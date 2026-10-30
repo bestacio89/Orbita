@@ -47,7 +47,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <None Update="ReferenceFixtures/**/*.json" CopyToOutputDirectory="PreserveNewest" />
+    <None Update="ReferenceFixtures/**/*.*" CopyToOutputDirectory="PreserveNewest" />
   </ItemGroup>
 
 </Project>
