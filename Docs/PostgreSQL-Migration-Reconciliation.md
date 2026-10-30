@@ -27,9 +27,9 @@ Orbita currently has 50 explicitly named relational tables in its EF configurati
 - [x] Historical follow-up migration ported with ID `20261024160000_EvolutionsRevueBimensuelle`.
 - [x] Historical Magellan model snapshot retained as migration-lineage metadata. It is **not** the current Orbita model snapshot.
 - [x] PostgreSQL Testcontainers integration project added and explicitly wired into CI.
-- [x] Historical migration chain applied to an empty PostgreSQL 18 database.
-- [x] Historical migration constraints verified against PostgreSQL: external-identity uniqueness, lot-code uniqueness, and restrictive project-to-lot deletion.
-- [x] Historical follow-up migration data-copy behavior covered by a populated PostgreSQL test: task updates are copied into comments before the legacy table is removed.
+- [x] Historical migration chain applied to an empty PostgreSQL 18 database (CI run `41106639204`).
+- [x] Historical migration constraints verified against PostgreSQL: external-identity uniqueness, lot-code uniqueness, and restrictive project-to-lot deletion (CI run `41106639204`).
+- [x] Historical follow-up migration data-copy behavior covered by a populated PostgreSQL test: task updates are copied into comments before the legacy table is removed (CI run `41106639204`).
 - [ ] Column-level source-to-target mapping and forward schema/data migration.
 - [ ] Current Orbita model snapshot committed alongside the reviewed forward migration.
 - [ ] Fresh PostgreSQL database reaches the current Orbita schema through the complete migration chain.
