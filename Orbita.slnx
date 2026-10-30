@@ -13,6 +13,7 @@
     <Project Path="sources/back/Orbita.API/Orbita.API.csproj" />
   </Folder>
   <Folder Name="/4- Tests/">
+    <Project Path="Tests/Orbita.Testing.Unit/Orbita.Testing.Unit.csproj" />
     <Project Path="Tests/Orbita.Testing/Orbita.Testing.csproj" />
     <Project Path="Tests/Orbita.Testing.ArchitecturalReports/Orbita.Testing.ArchitecturalReports.csproj" />
   </Folder>
