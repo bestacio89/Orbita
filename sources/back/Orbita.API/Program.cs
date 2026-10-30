@@ -49,7 +49,7 @@ builder.Services.AddFranzResilience(configuration);
 
 var app = builder.Build();
 
-// Runtime schema changes and development seed data are deliberately limited to Development.
+// Runtime schema migration is deliberately limited to Development.
 // Production migrations should be applied by the deployment/orchestration pipeline.
 if (app.Environment.IsDevelopment())
 {
