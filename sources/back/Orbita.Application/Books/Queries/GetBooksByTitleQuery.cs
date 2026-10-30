@@ -15,9 +15,9 @@ public sealed class GetBookByTitleQueryHandler
     : IQueryHandler<GetBookByTitleQuery, Result<IEnumerable<BookDto>>>
 {
     private readonly IBookRepository _bookRepository;
-    private readonly IOrbitaMapper _mapper;
+    private readonly IFranzMapper _mapper;
 
-    public GetBookByTitleQueryHandler(IBookRepository bookRepository, IOrbitaMapper mapper)
+    public GetBookByTitleQueryHandler(IBookRepository bookRepository, IFranzMapper mapper)
     {
         _bookRepository = bookRepository;
         _mapper = mapper;

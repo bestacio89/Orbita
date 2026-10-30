@@ -11,8 +11,8 @@ public static class ApplicationServiceCollectionExtensions
   {
 
 
-   collection.AddOrbitaMapping(Assembly.GetExecutingAssembly());
-   collection.AddOrbitaMediatorV2Default(null, Assembly.GetExecutingAssembly());
+   collection.AddFranzMapping(Assembly.GetExecutingAssembly());
+   collection.AddFranzMediatorV2Default(null, Assembly.GetExecutingAssembly());
 
     return collection;
   }
