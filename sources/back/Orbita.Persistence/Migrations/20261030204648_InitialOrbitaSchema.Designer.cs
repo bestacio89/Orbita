@@ -12,7 +12,7 @@ using Orbita.Persistence;
 namespace Orbita.Persistence.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20261030194059_InitialOrbitaSchema")]
+    [Migration("20261030204648_InitialOrbitaSchema")]
     partial class InitialOrbitaSchema
     {
         /// <inheritdoc />
