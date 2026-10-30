@@ -1,4 +1,21 @@
-# AstrolabaMagellan Backend Porting Roadmap
+# Orbita Backend Porting Roadmap
+
+## Current implementation status — 2026-10-30
+
+This roadmap remains the functional target. The status below distinguishes implemented foundations from work that is not yet complete.
+
+| Phase | Status | Evidence / remaining work |
+| --- | --- | --- |
+| 0 — Architecture baseline | Complete | Source/target mapping, functional inventory, dependency rules, and acceptance criteria are documented. |
+| 1 — Domain and contracts | Foundation implemented | Orbita domain entities, value objects, calculation rules, TSP models, commands, queries, DTOs, and repository contracts are present. Project contracts now follow one-type-per-file organization. Continue validating completeness against the functional inventory. |
+| 2 — PostgreSQL persistence | Baseline complete; capability validation ongoing | A single clean InitialOrbitaSchema migration is generated from the current model. PostgreSQL 18 integration tests apply it to an empty database, validate the mapped schema, and exercise repository, uniqueness, rollback, and concurrency behavior. Historical data import remains separate. |
+| 3 — Application workflows | Partial | Project lifecycle, assignment, current-user, project draft, co-author, TSP ingestion, and deterministic calculation workflows are present. Remaining planning, time-entry, financial, export, governance, and reporting capabilities must be assessed against the source inventory. |
+| 4 — API and security | Partial | Project and draft HTTP endpoints and current-user resolution are present. Full Entra token validation and end-to-end authorization coverage for the complete security matrix remain outstanding. |
+| 5 — Automated verification | Foundation complete; coverage expansion ongoing | Unit, PostgreSQL integration, architecture, and architectural tribunal projects run in CI. API-level end-to-end security scenarios and remaining business workflows still require coverage. |
+| 6 — Operations and documentation | Partial | CI, environment-driven configuration, migration guidance, and this roadmap are present. Production deployment, readiness, secret-store integration, and operational validation remain outstanding. |
+
+The next roadmap phase must be selected from the remaining functional inventory, not inferred from the existence of the current foundation.
+
 
 ## 1. Objective
 
@@ -131,7 +148,7 @@ Acceptance:
 Deliverables:
 - Replace the sample `ApplicationDbContext` model with the full project model.
 - Port all EF entity configurations, indexes, unique constraints, relationships, delete behaviours, concurrency tokens, value conversions, and PostgreSQL-specific mappings.
-- Port the existing PostgreSQL migration history and model snapshot as a deliberate baseline. Do not blindly rename migration files or discard migration lineage.
+- Establish a fresh Orbita migration lineage containing exactly one EF Core-generated initial migration and its matching model snapshot. Historical Magellan migration IDs, schema names, and upgrade operations do not belong in Orbita's migration assembly; historical data conversion is a separate import workflow.
 - Implement persistence adapters/repositories behind Contracts.
 - Configure design-time DbContext creation and environment-driven connection settings.
 - Preserve tenant/object identity uniqueness and project/profile ownership constraints.
@@ -269,12 +286,12 @@ One-line changelog entry
 
 ## 8. Initial implementation order
 
-1. Phase 0 roadmap PR.
-2. Phase 1 domain and contracts, with sample bookstore code removed in coherent commits.
-3. Phase 2 PostgreSQL persistence and migrations.
-4. Phase 3 application workflows, grouped by business capability.
-5. Phase 4 API and security.
-6. Phase 5 comprehensive automated tests and architecture enforcement.
-7. Phase 6 operational configuration and documentation.
+1. Phase 0 architecture baseline.
+2. Phase 1 domain and contracts, including removal of unrelated template examples.
+3. Phase 2 clean PostgreSQL baseline and persistence verification.
+4. Complete the remaining Phase 3 business capabilities in coherent capability-based PRs.
+5. Complete Phase 4 Entra authentication and API-level authorization verification.
+6. Expand Phase 5 end-to-end and regression coverage as each capability is delivered.
+7. Complete Phase 6 deployment, secret management, readiness, and operational documentation.
 
 The migration is complete only when the Orbita backend exposes the required Magellan capabilities with equivalent business and security behaviour, passes the PostgreSQL-backed test suite, and conforms to Orbita's architecture.

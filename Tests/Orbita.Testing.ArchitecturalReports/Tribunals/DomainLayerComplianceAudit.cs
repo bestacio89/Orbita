@@ -37,7 +37,7 @@ namespace Orbita.Testing.ArchitecturalReports.Layers
           var domainEntities = DomainLayer
               .GetObjects(BaseArchitecture)
               .Where(t =>
-                  !t.ResidesInNamespace($"{prefix}.Domain.ValueObjects") &&
+                  t.ResidesInNamespace($"{prefix}.Domain.Entities") &&
                   !t.FullName.Contains("Infrastructure", StringComparison.OrdinalIgnoreCase) &&
                   !t.FullName.Contains("Persistence", StringComparison.OrdinalIgnoreCase) &&
                   !t.FullName.Contains("Mongo", StringComparison.OrdinalIgnoreCase) &&

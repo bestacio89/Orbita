@@ -14,3 +14,8 @@
 # Visual Studio
 .vs/
 *.coverage
+# Runtime diagnostics and local build output
+*.log
+**/logs/
+**/out.txt
+**/build.log

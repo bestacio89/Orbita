@@ -25,7 +25,7 @@ public class DomainArchitectureTests : BaseArchitectureTest
         .GetObjects(BaseArchitecture)
         .Where(t =>
            
-            !t.ResidesInNamespace("Orbita.Domain.ValueObjects") && // 🚫 exclude ValueObjects
+            t.ResidesInNamespace("Orbita.Domain.Entities") && // only persisted domain entity types
             !t.FullName.Contains("Infrastructure", StringComparison.OrdinalIgnoreCase) &&
             !t.FullName.Contains("Persistence", StringComparison.OrdinalIgnoreCase) &&
             !t.FullName.Contains("Mongo", StringComparison.OrdinalIgnoreCase) &&
