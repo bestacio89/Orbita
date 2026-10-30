@@ -41,6 +41,7 @@ public sealed class Project : DomainEntity
     public DateTimeOffset CreatedAt { get; private set; }
     public Guid? CreatedByUserId { get; private set; }
     public ProjectSettings Settings { get; private set; } = new();
+    public List<ProjectTaskType> TaskTypes { get; private set; } = [];
 
     public IReadOnlyCollection<ProjectAssignment> Assignments => _assignments.AsReadOnly();
 
@@ -74,7 +75,7 @@ public sealed class Project : DomainEntity
             Client = client.Trim(),
             Name = name.Trim(),
             Reference = NormalizeOptional(reference),
-            ContractType = NormalizeOptional(contractType) ?? "FixedPrice",
+            ContractType = NormalizeOptional(contractType) ?? "Forfait",
             StartDate = startDate,
             ContractualEndDate = contractualEndDate,
             ForecastEndDate = contractualEndDate,
@@ -86,6 +87,7 @@ public sealed class Project : DomainEntity
         };
 
         project.RecalculateUniqueKey();
+        project.AddCoreTaskTypes();
         return project;
     }
 
@@ -156,6 +158,25 @@ public sealed class Project : DomainEntity
     {
         var assignment = _assignments.SingleOrDefault(candidate => candidate.UserId == userId);
         return assignment is not null && _assignments.Remove(assignment);
+    }
+
+    public void AddCoreTaskTypes()
+    {
+        var order = 0;
+        foreach (var (code, name) in ProjectTaskTypeCodes.CoreTypes)
+        {
+            if (!TaskTypes.Any(taskType => taskType.Code == code))
+            {
+                TaskTypes.Add(new ProjectTaskType
+                {
+                    ProjectId = Id,
+                    Code = code,
+                    Name = name,
+                    IsCoreType = true,
+                    Order = order++
+                });
+            }
+        }
     }
 
     public void RecalculateUniqueKey() => UniqueKey = ProjectIdentity.Create(Reference, Client, Name);

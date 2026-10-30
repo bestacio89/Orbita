@@ -33,7 +33,7 @@ public sealed class TspProjectSheet
     public string Director { get; set; } = string.Empty;
     public string ServiceLineManager { get; set; } = string.Empty;
     public string SalesRepresentative { get; set; } = string.Empty;
-    public string ContractType { get; set; } = "FixedPrice";
+    public string ContractType { get; set; } = "Forfait";
     public DateOnly? StartDate { get; set; }
     public DateOnly? EndDate { get; set; }
 }

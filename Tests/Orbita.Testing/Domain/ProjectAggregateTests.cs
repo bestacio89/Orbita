@@ -30,7 +30,8 @@ public sealed class ProjectAggregateTests
         Assert.Equal(Start, project.StartDate);
         Assert.Equal(End, project.ContractualEndDate);
         Assert.Equal(End, project.ForecastEndDate);
-        Assert.Equal("FixedPrice", project.ContractType);
+        Assert.Equal("Forfait", project.ContractType);
+        Assert.Equal(new[] { "Atelier", "Livrable" }, project.TaskTypes.Select(taskType => taskType.Code).ToArray());
         Assert.Equal(ProjectOrigin.ManualCreation, project.Origin);
         Assert.Equal(ProjectStatus.Preparation, project.Status);
         Assert.Equal("2026-11", project.Settings.FirstPlanningMonth);
