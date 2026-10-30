@@ -71,6 +71,25 @@ public sealed class ApplicationDbContext : DbContextBase
         base.OnModelCreating(modelBuilder);
         modelBuilder.ApplyConfigurationsFromAssembly(typeof(ApplicationDbContext).Assembly);
 
+        // DomainEntity and ProjectEntity are code-reuse bases, not persistence inheritance.
+        // Detach each concrete entity from the CLR base hierarchy so EF creates one table per
+        // domain entity instead of a shared TPH/TPT hierarchy.
+        var domainEntityTypes = modelBuilder.Model.GetEntityTypes()
+            .Where(entityType =>
+                typeof(DomainEntity).IsAssignableFrom(entityType.ClrType) &&
+                entityType.ClrType != typeof(DomainEntity) &&
+                entityType.ClrType != typeof(ProjectEntity))
+            .ToArray();
+
+        foreach (var entityType in domainEntityTypes)
+        {
+            modelBuilder.Entity(entityType.ClrType).HasBaseType((Type?)null);
+        }
+
+        modelBuilder.Ignore<ProjectEntity>();
+        modelBuilder.Ignore<DomainEntity>();
+        modelBuilder.Ignore<Entity<Guid>>();
+
         // Every Franz-backed domain entity uses the same optimistic-concurrency contract.
         foreach (var entityType in modelBuilder.Model.GetEntityTypes())
         {
