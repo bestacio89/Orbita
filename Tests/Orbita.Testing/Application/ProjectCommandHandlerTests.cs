@@ -123,27 +123,28 @@ public sealed class ProjectCommandHandlerTests
     private static Project CreateProject() =>
         Project.CreateManually("Client", "Project", null, Start, End, "Forfait", null, Now);
 
-    private sealed class Harness(IReadOnlyCollection<string> roles)
+    private sealed class Harness
     {
-        private readonly TestCurrentUserContext _context = new(roles);
-        public FakeUserRepository Users { get; } = new();
-        public FakeProjectRepository Projects { get; } = new();
-        public User Actor { get; } = User.Provision(
-            Guid.NewGuid(), Guid.NewGuid(), null, null, null, Now);
-        public TimeProvider TimeProvider { get; } = new FixedTimeProvider(Now);
-        public ICurrentUserContext CurrentUser => _context;
-        public CurrentActorResolver ActorResolver { get; }
+        private readonly TestCurrentUserContext _context;
 
-        public Harness(IReadOnlyCollection<string> roles) : this(roles, initialize: true)
+        public Harness(IReadOnlyCollection<string> roles)
         {
-        }
-
-        private Harness(IReadOnlyCollection<string> roles, bool initialize) : this(roles)
-        {
+            _context = new TestCurrentUserContext(roles);
+            Users = new FakeUserRepository();
+            Projects = new FakeProjectRepository();
+            Actor = User.Provision(Guid.NewGuid(), Guid.NewGuid(), null, null, null, Now);
+            TimeProvider = new FixedTimeProvider(Now);
             _context.SetIdentity(Actor.TenantId, Actor.ObjectId);
             Users.Seed(Actor);
             ActorResolver = new CurrentActorResolver(_context, Users, TimeProvider);
         }
+
+        public FakeUserRepository Users { get; }
+        public FakeProjectRepository Projects { get; }
+        public User Actor { get; }
+        public TimeProvider TimeProvider { get; }
+        public ICurrentUserContext CurrentUser => _context;
+        public CurrentActorResolver ActorResolver { get; }
     }
 
     private sealed class TestCurrentUserContext(IReadOnlyCollection<string> roles) : ICurrentUserContext
