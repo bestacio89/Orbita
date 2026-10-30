@@ -27,7 +27,7 @@ Orbita currently has 50 explicitly named relational tables in its EF configurati
 - [x] Historical follow-up migration ported with ID `20261024160000_EvolutionsRevueBimensuelle`.
 - [x] Historical model snapshot ported as `ApplicationDbContextModelSnapshot`.
 - [x] PostgreSQL Testcontainers integration project added and explicitly wired into CI.
-- [ ] Real PostgreSQL execution of the historical migration chain — CI run `41096953225` is pending at the time of this update.
+- [x] Real PostgreSQL execution of the historical migration chain — verified against PostgreSQL 18 in CI run `41097245451`.
 - [ ] Column-level source-to-target mapping and forward schema/data migration.
 - [ ] Current Orbita model snapshot and no-pending-model-changes verification.
 
@@ -137,13 +137,40 @@ Particular attention is required for:
 - decimal precision, currently intended to remain `numeric(18,6)`;
 - optimistic concurrency version columns.
 
+### Generated migration review
+
+EF Core 10 successfully generated a draft migration from the historical snapshot to the current Orbita model in CI run `41098623438`. The generated draft contains 49 `DropTable` operations and 49 `CreateTable` operations in its `Up` method. It does not infer table renames because the source and target CLR entity identities differ.
+
+**That generated migration is destructive and must not be committed as-is.** It would discard the historical data in the old tables. The generated preview was retained as a short-lived CI artifact for inspection only.
+
+The forward migration must replace those drop/create pairs with reviewed data-preserving operations. For tables with equivalent semantics, use explicit PostgreSQL-safe table/column renames and targeted alterations. For changed shapes, add explicit backfills and validate row counts and relationships before removing legacy columns. Any source table without an unambiguous target must remain available until its disposition is approved.
+
+### Confirmed identity and role semantics
+
+The source API constructs `IdentifiantExterne` from the validated Entra claims as `{tid}:{oid}`. This permits a deterministic split into Orbita's `TenantId` and `ObjectId`, but the migration must validate both components as GUIDs and fail before changing user data if any non-empty source identity is malformed. It must not infer either value from email or display name.
+
+The source project-assignment role values map to Orbita's project roles as follows:
+
+| Historical role | Orbita role |
+|---|---|
+| `Consultant` | `Contributor` |
+| `ChefDeProjet` | `ProjectManager` |
+| `Pilotage` | `Steering` |
+| `Lecteur` | `Reader` |
+
+The historical `Utilisateur.Administrateur` flag is not a project assignment. Orbita derives global capabilities from validated Entra `roles` claims. The migration must preserve this legacy flag for review or provide an explicit reconciliation report; it must not silently promote it into a project role.
+
+Risk probability/impact, project status/origin, task status, action/decision status, notification state, absence period and other string-backed historical enums require explicit, reviewed value maps before conversion to Orbita's integer-backed enums. Unknown values must abort the migration rather than fall back to a default.
+
+Orbita's Franz-backed entities also introduce common audit and soft-delete columns. Their backfill values must be deterministic and must not fabricate historical actors or timestamps. Existing source creation/modification fields should be mapped where semantically equivalent; otherwise use an explicitly documented migration actor and source timestamp policy.
+
 ## Required implementation sequence
 
-1. Port the two historical migration operations and their designer metadata into the Orbita migration assembly, retaining migration IDs and PostgreSQL annotations.
-2. Port the historical model snapshot as the baseline for the migration chain.
-3. Generate the next migration against the actual Orbita model and review every generated operation.
+1. Historical migration operations, designer metadata and snapshot are ported with their original IDs and PostgreSQL annotations.
+2. Generate the next migration against the actual Orbita model and review every operation; treat EF's output as a draft, not as a safe data migration.
+3. Complete and review the column-level mapping for every source table, including common audit fields, enums, owned settings and relationships.
 4. Replace generated drop/create operations with explicit rename/alter/data-copy operations where data continuity is required.
-5. Add explicit backfills for identity and enum transformations; fail safely when a value cannot be migrated unambiguously.
+5. Add validated backfills for Entra identity and enum transformations; fail safely when a value cannot be migrated unambiguously.
 6. Add a final current-model snapshot and verify that EF reports no pending model changes.
 7. Test both paths against real PostgreSQL:
    - empty database through all migrations;

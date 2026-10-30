@@ -46,19 +46,3 @@ jobs:
       - name: Run architectural tribunals
         run: dotnet test Tests/Orbita.Testing.ArchitecturalReports/Orbita.Testing.ArchitecturalReports.csproj --configuration Release --no-build --no-restore --logger "console;verbosity=normal"
 
-      # Temporary migration-generation probe. The generated diff is reviewed before
-      # any migration is committed; this step is removed after the reviewed files land.
-      - name: Generate PostgreSQL schema migration preview
-        run: |
-          dotnet tool install dotnet-ef --tool-path "$RUNNER_TEMP/dotnet-tools" --version 10.0.14
-          "$RUNNER_TEMP/dotnet-tools/dotnet-ef" migrations add OrbitaSchemaTranslation --project sources/back/Orbita.Persistence/Orbita.Persistence.csproj --startup-project sources/back/Orbita.API/Orbita.API.csproj --output-dir Migrations --configuration Release --no-build
-
-      - name: Upload PostgreSQL migration preview
-        uses: actions/upload-artifact@v4
-        with:
-          name: orbita-postgresql-migration-preview
-          path: |
-            sources/back/Orbita.Persistence/Migrations/*OrbitaSchemaTranslation*.cs
-            sources/back/Orbita.Persistence/Migrations/ApplicationDbContextModelSnapshot.cs
-          if-no-files-found: error
-          retention-days: 3
