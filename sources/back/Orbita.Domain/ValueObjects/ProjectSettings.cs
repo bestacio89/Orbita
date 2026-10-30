@@ -1,7 +1,7 @@
 using Orbita.Domain.Common;
 using Orbita.Domain.Enums;
 
-namespace Orbita.Domain.Entities;
+namespace Orbita.Domain.ValueObjects;
 
 /// <summary>Project-specific planning and alert configuration. Persisted as a dependent value object.</summary>
 public sealed class ProjectSettings
