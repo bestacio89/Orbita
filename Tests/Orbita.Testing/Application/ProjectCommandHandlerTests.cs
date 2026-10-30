@@ -91,6 +91,30 @@ public sealed class ProjectCommandHandlerTests
     }
 
     [Fact]
+    public async Task Inactive_current_actor_is_rejected_even_when_global_role_has_project_update()
+    {
+        var harness = new Harness([GlobalRoleNames.Manager]);
+        harness.Actor.Deactivate();
+        var project = CreateProject();
+        harness.Projects.Seed(project);
+
+        var result = await new UpdateProjectDatesCommandHandler(
+            harness.Projects,
+            harness.ActorResolver,
+            harness.CurrentUser)
+            .Handle(new UpdateProjectDatesCommand(
+                project.Id,
+                ExpectedVersion: 0,
+                StartDate: Start,
+                ContractualEndDate: End,
+                ForecastEndDate: End.AddDays(15)), CancellationToken.None);
+
+        Assert.False(result.IsSuccess);
+        Assert.Equal("Unauthorized", result.Error?.Code);
+        Assert.Equal(0, project.Version);
+    }
+
+    [Fact]
     public async Task Project_manager_cannot_assign_an_inactive_user()
     {
         var harness = new Harness([]);

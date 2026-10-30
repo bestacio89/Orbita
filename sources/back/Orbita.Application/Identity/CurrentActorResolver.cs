@@ -36,6 +36,11 @@ public sealed class CurrentActorResolver(
             return user;
         }
 
+        if (!user.IsActive)
+        {
+            return null;
+        }
+
         if (user.FirstName != currentUser.FirstName ||
             user.LastName != currentUser.LastName ||
             user.Email != currentUser.Email)
