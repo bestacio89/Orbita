@@ -1,6 +1,7 @@
 using Orbita.Domain.Common;
 using Orbita.Domain.Entities;
 using Orbita.Domain.Enums;
+using Orbita.Domain.Services;
 using Xunit;
 
 namespace Orbita.Testing.Domain;
