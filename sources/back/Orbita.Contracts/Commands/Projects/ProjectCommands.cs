@@ -26,8 +26,10 @@ public sealed record ArchiveProjectCommand(
 public sealed record AssignProjectUserCommand(
     Guid ProjectId,
     Guid UserId,
-    ProjectRole Role) : ICommand<Result>;
+    ProjectRole Role,
+    int ExpectedVersion) : ICommand<Result>;
 
 public sealed record RemoveProjectAssignmentCommand(
     Guid ProjectId,
-    Guid UserId) : ICommand<Result>;
+    Guid UserId,
+    int ExpectedVersion) : ICommand<Result>;
