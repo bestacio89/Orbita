@@ -1,6 +1,7 @@
 #nullable enable
 
 using Orbita.Domain.Calculations.Reference.Tsp;
+using Orbita.Domain.Tsp;
 
 namespace Orbita.Persistence.Excel;
 
