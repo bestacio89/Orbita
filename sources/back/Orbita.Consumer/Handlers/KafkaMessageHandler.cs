@@ -1,7 +1,7 @@
-using Orbita.Common.Messaging;
-using Orbita.Common.Messaging.Delegating;
-using Orbita.Common.Messaging.Headers;
-using Orbita.Common.Messaging.Messages;
+using Franz.Common.Messaging;
+using Franz.Common.Messaging.Delegating;
+using Franz.Common.Messaging.Headers;
+using Franz.Common.Messaging.Messages;
 using Orbita.Consumer.Processing;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;

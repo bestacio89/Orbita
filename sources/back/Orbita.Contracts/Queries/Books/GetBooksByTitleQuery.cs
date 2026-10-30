@@ -1,7 +1,7 @@
 // Queries/Books/GetBookByTitleQuery.cs
 using Orbita.Contracts.DTOs;
-using Orbita.Common.Mediator.Messages;
-using Orbita.Common.Mediator.Results;
+using Franz.Common.Mediator.Messages;
+using Franz.Common.Mediator.Results;
 
 namespace Orbita.Contracts.Queries.Books
 {

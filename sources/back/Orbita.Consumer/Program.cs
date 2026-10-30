@@ -1,10 +1,10 @@
 using Orbita.Application;
-using Orbita.Common.Business.Extensions;
-using Orbita.Common.Http.EntityFramework.Extensions;
-using Orbita.Common.Mediator.Extensions;
-using Orbita.Common.Messaging.Bootstrap.Extenstions;
-using Orbita.Common.Messaging.Hosting.Kafka;
-using Orbita.Common.Messaging.Kafka.Extensions;
+using Franz.Common.Business.Extensions;
+using Franz.Common.Http.EntityFramework.Extensions;
+using Franz.Common.Mediator.Extensions;
+using Franz.Common.Messaging.Bootstrap.Extenstions;
+using Franz.Common.Messaging.Hosting.Kafka;
+using Franz.Common.Messaging.Kafka.Extensions;
 using Orbita.Domain.Entities;
 using Orbita.Persistence;
 using Microsoft.Extensions.Configuration;

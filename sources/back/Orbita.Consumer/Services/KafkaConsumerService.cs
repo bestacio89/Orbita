@@ -1,13 +1,13 @@
-using Orbita.Common.Messaging.Kafka;
-using Orbita.Common.Messaging.Delegating;
-using Orbita.Common.Messaging.Configuration;
+using Franz.Common.Messaging.Kafka;
+using Franz.Common.Messaging.Delegating;
+using Franz.Common.Messaging.Configuration;
 using Confluent.Kafka;
 using Microsoft.Extensions.Options;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Hosting;
-using Orbita.Common.Messaging;
+using Franz.Common.Messaging;
 using System.Text;
-using Orbita.Common.Messaging.Messages;
+using Franz.Common.Messaging.Messages;
 
 namespace Orbita.Consumer.Services
 {

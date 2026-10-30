@@ -2,7 +2,7 @@ using ArchUnitNET;
 using ArchUnitNET.Domain.Extensions;
 using ArchUnitNET.Fluent;
 using ArchUnitNET.xUnit;
-using Orbita.Common.Mediator.Messages;
+using Franz.Common.Mediator.Messages;
 using OrbitaTesting;
 using Microsoft.AspNetCore.Mvc;
 using Xunit;
@@ -90,7 +90,7 @@ public class ApiArchitectureTests : BaseArchitectureTest
           "Orbita.Contracts")
       .OrShould()
       .ResideInAssembly(
-          "Orbita.Common")
+          "Franz.Common")
       .Because("API components (except composition root) should depend only on Contracts and Common abstractions.")
       .WithoutRequiringPositiveResults()
       .Check(BaseArchitecture);

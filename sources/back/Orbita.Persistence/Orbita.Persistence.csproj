@@ -3,9 +3,9 @@
   <Import Project="../../../common.targets" />
 
   <ItemGroup>
-    <PackageReference Include="Orbita.Common.Caching" />
-    <PackageReference Include="Orbita.Common.EntityFramework" />
-    <PackageReference Include="Orbita.Common.Hosting" />
+    <PackageReference Include="Franz.Common.Caching" />
+    <PackageReference Include="Franz.Common.EntityFramework" />
+    <PackageReference Include="Franz.Common.Hosting" />
     <PackageReference Include="Microsoft.EntityFrameworkCore" />
     <PackageReference Include="Microsoft.CodeAnalysis.Common" />
     <PackageReference Include="Microsoft.EntityFrameworkCore.Design">

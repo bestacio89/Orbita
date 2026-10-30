@@ -1,6 +1,6 @@
 using System;
 using System.Linq;
-using Orbita.Common.Data;
+using Franz.Common.Data;
 using Orbita.Domain.Entities;
 using Orbita.Domain.ValueObjects;
 

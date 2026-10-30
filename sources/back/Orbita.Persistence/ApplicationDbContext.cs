@@ -1,8 +1,8 @@
 using Orbita.Domain.Entities;
 using Orbita.Persistence;
-using Orbita.Common.Business.Domain;
-using Orbita.Common.EntityFramework;
-using Orbita.Common.Mediator.Dispatchers;
+using Franz.Common.Business.Domain;
+using Franz.Common.EntityFramework;
+using Franz.Common.Mediator.Dispatchers;
 using Microsoft.EntityFrameworkCore;
 
 namespace Orbita.Persistence

@@ -1,5 +1,5 @@
-using Orbita.Common.Mapping;
-using Orbita.Common.Mapping.Profiles;
+using Franz.Common.Mapping;
+using Franz.Common.Mapping.Profiles;
 using Orbita.Contracts.DTOs;
 using Orbita.Domain.Entities;
 using Orbita.Domain.ValueObjects;

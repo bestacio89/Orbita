@@ -1,8 +1,8 @@
-using Orbita.Common.Business.Repositories;
-using Orbita.Common.EntityFramework.Repositories;
-using Orbita.Common.Mediator.Errors;
-using Orbita.Common.Mediator.Handlers;
-using Orbita.Common.Mediator.Results;
+using Franz.Common.Business.Repositories;
+using Franz.Common.EntityFramework.Repositories;
+using Franz.Common.Mediator.Errors;
+using Franz.Common.Mediator.Handlers;
+using Franz.Common.Mediator.Results;
 using Orbita.Contracts.Commands.Books;
 using Orbita.Domain.Entities;
 using Orbita.Persistence;

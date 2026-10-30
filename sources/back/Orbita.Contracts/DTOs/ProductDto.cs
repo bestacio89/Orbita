@@ -2,7 +2,7 @@ namespace Orbita.Contracts.DTOs;
 
 /// <summary>
 /// Immutable DTO representing a product in the system.
-/// Fully compatible with Orbita.Common.Mapping v1.6.18 (constructor-aware).
+/// Fully compatible with Franz.Common.Mapping v1.6.18 (constructor-aware).
 /// </summary>
 public record ProductDto(
     int Id,

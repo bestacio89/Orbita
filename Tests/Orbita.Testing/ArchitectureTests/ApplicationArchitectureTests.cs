@@ -1,9 +1,9 @@
 using ArchUnitNET.Domain;
 using ArchUnitNET.Fluent;
 using ArchUnitNET.xUnit;
-using Orbita.Common.Business.Domain;
-using Orbita.Common.Mediator.Handlers;
-using Orbita.Common.Mediator.Messages;
+using Franz.Common.Business.Domain;
+using Franz.Common.Mediator.Handlers;
+using Franz.Common.Mediator.Messages;
 using System;
 using System.Linq;
 using Xunit;
@@ -136,9 +136,9 @@ namespace Orbita.Testing.ArchitectureTests
             .Classes()
             .That().Are(pureDomainEvents)
             .Should()
-            .ImplementAnyInterfacesThat().HaveFullName("Orbita.Common.Business.Events.IDomainEvent")
+            .ImplementAnyInterfacesThat().HaveFullName("Franz.Common.Business.Events.IDomainEvent")
             .OrShould()
-            .ImplementAnyInterfacesThat().HaveFullName("Orbita.Common.Business.Events.IEvent")
+            .ImplementAnyInterfacesThat().HaveFullName("Franz.Common.Business.Events.IEvent")
             .AndShould()
             .HaveNameEndingWith("Event")
             .Because("All domain events must implement IDomainEvent or IEvent.")
@@ -154,9 +154,9 @@ namespace Orbita.Testing.ArchitectureTests
             .Classes()
             .That().Are(ApplicationEventHandlerTypes)
             .Should()
-            .ImplementAnyInterfacesThat().HaveFullName("Orbita.Common.Mediator.Handlers.IEventHandler`1")
+            .ImplementAnyInterfacesThat().HaveFullName("Franz.Common.Mediator.Handlers.IEventHandler`1")
             .OrShould()
-            .ImplementAnyInterfacesThat().HaveFullName("Orbita.Common.Mediator.Handlers.INotificationHandler`1")
+            .ImplementAnyInterfacesThat().HaveFullName("Franz.Common.Mediator.Handlers.INotificationHandler`1")
             .AndShould()
             .HaveNameEndingWith("Handler")
             .Because("All event handlers must implement IEventHandler<T> or INotificationHandler<T>.")
@@ -188,28 +188,28 @@ namespace Orbita.Testing.ArchitectureTests
           .That()
           .Are(ApplicationLayer)
           .Should()
-          .DependOnAnyTypesThat().ResideInNamespace("Orbita.Common.Business.Domain")
-          .OrShould().DependOnAnyTypesThat().ResideInNamespace("Orbita.Common.Business.Entities")
-          .OrShould().DependOnAnyTypesThat().ResideInNamespace("Orbita.Common.Business.Events")
-          .OrShould().DependOnAnyTypesThat().ResideInNamespace("Orbita.Common.Mediator")
-          .OrShould().DependOnAnyTypesThat().ResideInNamespace("Orbita.Common.Mediator.Core")
-          .OrShould().DependOnAnyTypesThat().ResideInNamespace("Orbita.Common.Mediator.Handlers")
-          .OrShould().DependOnAnyTypesThat().ResideInNamespace("Orbita.Common.Mediator.Pipelines")
-          .OrShould().DependOnAnyTypesThat().ResideInNamespace("Orbita.Common.Mediator.Pipelines.Core")
-          .OrShould().DependOnAnyTypesThat().ResideInNamespace("Orbita.Common.Mediator.Pipelines.Logging")
-          .OrShould().DependOnAnyTypesThat().ResideInNamespace("Orbita.Common.Mediator.Pipelines.Validation")
-          .OrShould().DependOnAnyTypesThat().ResideInNamespace("Orbita.Common.Mediator.Pipelines.Transaction")
-          .OrShould().DependOnAnyTypesThat().ResideInNamespace("Orbita.Common.Mediator.Validation")
-          .OrShould().DependOnAnyTypesThat().ResideInNamespace("Orbita.Common.Mediator.Extensions")
-          .OrShould().DependOnAnyTypesThat().ResideInNamespace("Orbita.Common.Mapping")
-          .OrShould().DependOnAnyTypesThat().ResideInNamespace("Orbita.Common.Mapping.Abstractions")
-          .OrShould().DependOnAnyTypesThat().ResideInNamespace("Orbita.Common.Mapping.Core")
-          .OrShould().DependOnAnyTypesThat().ResideInNamespace("Orbita.Common.Logging")
+          .DependOnAnyTypesThat().ResideInNamespace("Franz.Common.Business.Domain")
+          .OrShould().DependOnAnyTypesThat().ResideInNamespace("Franz.Common.Business.Entities")
+          .OrShould().DependOnAnyTypesThat().ResideInNamespace("Franz.Common.Business.Events")
+          .OrShould().DependOnAnyTypesThat().ResideInNamespace("Franz.Common.Mediator")
+          .OrShould().DependOnAnyTypesThat().ResideInNamespace("Franz.Common.Mediator.Core")
+          .OrShould().DependOnAnyTypesThat().ResideInNamespace("Franz.Common.Mediator.Handlers")
+          .OrShould().DependOnAnyTypesThat().ResideInNamespace("Franz.Common.Mediator.Pipelines")
+          .OrShould().DependOnAnyTypesThat().ResideInNamespace("Franz.Common.Mediator.Pipelines.Core")
+          .OrShould().DependOnAnyTypesThat().ResideInNamespace("Franz.Common.Mediator.Pipelines.Logging")
+          .OrShould().DependOnAnyTypesThat().ResideInNamespace("Franz.Common.Mediator.Pipelines.Validation")
+          .OrShould().DependOnAnyTypesThat().ResideInNamespace("Franz.Common.Mediator.Pipelines.Transaction")
+          .OrShould().DependOnAnyTypesThat().ResideInNamespace("Franz.Common.Mediator.Validation")
+          .OrShould().DependOnAnyTypesThat().ResideInNamespace("Franz.Common.Mediator.Extensions")
+          .OrShould().DependOnAnyTypesThat().ResideInNamespace("Franz.Common.Mapping")
+          .OrShould().DependOnAnyTypesThat().ResideInNamespace("Franz.Common.Mapping.Abstractions")
+          .OrShould().DependOnAnyTypesThat().ResideInNamespace("Franz.Common.Mapping.Core")
+          .OrShould().DependOnAnyTypesThat().ResideInNamespace("Franz.Common.Logging")
           .OrShould().DependOnAnyTypesThat().ResideInNamespace("System")
           .OrShould().DependOnAnyTypesThat().ResideInNamespace("System.Threading")
           .OrShould().DependOnAnyTypesThat().ResideInNamespace("System.Threading.Tasks")
           .OrShould().DependOnAnyTypesThat().ResideInNamespace("Microsoft.Extensions.DependencyInjection")
-          .Because("The Application layer must remain pure — only Orbita.Common and System namespaces are allowed.");
+          .Because("The Application layer must remain pure — only Franz.Common and System namespaces are allowed.");
 
       try
       {

@@ -1,4 +1,4 @@
-using Orbita.Common.DependencyInjection;
+using Franz.Common.DependencyInjection;
 using Orbita.Contracts.Persistence;
 using Orbita.Domain.Entities;
 

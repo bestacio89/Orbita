@@ -2,9 +2,9 @@ using ArchUnitNET.Domain;
 using ArchUnitNET.Domain.Extensions;
 using ArchUnitNET.Fluent;
 using ArchUnitNET.Loader;
-using Orbita.Common.Business.Events;
-using Orbita.Common.Mediator;
-using Orbita.Common.Mediator.Messages;
+using Franz.Common.Business.Events;
+using Franz.Common.Mediator;
+using Franz.Common.Mediator.Messages;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -29,7 +29,7 @@ namespace Orbita.Testing
       Console.OutputEncoding = System.Text.Encoding.UTF8;
       Console.WriteLine("🧩 Preloading solution assemblies...");
 
-      // Include Orbita.Common and Orbita.Common.Mediator
+      // Include Franz.Common and Franz.Common.Mediator
       const string allowedPattern =
         @".*\.(Common(\.Mediator)?|Mediator|Domain|Application|API|Persistence|Contracts)(\.dll)?$";
 
@@ -71,8 +71,8 @@ namespace Orbita.Testing
       // (Common assemblies are not strictly needed as fields, we just need them loaded into BaseArchitecture)
 
       // 🔎 Diagnostics — verify key interfaces are visible to the model
-      bool scopedExists = BaseArchitecture.Interfaces.Any(i => i.FullName == typeof(Orbita.Common.DependencyInjection.IScopedDependency).FullName);
-      bool singletonExists = BaseArchitecture.Interfaces.Any(i => i.FullName == typeof(Orbita.Common.DependencyInjection.ISingletonDependency).FullName);
+      bool scopedExists = BaseArchitecture.Interfaces.Any(i => i.FullName == typeof(Franz.Common.DependencyInjection.IScopedDependency).FullName);
+      bool singletonExists = BaseArchitecture.Interfaces.Any(i => i.FullName == typeof(Franz.Common.DependencyInjection.ISingletonDependency).FullName);
       bool icommandExists = BaseArchitecture.Interfaces.Any(i => i.FullName == typeof(ICommand).FullName);
       bool iqueryExists = BaseArchitecture.Interfaces.Any(i => i.FullName == typeof(IQuery<>).FullName);
       bool customreposexist = BaseArchitecture.Types.Any(t => t.Name.EndsWith("Repository", StringComparison.OrdinalIgnoreCase));
@@ -80,13 +80,13 @@ namespace Orbita.Testing
       if (!scopedExists || !singletonExists || !icommandExists || !iqueryExists)
       {
         Console.ForegroundColor = ConsoleColor.Yellow;
-        Console.WriteLine("⚠️  Warning: Some Orbita.Common.* or Mediator interfaces were NOT found in the architecture graph.");
-        if (!scopedExists) Console.WriteLine("   ➜ Missing: Orbita.Common.DependencyInjection.IScopedDependency");
-        if (!singletonExists) Console.WriteLine("   ➜ Missing: Orbita.Common.DependencyInjection.ISingletonDependency");
-        if (!icommandExists) Console.WriteLine("   ➜ Missing: Orbita.Common.Mediator.Messages.ICommand");
-        if (!iqueryExists) Console.WriteLine("   ➜ Missing: Orbita.Common.Mediator.Messages.IQuery<>");
-        if (!customreposexist) Console.WriteLine("   ➜ Non Existant: Custom Repository types this architecture runs with Orbita.Common Preordained entity and aggregate repos (e.g., IBookRepository)");
-        Console.WriteLine("   Hint: Ensure Orbita.Common*.dll are copied to the test output (bin) folder.");
+        Console.WriteLine("⚠️  Warning: Some Franz.Common.* or Mediator interfaces were NOT found in the architecture graph.");
+        if (!scopedExists) Console.WriteLine("   ➜ Missing: Franz.Common.DependencyInjection.IScopedDependency");
+        if (!singletonExists) Console.WriteLine("   ➜ Missing: Franz.Common.DependencyInjection.ISingletonDependency");
+        if (!icommandExists) Console.WriteLine("   ➜ Missing: Franz.Common.Mediator.Messages.ICommand");
+        if (!iqueryExists) Console.WriteLine("   ➜ Missing: Franz.Common.Mediator.Messages.IQuery<>");
+        if (!customreposexist) Console.WriteLine("   ➜ Non Existant: Custom Repository types this architecture runs with Franz.Common Preordained entity and aggregate repos (e.g., IBookRepository)");
+        Console.WriteLine("   Hint: Ensure Franz.Common*.dll are copied to the test output (bin) folder.");
         Console.ResetColor();
       }
 

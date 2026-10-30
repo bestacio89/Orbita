@@ -1,7 +1,7 @@
-using Orbita.Common.Business.Domain;
-using Orbita.Common.DependencyInjection;
-using Orbita.Common.Messaging;
-using Orbita.Common.Messaging.Messages;
+using Franz.Common.Business.Domain;
+using Franz.Common.DependencyInjection;
+using Franz.Common.Messaging;
+using Franz.Common.Messaging.Messages;
 
 namespace Orbita.Consumer.Processing
 {

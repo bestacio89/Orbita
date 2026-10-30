@@ -1,2 +1,2 @@
-global using Orbita.Common.Mediator.Handlers;
-global using Orbita.Common.Mediator.Dispatchers;
+global using Franz.Common.Mediator.Handlers;
+global using Franz.Common.Mediator.Dispatchers;

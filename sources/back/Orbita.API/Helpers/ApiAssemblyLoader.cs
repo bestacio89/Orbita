@@ -1,4 +1,4 @@
-using Orbita.Common.Errors;
+using Franz.Common.Errors;
 using System;
 using System.Linq;
 using System.Reflection;

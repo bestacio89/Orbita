@@ -1,11 +1,11 @@
 using ArchUnitNET.Domain.Extensions;
 using ArchUnitNET.Fluent;
 using ArchUnitNET.xUnit;
-using Orbita.Common.Business.Domain;
-using Orbita.Common.Business.Events;
-using Orbita.Common.Mediator;
-using Orbita.Common.Mediator.Results;
-using Orbita.Common.Mediator.Errors;
+using Franz.Common.Business.Domain;
+using Franz.Common.Business.Events;
+using Franz.Common.Mediator;
+using Franz.Common.Mediator.Results;
+using Franz.Common.Mediator.Errors;
 namespace Orbita.Testing.ArchitectureTests;
 
 /// <summary>
@@ -213,10 +213,10 @@ public class DomainArchitectureTests : BaseArchitectureTest
         .ResideInNamespaceMatching("*.Domain")
 
         // Orbita base abstractions
-        .OrShould().ResideInAssembly(typeof(Entity<>).Assembly.GetName().Name)          // Orbita.Common.Business
-        .OrShould().ResideInAssembly(typeof(ValueObject).Assembly.GetName().Name)       // Orbita.Common.Business.Domain
-        .OrShould().ResideInAssembly(typeof(Result).Assembly.GetName().Name)            // Orbita.Common.Mediator
-        .OrShould().ResideInAssembly(typeof(Error).Assembly.GetName().Name)             // Orbita.Common.Errors
+        .OrShould().ResideInAssembly(typeof(Entity<>).Assembly.GetName().Name)          // Franz.Common.Business
+        .OrShould().ResideInAssembly(typeof(ValueObject).Assembly.GetName().Name)       // Franz.Common.Business.Domain
+        .OrShould().ResideInAssembly(typeof(Result).Assembly.GetName().Name)            // Franz.Common.Mediator
+        .OrShould().ResideInAssembly(typeof(Error).Assembly.GetName().Name)             // Franz.Common.Errors
 
         // System namespaces
         .OrShould().ResideInNamespace("System")

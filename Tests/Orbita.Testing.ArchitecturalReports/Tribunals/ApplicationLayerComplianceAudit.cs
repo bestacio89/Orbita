@@ -2,7 +2,7 @@ using System;
 using System.Linq;
 using ArchUnitNET.Fluent;
 using ArchUnitNET.xUnit;
-using Orbita.Common.Mediator.Handlers;
+using Franz.Common.Mediator.Handlers;
 using OrbitaTesting;
 using Xunit;
 

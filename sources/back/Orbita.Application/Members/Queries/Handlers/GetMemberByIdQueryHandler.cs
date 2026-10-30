@@ -1,12 +1,12 @@
 // Application/Members/Queries/GetMemberByIdQueryHandler.cs
 
 
-using Orbita.Common.Business.Domain;
-using Orbita.Common.EntityFramework.Repositories;
-using Orbita.Common.Mapping.Abstractions;
-using Orbita.Common.Mediator.Errors;
-using Orbita.Common.Mediator.Handlers;
-using Orbita.Common.Mediator.Results;
+using Franz.Common.Business.Domain;
+using Franz.Common.EntityFramework.Repositories;
+using Franz.Common.Mapping.Abstractions;
+using Franz.Common.Mediator.Errors;
+using Franz.Common.Mediator.Handlers;
+using Franz.Common.Mediator.Results;
 using Orbita.Contracts.DTOs;
 using Orbita.Contracts.Queries.Members;
 using Orbita.Domain.Entities;

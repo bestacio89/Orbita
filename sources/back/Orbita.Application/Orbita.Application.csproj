@@ -3,10 +3,10 @@
   <Import Project="../../../common.targets" />
 
   <ItemGroup>
-    <PackageReference Include="Orbita.Common.Business"/>
-    <PackageReference Include="Orbita.Common.Hosting"/>
-    <PackageReference Include="Orbita.Common.Mapping"/>
-    <PackageReference Include="Orbita.Common.Mediator"/>
+    <PackageReference Include="Franz.Common.Business"/>
+    <PackageReference Include="Franz.Common.Hosting"/>
+    <PackageReference Include="Franz.Common.Mapping"/>
+    <PackageReference Include="Franz.Common.Mediator"/>
   </ItemGroup>
 
   <ItemGroup>

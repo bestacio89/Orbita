@@ -1,4 +1,4 @@
-using Orbita.Common.Mediator.Dispatchers;
+using Franz.Common.Mediator.Dispatchers;
 using Orbita.Contracts.Commands.Books;
 using Orbita.Contracts.DTOs;
 using Orbita.Contracts.Queries.Books;

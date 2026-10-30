@@ -1,8 +1,8 @@
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Configuration;
-using Orbita.Common.Messaging.Kafka;
+using Franz.Common.Messaging.Kafka;
 using Orbita.Consumer.Services;
-using Orbita.Common.Messaging.Kafka.Extensions;
+using Franz.Common.Messaging.Kafka.Extensions;
 
 namespace Orbita.Consumer.Extensions
 {

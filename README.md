@@ -52,11 +52,11 @@ operational practices, and production patterns are encoded from day one.
 
 ---
 
-# 🏛 Relationship With Orbita.Common
+# 🏛 Relationship With Franz.Common
 
-Orbita API Template is built on top of the open Orbita.Common ecosystem.
+Orbita API Template is built on top of the open Franz.Common ecosystem.
 
-Orbita.Common provides reusable infrastructure capabilities:
+Franz.Common provides reusable infrastructure capabilities:
 
 - Dependency injection extensions
 - Mediator pipelines
@@ -770,4 +770,4 @@ The answer:
 
 ## Current service baseline
 
-The `develop` branch is being maintained against **Orbita.Common 2.3.3**. Refer to [Service Template Setup](Docs/Service-Template-Setup.md) for provider-neutral database configuration, Kafka hosted services, secret handling, runtime migration policy, and CI validation.
+The `develop` branch is being maintained against **Franz.Common 2.3.3**. Refer to [Service Template Setup](Docs/Service-Template-Setup.md) for provider-neutral database configuration, Kafka hosted services, secret handling, runtime migration policy, and CI validation.

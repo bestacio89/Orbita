@@ -482,26 +482,26 @@ E:\Source\Repos\Orbita\Directory.Packages.props
     <ManagePackageVersionsCentrally>true</ManagePackageVersionsCentrally>
   </PropertyGroup>
   <ItemGroup>
-    <!-- Orbita.Common packages -->
-    <PackageVersion Include="Orbita.Common.*" Version="1.7.8" />
-    <PackageVersion Include="Orbita.Common.Business" Version="2.1.3" />
-    <PackageVersion Include="Orbita.Common.Caching" Version="2.1.3" />
-    <PackageVersion Include="Orbita.Common.DependencyInjection" Version="2.1.3" />
-    <PackageVersion Include="Orbita.Common.EntityFramework" Version="2.1.3" />
-    <PackageVersion Include="Orbita.Common.EntityFramework.PostGres" Version="2.1.3" />
-    <PackageVersion Include="Orbita.Common.Errors" Version="2.1.3" />
-    <PackageVersion Include="Orbita.Common.Hosting" Version="2.1.3" />
-    <PackageVersion Include="Orbita.Common.Http" Version="2.1.3" />
-    <PackageVersion Include="Orbita.Common.Http.Bootstrap" Version="2.1.3" />
-    <PackageVersion Include="Orbita.Common.Http.Client" Version="2.1.3" />
-    <PackageVersion Include="Orbita.Common.Http.EntityFramework" Version="2.1.3" />
-    <PackageVersion Include="Orbita.Common.Mediator" Version="2.1.3" />
-    <PackageVersion Include="Orbita.Common.Mediator.Polly" Version="2.1.3" />
-    <PackageVersion Include="Orbita.Common.Mediator.OpenTelemetry" Version="2.1.3" />
-    <PackageVersion Include="Orbita.Common.Mapping" Version="2.1.3" />
-    <PackageVersion Include="Orbita.Common.Messaging.Bootstrap" Version="2.1.3" />
-    <PackageVersion Include="Orbita.Common.Messaging.EntityFramework" Version="2.1.3" />
-    <PackageVersion Include="Orbita.Common.Messaging.KafKa" Version="2.1.3" />
+    <!-- Franz.Common packages -->
+    <PackageVersion Include="Franz.Common.*" Version="1.7.8" />
+    <PackageVersion Include="Franz.Common.Business" Version="2.1.3" />
+    <PackageVersion Include="Franz.Common.Caching" Version="2.1.3" />
+    <PackageVersion Include="Franz.Common.DependencyInjection" Version="2.1.3" />
+    <PackageVersion Include="Franz.Common.EntityFramework" Version="2.1.3" />
+    <PackageVersion Include="Franz.Common.EntityFramework.PostGres" Version="2.1.3" />
+    <PackageVersion Include="Franz.Common.Errors" Version="2.1.3" />
+    <PackageVersion Include="Franz.Common.Hosting" Version="2.1.3" />
+    <PackageVersion Include="Franz.Common.Http" Version="2.1.3" />
+    <PackageVersion Include="Franz.Common.Http.Bootstrap" Version="2.1.3" />
+    <PackageVersion Include="Franz.Common.Http.Client" Version="2.1.3" />
+    <PackageVersion Include="Franz.Common.Http.EntityFramework" Version="2.1.3" />
+    <PackageVersion Include="Franz.Common.Mediator" Version="2.1.3" />
+    <PackageVersion Include="Franz.Common.Mediator.Polly" Version="2.1.3" />
+    <PackageVersion Include="Franz.Common.Mediator.OpenTelemetry" Version="2.1.3" />
+    <PackageVersion Include="Franz.Common.Mapping" Version="2.1.3" />
+    <PackageVersion Include="Franz.Common.Messaging.Bootstrap" Version="2.1.3" />
+    <PackageVersion Include="Franz.Common.Messaging.EntityFramework" Version="2.1.3" />
+    <PackageVersion Include="Franz.Common.Messaging.KafKa" Version="2.1.3" />
     <!-- Microsoft packages -->
     <PackageVersion Include="Microsoft.AspNetCore.Http.Abstractions" Version="2.3.9" />
     <PackageVersion Include="Microsoft.AspNetCore.Mvc.Core" Version="2.3.9" />
@@ -3527,13 +3527,13 @@ E:\Source\Repos\Orbita\sources\back\Orbita.API\Orbita.API.csproj
   </PropertyGroup>
   <ItemGroup>
     <PackageReference Include="AspNetCoreRateLimit" />
-    <PackageReference Include="Orbita.Common.Hosting" />
-    <PackageReference Include="Orbita.Common.Http" />
-    <PackageReference Include="Orbita.Common.Http.Bootstrap" />
-    <PackageReference Include="Orbita.Common.Http.Client" />
-    <PackageReference Include="Orbita.Common.Http.EntityFramework" />
-    <PackageReference Include="Orbita.Common.Mediator.Polly" />
-    <PackageReference Include="Orbita.Common.Mediator.OpenTelemetry" />
+    <PackageReference Include="Franz.Common.Hosting" />
+    <PackageReference Include="Franz.Common.Http" />
+    <PackageReference Include="Franz.Common.Http.Bootstrap" />
+    <PackageReference Include="Franz.Common.Http.Client" />
+    <PackageReference Include="Franz.Common.Http.EntityFramework" />
+    <PackageReference Include="Franz.Common.Mediator.Polly" />
+    <PackageReference Include="Franz.Common.Mediator.OpenTelemetry" />
     <PackageReference Include="Microsoft.AspNetCore.OpenApi" />
     <PackageReference Include="Microsoft.Extensions.Hosting" />
     <PackageReference Include="Microsoft.VisualStudio.Azure.Containers.Tools.Targets" />

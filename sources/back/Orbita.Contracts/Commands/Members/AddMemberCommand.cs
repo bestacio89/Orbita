@@ -1,7 +1,7 @@
 // Application/Members/Commands/AddMemberCommand.cs
 
-using Orbita.Common.Mediator.Messages;
-using Orbita.Common.Mediator.Results;
+using Franz.Common.Mediator.Messages;
+using Franz.Common.Mediator.Results;
 
 namespace Orbita.Contracts.Commands.Members;
 

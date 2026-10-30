@@ -1,8 +1,8 @@
-using Orbita.Common.Messaging;
-using Orbita.Common.Business.Domain;
+using Franz.Common.Messaging;
+using Franz.Common.Business.Domain;
 using Newtonsoft.Json; // Example for JSON deserialization; use your preferred method.
 using Microsoft.Extensions.Logging;
-using Orbita.Common.Messaging.Messages;
+using Franz.Common.Messaging.Messages;
 
 namespace Orbita.Consumer.Processing
 {

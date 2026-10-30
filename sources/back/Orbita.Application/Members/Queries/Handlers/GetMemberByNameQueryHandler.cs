@@ -1,9 +1,9 @@
 using Orbita.Application.Members.Queries;
 using Orbita.Domain.Entities;
 
-using Orbita.Common.Mapping.Abstractions;
-using Orbita.Common.Mediator.Handlers;
-using Orbita.Common.Mediator.Results;
+using Franz.Common.Mapping.Abstractions;
+using Franz.Common.Mediator.Handlers;
+using Franz.Common.Mediator.Results;
 
 using Orbita.Contracts.DTOs;
 using Orbita.Contracts.Persistence;

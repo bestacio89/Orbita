@@ -1,4 +1,4 @@
-using Orbita.Common.Business.Domain;
+using Franz.Common.Business.Domain;
 using System;
 using System.Collections.Generic;
 

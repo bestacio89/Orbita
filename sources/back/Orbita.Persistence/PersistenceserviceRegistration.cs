@@ -4,9 +4,9 @@ using System.Reflection;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
-using Orbita.Common.Caching.Extensions;
-using Orbita.Common.Caching.Options;
-using Orbita.Common.EntityFramework.Extensions;
+using Franz.Common.Caching.Extensions;
+using Franz.Common.Caching.Options;
+using Franz.Common.EntityFramework.Extensions;
 
 namespace Orbita.Persistence;
 

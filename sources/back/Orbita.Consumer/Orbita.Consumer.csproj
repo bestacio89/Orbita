@@ -9,14 +9,14 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="Orbita.Common.Business" />
-    <PackageReference Include="Orbita.Common.Hosting" />
-    <PackageReference Include="Orbita.Common.Http.EntityFramework" />
-    <PackageReference Include="Orbita.Common.Mediator" />
-    <PackageReference Include="Orbita.Common.Messaging.Bootstrap" />
-    <PackageReference Include="Orbita.Common.Messaging.EntityFramework" />
-    <PackageReference Include="Orbita.Common.Messaging.Hosting.Kafka" />
-    <PackageReference Include="Orbita.Common.Messaging.KafKa" />
+    <PackageReference Include="Franz.Common.Business" />
+    <PackageReference Include="Franz.Common.Hosting" />
+    <PackageReference Include="Franz.Common.Http.EntityFramework" />
+    <PackageReference Include="Franz.Common.Mediator" />
+    <PackageReference Include="Franz.Common.Messaging.Bootstrap" />
+    <PackageReference Include="Franz.Common.Messaging.EntityFramework" />
+    <PackageReference Include="Franz.Common.Messaging.Hosting.Kafka" />
+    <PackageReference Include="Franz.Common.Messaging.KafKa" />
     <PackageReference Include="Microsoft.Extensions.Hosting" />
     <PackageReference Include="Microsoft.VisualStudio.Azure.Containers.Tools.Targets" />
   </ItemGroup>

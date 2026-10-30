@@ -2,7 +2,7 @@ using ArchUnitNET.Domain;
 using ArchUnitNET.Fluent;
 using ArchUnitNET.Fluent.Conditions;
 using ArchUnitNET.Fluent.Syntax.Elements.Types;
-using Orbita.Common.Business.Domain;
+using Franz.Common.Business.Domain;
 using System;
 using System.Collections.Generic;
 using System.Linq;

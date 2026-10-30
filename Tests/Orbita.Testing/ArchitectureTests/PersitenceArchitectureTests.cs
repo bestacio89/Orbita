@@ -61,23 +61,23 @@ public class PersistenceArchitectureTests : BaseArchitectureTest
         .Should()
         .OnlyDependOnTypesThat()
         // ✅ Allow dependencies on Orbita core domain abstractions
-        .ResideInNamespaceMatching("Orbita.Common.Business.Domain")
-        .OrShould().ResideInNamespaceMatching("Orbita.Common.Business.Events")
+        .ResideInNamespaceMatching("Franz.Common.Business.Domain")
+        .OrShould().ResideInNamespaceMatching("Franz.Common.Business.Events")
 
         // ✅ Allow dependencies on Orbita persistence and repository tooling
-        .OrShould().ResideInNamespaceMatching("Orbita.Common.EntityFramework")
-        .OrShould().ResideInNamespaceMatching("Orbita.Common.EntityFramework.Repositories")
-        .OrShould().ResideInNamespaceMatching("Orbita.Common.EntityFramework.Extensions")
-        .OrShould().ResideInNamespaceMatching("Orbita.Common.EntityFramework.Configuration")
-        .OrShould().ResideInNamespaceMatching("Orbita.Common.EntityFramework.Behaviors")
-        .OrShould().ResideInNamespaceMatching("Orbita.Common.EntityFramework.Properties")
-        .OrShould().ResideInNamespaceMatching("Orbita.Common.MongoDB")
-        .OrShould().ResideInNamespaceMatching("Orbita.Common.MongoDB.Config") 
+        .OrShould().ResideInNamespaceMatching("Franz.Common.EntityFramework")
+        .OrShould().ResideInNamespaceMatching("Franz.Common.EntityFramework.Repositories")
+        .OrShould().ResideInNamespaceMatching("Franz.Common.EntityFramework.Extensions")
+        .OrShould().ResideInNamespaceMatching("Franz.Common.EntityFramework.Configuration")
+        .OrShould().ResideInNamespaceMatching("Franz.Common.EntityFramework.Behaviors")
+        .OrShould().ResideInNamespaceMatching("Franz.Common.EntityFramework.Properties")
+        .OrShould().ResideInNamespaceMatching("Franz.Common.MongoDB")
+        .OrShould().ResideInNamespaceMatching("Franz.Common.MongoDB.Config") 
 
         // ✅ Allow DI, Mediator, and core utilities
         .OrShould().ResideInNamespaceMatching("Microsoft.Extensions.DependencyInjection")
-        .OrShould().ResideInNamespaceMatching("Orbita.Common.Mediator")
-        .OrShould().ResideInNamespaceMatching("Orbita.Common.Errors")
+        .OrShould().ResideInNamespaceMatching("Franz.Common.Mediator")
+        .OrShould().ResideInNamespaceMatching("Franz.Common.Errors")
 
         // ✅ Allow standard BCL namespaces
         .OrShould().ResideInNamespaceMatching("System")

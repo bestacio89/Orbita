@@ -2,7 +2,7 @@ namespace Orbita.Contracts.DTOs;
 
 /// <summary>
 /// Data Transfer Object for Book entities (immutable and record-based).
-/// Fully compatible with Orbita.Common.Mapping v1.6.18 (constructor-aware).
+/// Fully compatible with Franz.Common.Mapping v1.6.18 (constructor-aware).
 /// </summary>
 public record BookDto(
     int Id,

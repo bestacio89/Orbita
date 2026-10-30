@@ -2,7 +2,7 @@ namespace Orbita.Contracts.DTOs;
 
 /// <summary>
 /// Immutable DTO for Member entities, compatible with
-/// Orbita.Common.Mapping v1.6.18 (constructor-aware mapping).
+/// Franz.Common.Mapping v1.6.18 (constructor-aware mapping).
 /// </summary>
 public record MemberDto(
     int Id,

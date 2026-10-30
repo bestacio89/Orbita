@@ -1,15 +1,15 @@
 
 
-using Orbita.Common.Business.Domain;
-using Orbita.Common.Mapping.Abstractions;
-using Orbita.Common.Mediator.Handlers;
-using Orbita.Common.Mediator.Results;
+using Franz.Common.Business.Domain;
+using Franz.Common.Mapping.Abstractions;
+using Franz.Common.Mediator.Handlers;
+using Franz.Common.Mediator.Results;
 using Orbita.Contracts.DTOs;
 using Orbita.Domain.Entities;
 
 using Orbita.Contracts.Queries.Members;
 using Orbita.Persistence;
-using Orbita.Common.EntityFramework.Repositories;
+using Franz.Common.EntityFramework.Repositories;
 
 namespace Orbita.Application.Members.Queries;
 

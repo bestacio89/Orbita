@@ -1,16 +1,16 @@
 
 
 // Queries/Books/Handlers/GetBookByIdQueryHandler.cs
-using Orbita.Common.Mediator;
-using Orbita.Common.Errors;
-using Orbita.Common.Mediator.Handlers;
-using Orbita.Common.Mediator.Results;
-using Orbita.Common.Mapping.Abstractions;
+using Franz.Common.Mediator;
+using Franz.Common.Errors;
+using Franz.Common.Mediator.Handlers;
+using Franz.Common.Mediator.Results;
+using Franz.Common.Mapping.Abstractions;
 using Orbita.Domain.Entities;
-using Orbita.Common.Business.Domain;
+using Franz.Common.Business.Domain;
 using Orbita.Contracts.DTOs;
 using Orbita.Contracts.Queries.Books;
-using Orbita.Common.Business.Repositories;
+using Franz.Common.Business.Repositories;
 
 namespace Orbita.Application.Books.Queries
 {

@@ -1,5 +1,5 @@
-using Orbita.Common.Mapping.Extensions;
-using Orbita.Common.Mediator.Extensions;
+using Franz.Common.Mapping.Extensions;
+using Franz.Common.Mediator.Extensions;
 using Microsoft.Extensions.DependencyInjection;
 using System.Reflection;
 

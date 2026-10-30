@@ -3,7 +3,7 @@
 	<Import Project="../../../common.targets" />
 
 	<ItemGroup>
-	  <PackageReference Include="Orbita.Common.Business"/>
+	  <PackageReference Include="Franz.Common.Business"/>
 	
 	</ItemGroup>
 

@@ -1,7 +1,7 @@
 using Orbita.Domain.ValueObjects;
-using Orbita.Common.Business.Domain;
-using Orbita.Common.Mediator.Results;
-using Orbita.Common.Mediator.Errors;
+using Franz.Common.Business.Domain;
+using Franz.Common.Mediator.Results;
+using Franz.Common.Mediator.Errors;
 
 namespace Orbita.Domain.Entities
 {

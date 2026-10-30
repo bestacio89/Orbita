@@ -3,10 +3,10 @@
 using Orbita.Domain.Entities;
 using Orbita.Domain.ValueObjects;
 
-using Orbita.Common.Mapping.Abstractions;
-using Orbita.Common.Mediator.Handlers;
-using Orbita.Common.Mediator.Results;
-using Orbita.Common.EntityFramework.Repositories;
+using Franz.Common.Mapping.Abstractions;
+using Franz.Common.Mediator.Handlers;
+using Franz.Common.Mediator.Results;
+using Franz.Common.EntityFramework.Repositories;
 using Orbita.Persistence;
 using Orbita.Contracts.Commands.Members;
 

@@ -6,10 +6,10 @@ using ArchUnitNET.Domain;
 using ArchUnitNET.Domain.Extensions;
 using ArchUnitNET.Fluent;
 using ArchUnitNET.xUnit;
-using Orbita.Common.Business.Domain;
-using Orbita.Common.Business.Repositories;
-using Orbita.Common.DependencyInjection;
-using Orbita.Common.Mediator.Messages;
+using Franz.Common.Business.Domain;
+using Franz.Common.Business.Repositories;
+using Franz.Common.DependencyInjection;
+using Franz.Common.Mediator.Messages;
 using OrbitaTesting;
 using Xunit;
 
