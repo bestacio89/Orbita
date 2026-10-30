@@ -76,7 +76,7 @@ public sealed class HistoricalPostgreSqlMigrationTests
         await using (var command = context.Database.GetDbConnection().CreateCommand())
         {
             command.CommandText = """
-                SELECT confdeltype
+                SELECT confdeltype::text
                 FROM pg_constraint
                 WHERE conname = 'FK_Lots_Projets_ProjetId'
                 """;
