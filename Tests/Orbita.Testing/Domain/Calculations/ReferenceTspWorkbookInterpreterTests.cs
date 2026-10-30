@@ -1,4 +1,5 @@
 using Orbita.Domain.Calculations.Reference.Tsp;
+using Orbita.Domain.Calculations.Reference.Common;
 using Xunit;
 
 namespace Orbita.Testing.Domain.Calculations;

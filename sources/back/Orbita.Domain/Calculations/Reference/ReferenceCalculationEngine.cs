@@ -1,3 +1,5 @@
+#nullable enable
+
 using Orbita.Domain.Calculations.Reference.Common;
 using static Orbita.Domain.Calculations.Reference.Common.ReferentielsMetier;
 

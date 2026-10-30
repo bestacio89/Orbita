@@ -1,3 +1,5 @@
+#nullable enable
+
 namespace Orbita.Domain.Calculations.Reference.Common;
 
 /// <summary>

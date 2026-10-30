@@ -1,3 +1,5 @@
+#nullable enable
+
 using Orbita.Domain.Calculations.Reference;
 
 namespace Orbita.Domain.Calculations.Reference.Tsp;

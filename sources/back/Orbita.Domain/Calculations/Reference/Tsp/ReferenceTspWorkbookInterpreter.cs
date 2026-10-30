@@ -1,3 +1,5 @@
+#nullable enable
+
 using System.Globalization;
 using System.Text.RegularExpressions;
 using Orbita.Domain.Calculations.Reference;

@@ -1,3 +1,5 @@
+#nullable enable
+
 using System.Globalization;
 
 namespace Orbita.Domain.Calculations.Reference.Common;
