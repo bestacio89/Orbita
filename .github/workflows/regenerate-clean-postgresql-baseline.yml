@@ -44,6 +44,15 @@ jobs:
         shell: bash
         run: |
           find sources/back/Orbita.Persistence/Migrations -maxdepth 1 -type f -name '*.cs' -delete
+          if find sources/back/Orbita.Persistence -type f -name '*ModelSnapshot.cs' -print -quit | grep -q .; then
+            echo "A model snapshot remains after migration cleanup."
+            find sources/back/Orbita.Persistence -type f -name '*ModelSnapshot.cs' -print
+            exit 1
+          fi
+          dotnet ef migrations list \
+            --project sources/back/Orbita.Persistence \
+            --startup-project sources/back/Orbita.API \
+            --context ApplicationDbContext
 
       - name: Generate clean initial migration from the current model
         run: |
