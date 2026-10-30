@@ -28,8 +28,8 @@ public sealed class GetProjectByIdQueryHandler(
         }
 
         var actor = await actorResolver.GetOrProvisionAsync(cancellationToken);
-        var canReadAll = GlobalRoleCapabilityMatrix.HasCapability(currentUser.GlobalRoles, CapabilityNames.ProjectRead);
-        if (actor is null || (!canReadAll && !ProjectAccessPolicy.CanAccessProject(project, actor.Id)))
+        var canRead = GlobalRoleCapabilityMatrix.HasCapability(currentUser.GlobalRoles, CapabilityNames.ProjectRead);
+        if (actor is null || !canRead || !ProjectAccessPolicy.CanAccessProject(project, actor.Id))
         {
             return Error.NotFound("Project", request.ProjectId).ToFailure<ProjectDetailsDto>();
         }
@@ -57,10 +57,12 @@ public sealed class ListProjectsQueryHandler(
             return new Error("Unauthorized", "A validated Entra identity is required.").ToFailure<IReadOnlyCollection<ProjectSummaryDto>>();
         }
 
-        var canReadAll = GlobalRoleCapabilityMatrix.HasCapability(currentUser.GlobalRoles, CapabilityNames.ProjectRead);
-        var accessible = canReadAll
-            ? await projects.GetAllAsync(cancellationToken)
-            : await projects.GetAccessibleByUserAsync(actor.Id, cancellationToken);
+        if (!GlobalRoleCapabilityMatrix.HasCapability(currentUser.GlobalRoles, CapabilityNames.ProjectRead))
+        {
+            return new Error("Forbidden", "The current identity cannot read projects.").ToFailure<IReadOnlyCollection<ProjectSummaryDto>>();
+        }
+
+        var accessible = await projects.GetAccessibleByUserAsync(actor.Id, cancellationToken);
 
         var filtered = accessible
             .Where(project => string.IsNullOrWhiteSpace(request.Search) ||

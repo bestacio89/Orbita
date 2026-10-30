@@ -43,7 +43,7 @@ public sealed class ProjectCommandHandlerTests
     [Fact]
     public async Task Assigned_project_manager_receives_conflict_for_stale_version()
     {
-        var harness = new Harness([]);
+        var harness = new Harness([GlobalRoleNames.Manager]);
         var project = CreateProject();
         project.AssignUser(harness.Actor.Id, ProjectRole.ProjectManager, Now, harness.Actor.Id);
         harness.Projects.Seed(project);

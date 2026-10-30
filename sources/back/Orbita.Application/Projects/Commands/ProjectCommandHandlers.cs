@@ -108,12 +108,13 @@ public sealed class UpdateProjectDatesCommandHandler(
     }
 
     private static bool CanManageProject(Project project, Guid userId, IEnumerable<string> roles) =>
-        GlobalRoleCapabilityMatrix.HasCapability(roles, CapabilityNames.ProjectUpdate) ||
+        GlobalRoleCapabilityMatrix.HasCapability(roles, CapabilityNames.ProjectUpdate) &&
         ProjectAccessPolicy.IsProjectManager(project, userId);
 }
 
 public sealed class ArchiveProjectCommandHandler(
     IProjectRepository projects,
+    CurrentActorResolver actorResolver,
     ICurrentUserContext currentUser)
     : ICommandHandler<ArchiveProjectCommand, Result>
 {
@@ -126,6 +127,17 @@ public sealed class ArchiveProjectCommandHandler(
 
         var project = await projects.GetByIdAsync(request.ProjectId, cancellationToken);
         if (project is null)
+        {
+            return Error.NotFound("Project", request.ProjectId).ToFailure<Result>();
+        }
+
+        var actor = await actorResolver.GetOrProvisionAsync(cancellationToken);
+        if (actor is null)
+        {
+            return new Error("Unauthorized", "A validated Entra identity is required.").ToFailure<Result>();
+        }
+
+        if (!ProjectAccessPolicy.IsProjectManager(project, actor.Id))
         {
             return Error.NotFound("Project", request.ProjectId).ToFailure<Result>();
         }
@@ -195,7 +207,7 @@ public sealed class AssignProjectUserCommandHandler(
     }
 
     private static bool CanManageAssignments(Project project, Guid userId, IEnumerable<string> roles) =>
-        GlobalRoleCapabilityMatrix.HasCapability(roles, CapabilityNames.ProjectManageAssignments) ||
+        GlobalRoleCapabilityMatrix.HasCapability(roles, CapabilityNames.ProjectManageAssignments) &&
         ProjectAccessPolicy.IsProjectManager(project, userId);
 }
 
@@ -219,8 +231,8 @@ public sealed class RemoveProjectAssignmentCommandHandler(
             return new Error("Unauthorized", "A validated Entra identity is required.").ToFailure<Result>();
         }
 
-        if (!GlobalRoleCapabilityMatrix.HasCapability(currentUser.GlobalRoles, CapabilityNames.ProjectManageAssignments) &&
-            !ProjectAccessPolicy.IsProjectManager(project, actor.Id))
+        if ((!GlobalRoleCapabilityMatrix.HasCapability(currentUser.GlobalRoles, CapabilityNames.ProjectManageAssignments) ||
+            !ProjectAccessPolicy.IsProjectManager(project, actor.Id)))
         {
             return Error.NotFound("Project", request.ProjectId).ToFailure<Result>();
         }
