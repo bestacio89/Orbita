@@ -211,6 +211,12 @@ public sealed class Project : DomainEntity
         }
     }
 
+    public void UpdateSettings(ProjectSettings settings)
+    {
+        ArgumentNullException.ThrowIfNull(settings);
+        Settings = settings;
+    }
+
     public void RecalculateUniqueKey() => UniqueKey = ProjectIdentity.Create(Reference, Client, Name);
 
     private static string? NormalizeOptional(string? value) =>
