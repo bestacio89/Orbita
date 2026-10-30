@@ -132,9 +132,26 @@ public sealed class OrbitaPostgreSqlPersistenceTests : IClassFixture<PostgreSqlP
               AND constraint_type = 'FOREIGN KEY'
             """);
 
+        var projectForeignKeyDiagnostics = context.Model.GetEntityTypes()
+            .SelectMany(entityType => entityType.GetForeignKeys())
+            .Where(foreignKey =>
+                foreignKey.GetConstraintName() == "FK_Projects_Projects_ProjectId" ||
+                foreignKey.DeclaringEntityType.GetTableName() == "Projects" ||
+                foreignKey.PrincipalEntityType.GetTableName() == "Projects")
+            .Select(foreignKey =>
+                $"{foreignKey.GetConstraintName()}: dependent={foreignKey.DeclaringEntityType.ClrType.FullName}, " +
+                $"principal={foreignKey.PrincipalEntityType.ClrType.FullName}, " +
+                $"properties=[{string.Join(", ", foreignKey.Properties.Select(property => $"{property.Name} (shadow={property.IsShadowProperty()}), column={property.GetColumnName()}"))}], " +
+                $"dependentNavigation={foreignKey.DependentToPrincipal?.Name ?? "<none>"}, " +
+                $"principalNavigation={foreignKey.PrincipalToDependent?.Name ?? "<none>"}")
+            .ToArray();
+
         foreach (var foreignKeyName in expectedForeignKeys)
         {
-            Assert.Contains(foreignKeyName, actualForeignKeys);
+            Assert.True(
+                actualForeignKeys.Contains(foreignKeyName, StringComparer.Ordinal),
+                $"Missing PostgreSQL foreign key '{foreignKeyName}'. " +
+                $"Relevant EF relationships: {Environment.NewLine}{string.Join(Environment.NewLine, projectForeignKeyDiagnostics)}");
         }
     }
 
