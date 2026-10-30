@@ -231,8 +231,8 @@ public sealed class RemoveProjectAssignmentCommandHandler(
             return new Error("Unauthorized", "A validated Entra identity is required.").ToFailure<Result>();
         }
 
-        if ((!GlobalRoleCapabilityMatrix.HasCapability(currentUser.GlobalRoles, CapabilityNames.ProjectManageAssignments) ||
-            !ProjectAccessPolicy.IsProjectManager(project, actor.Id)))
+        if (!GlobalRoleCapabilityMatrix.HasCapability(currentUser.GlobalRoles, CapabilityNames.ProjectManageAssignments) ||
+            !ProjectAccessPolicy.IsProjectManager(project, actor.Id))
         {
             return Error.NotFound("Project", request.ProjectId).ToFailure<Result>();
         }

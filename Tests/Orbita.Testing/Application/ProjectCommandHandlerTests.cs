@@ -18,7 +18,7 @@ public sealed class ProjectCommandHandlerTests
     [Fact]
     public async Task Unassigned_project_manager_gets_not_found_before_stale_version_is_evaluated()
     {
-        var harness = new Harness([]);
+        var harness = new Harness([GlobalRoleNames.Manager]);
         var project = CreateProject();
         project.AssignUser(Guid.NewGuid(), ProjectRole.ProjectManager, Now, null);
         harness.Projects.Seed(project);
@@ -68,7 +68,7 @@ public sealed class ProjectCommandHandlerTests
     [Fact]
     public async Task Assigned_project_manager_can_update_dates_with_the_current_version()
     {
-        var harness = new Harness([]);
+        var harness = new Harness([GlobalRoleNames.Manager]);
         var project = CreateProject();
         project.AssignUser(harness.Actor.Id, ProjectRole.ProjectManager, Now, harness.Actor.Id);
         harness.Projects.Seed(project);
@@ -117,7 +117,7 @@ public sealed class ProjectCommandHandlerTests
     [Fact]
     public async Task Project_manager_cannot_assign_an_inactive_user()
     {
-        var harness = new Harness([]);
+        var harness = new Harness([GlobalRoleNames.Manager]);
         var project = CreateProject();
         project.AssignUser(harness.Actor.Id, ProjectRole.ProjectManager, Now, harness.Actor.Id);
         harness.Projects.Seed(project);
