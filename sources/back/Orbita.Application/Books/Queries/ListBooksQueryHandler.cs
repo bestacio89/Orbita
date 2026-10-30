@@ -13,9 +13,9 @@ public sealed class ListBooksQueryHandler
     : IQueryHandler<ListBooksQuery, Result<IReadOnlyCollection<BookDto>>>
 {
   private readonly IBookRepository _bookRepository;
-  private readonly IOrbitaMapper _mapper;
+  private readonly IFranzMapper _mapper;
 
-    public ListBooksQueryHandler(IBookRepository bookRepository, IOrbitaMapper mapper)
+    public ListBooksQueryHandler(IBookRepository bookRepository, IFranzMapper mapper)
     {
         _bookRepository = bookRepository;
         _mapper = mapper;
