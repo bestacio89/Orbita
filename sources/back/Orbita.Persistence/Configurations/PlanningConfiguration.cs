@@ -63,8 +63,6 @@ internal sealed class ReferencePlanTaskLineConfiguration : IEntityTypeConfigurat
     public void Configure(EntityTypeBuilder<ReferencePlanTaskLine> builder)
     {
         builder.ToTable("ReferencePlanTaskLines");
-        builder.HasOne<ReferencePlan>().WithMany().HasForeignKey(line => line.ReferencePlanId)
-            .OnDelete(DeleteBehavior.Cascade);
         builder.HasOne<WorkTask>().WithMany().HasForeignKey(line => line.TaskId)
             .OnDelete(DeleteBehavior.Restrict);
         builder.HasIndex(line => new { line.ReferencePlanId, line.TaskId }).IsUnique();

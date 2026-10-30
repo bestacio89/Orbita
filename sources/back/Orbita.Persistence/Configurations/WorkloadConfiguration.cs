@@ -53,8 +53,6 @@ internal sealed class TaskEffortConfiguration : IEntityTypeConfiguration<TaskEff
                 "CK_TaskEfforts_NonNegative",
                 "\"SoldEffort\" >= 0 AND \"AdditionalEffort\" >= 0"));
 
-        builder.HasOne<WorkTask>().WithMany().HasForeignKey(effort => effort.TaskId)
-            .OnDelete(DeleteBehavior.Cascade);
         builder.HasOne<ProjectProfile>().WithMany().HasForeignKey(effort => effort.ProjectProfileId)
             .OnDelete(DeleteBehavior.Restrict);
         builder.HasIndex(effort => new { effort.TaskId, effort.ProjectProfileId }).IsUnique();
@@ -71,8 +69,6 @@ internal sealed class TimeEntryConfiguration : IEntityTypeConfiguration<TimeEntr
         builder.ToTable("TimeEntries", table =>
             table.HasCheckConstraint("CK_TimeEntries_PersonDays_Positive", "\"PersonDays\" > 0"));
 
-        builder.HasOne<WorkTask>().WithMany().HasForeignKey(entry => entry.TaskId)
-            .OnDelete(DeleteBehavior.Cascade);
         builder.HasOne<ProjectProfile>().WithMany().HasForeignKey(entry => entry.ProjectProfileId)
             .OnDelete(DeleteBehavior.Restrict);
         builder.HasIndex(entry => new { entry.TaskId, entry.ProjectProfileId, entry.WorkDate }).IsUnique();
@@ -87,8 +83,6 @@ internal sealed class ScopeChangeConfiguration : IEntityTypeConfiguration<ScopeC
     public void Configure(EntityTypeBuilder<ScopeChange> builder)
     {
         builder.ToTable("ScopeChanges");
-        builder.HasOne<WorkTask>().WithMany().HasForeignKey(change => change.TaskId)
-            .OnDelete(DeleteBehavior.Cascade);
         builder.HasOne<ProjectProfile>().WithMany().HasForeignKey(change => change.ProjectProfileId)
             .OnDelete(DeleteBehavior.Restrict);
         builder.HasOne<ProjectProfile>().WithMany().HasForeignKey(change => change.SourceProjectProfileId)
