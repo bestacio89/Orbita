@@ -1,3 +1,5 @@
+#nullable enable
+
 namespace Orbita.Contracts.Authorization;
 
 /// <summary>
@@ -10,5 +12,9 @@ public interface ICurrentUserContext
     Guid? UserId { get; }
     Guid? TenantId { get; }
     Guid? ObjectId { get; }
+    string? FirstName { get; }
+    string? LastName { get; }
+    string? DisplayName { get; }
+    string? Email { get; }
     IReadOnlyCollection<string> GlobalRoles { get; }
 }

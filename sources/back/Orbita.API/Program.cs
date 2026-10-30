@@ -1,4 +1,6 @@
 using Orbita.API.Extensions;
+using Orbita.API.Security;
+using Orbita.Contracts.Authorization;
 using Orbita.Application;
 using Franz.Common.Business.Extensions;
 using Franz.Common.EntityFramework.Auditing;
@@ -12,6 +14,10 @@ using Orbita.Persistence;
 using Serilog;
 
 var builder = WebApplication.CreateBuilder(args);
+
+builder.Services.AddHttpContextAccessor();
+builder.Services.AddScoped<ICurrentUserContext, HttpCurrentUserContext>();
+builder.Services.AddSingleton(TimeProvider.System);
 
 var environment = builder.Environment;
 var configuration = builder.Configuration;
