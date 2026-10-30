@@ -8,7 +8,7 @@ This document is a migration design record. It does not claim that the schema co
 
 ## Source of truth inspected
 
-The historical source is `bestacio89/AstrolabaMagellan`, branch `main`, at the source snapshot recorded in `Backend-Migration-Roadmap.md`.
+The historical source is `bestacio89/AstrolabaMagellan`, branch `main`, pinned at `b88ab8177bbab47da46daf78c08cf7db253d296d` (the branch currently resolves to the same commit).
 
 The source EF Core migration chain contains:
 
@@ -19,7 +19,17 @@ The source EF Core migration chain contains:
 
 The source also contains `PilotageDbContextModelSnapshot.cs`. The migration source uses Npgsql PostgreSQL types, including `uuid`, `date`, `timestamp with time zone`, and `numeric(18,6)`.
 
-Orbita currently has 50 explicitly named relational tables in its EF configurations, but no committed migration classes or model snapshot. Its context and mappings are not a drop-in continuation of the source CLR model.
+Orbita currently has 50 explicitly named relational tables in its EF configurations. The two historical migration operations, their EF designer metadata, and the historical model snapshot have now been ported into `Orbita.Persistence.Migrations`, preserving their original migration IDs and PostgreSQL operations. The source CLR type names inside the historical snapshot are intentionally retained as migration metadata; the EF context association and migration namespace are Orbita-specific. The port compiled in the Release build on commit `f184a08bf29c34a78191dd6a304efb155dca067f`.
+
+## Current implementation status
+
+- [x] Historical initial migration ported with ID `20261019121926_Postgresqlmigration`.
+- [x] Historical follow-up migration ported with ID `20261024160000_EvolutionsRevueBimensuelle`.
+- [x] Historical model snapshot ported as `ApplicationDbContextModelSnapshot`.
+- [x] PostgreSQL Testcontainers integration project added and explicitly wired into CI.
+- [ ] Real PostgreSQL execution of the historical migration chain — CI run `41096953225` is pending at the time of this update.
+- [ ] Column-level source-to-target mapping and forward schema/data migration.
+- [ ] Current Orbita model snapshot and no-pending-model-changes verification.
 
 ## Migration strategy
 
