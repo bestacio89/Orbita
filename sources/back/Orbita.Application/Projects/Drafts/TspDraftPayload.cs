@@ -41,10 +41,10 @@ internal static class TspDraftPayload
         var draft = Deserialize(content);
         var client = RequireText(draft.Project.Client, "Client");
         var projectName = RequireText(draft.Project.ProjectName, "Project name");
-        return ToNormalized(draft withProject(client, projectName));
+        return ToNormalized(WithProject(draft, client, projectName));
     }
 
-    private static TspDraft withProject(TspDraft draft, string client, string projectName)
+    private static TspDraft WithProject(TspDraft draft, string client, string projectName)
     {
         draft.Project.Client = client;
         draft.Project.ProjectName = projectName;

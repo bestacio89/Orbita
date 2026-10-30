@@ -1,3 +1,5 @@
+#nullable enable
+
 using Orbita.Domain.Common;
 using Orbita.Domain.Enums;
 
