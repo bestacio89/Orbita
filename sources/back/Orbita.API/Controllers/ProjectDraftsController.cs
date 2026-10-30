@@ -1,6 +1,7 @@
 using Franz.Common.Mediator.Dispatchers;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Orbita.API.Extensions;
 using Orbita.Contracts.Commands.Projects;
 using Orbita.Contracts.DTOs.Projects;
 using Orbita.Contracts.Queries.Projects;
@@ -18,7 +19,7 @@ public sealed class ProjectDraftsController(IDispatcher dispatcher) : Controller
         var result = await dispatcher.SendAsync(new ListProjectDraftsQuery(), cancellationToken);
         return result.IsSuccess
             ? Ok(result.Value)
-            : Unauthorized(result.Error.Message);
+            : ApiResultHttpMapper.FromError(result.Error);
     }
 
     [HttpGet("{draftId:guid}")]
@@ -27,7 +28,7 @@ public sealed class ProjectDraftsController(IDispatcher dispatcher) : Controller
         var result = await dispatcher.SendAsync(new GetProjectDraftByIdQuery(draftId), cancellationToken);
         return result.IsSuccess
             ? Ok(result.Value)
-            : NotFound(result.Error.Message);
+            : ApiResultHttpMapper.FromError(result.Error);
     }
 
     [HttpPost]
@@ -38,7 +39,7 @@ public sealed class ProjectDraftsController(IDispatcher dispatcher) : Controller
         var result = await dispatcher.SendAsync(command, cancellationToken);
         return result.IsSuccess
             ? CreatedAtAction(nameof(GetById), new { draftId = result.Value }, result.Value)
-            : BadRequest(result.Error.Message);
+            : ApiResultHttpMapper.FromError(result.Error);
     }
 
     [HttpPut("{draftId:guid}")]
@@ -55,7 +56,7 @@ public sealed class ProjectDraftsController(IDispatcher dispatcher) : Controller
         var result = await dispatcher.SendAsync(command, cancellationToken);
         return result.IsSuccess
             ? NoContent()
-            : BadRequest(result.Error.Message);
+            : ApiResultHttpMapper.FromError(result.Error);
     }
 
     [HttpPut("{draftId:guid}/co-author")]
@@ -72,7 +73,7 @@ public sealed class ProjectDraftsController(IDispatcher dispatcher) : Controller
         var result = await dispatcher.SendAsync(command, cancellationToken);
         return result.IsSuccess
             ? NoContent()
-            : BadRequest(result.Error.Message);
+            : ApiResultHttpMapper.FromError(result.Error);
     }
 
     [HttpDelete("{draftId:guid}/co-author")]
@@ -81,7 +82,7 @@ public sealed class ProjectDraftsController(IDispatcher dispatcher) : Controller
         var result = await dispatcher.SendAsync(new RemoveDraftCoAuthorCommand(draftId, expectedVersion), cancellationToken);
         return result.IsSuccess
             ? NoContent()
-            : BadRequest(result.Error.Message);
+            : ApiResultHttpMapper.FromError(result.Error);
     }
 
     [HttpDelete("{draftId:guid}")]
@@ -93,6 +94,6 @@ public sealed class ProjectDraftsController(IDispatcher dispatcher) : Controller
         var result = await dispatcher.SendAsync(new DeleteProjectDraftCommand(draftId, expectedVersion), cancellationToken);
         return result.IsSuccess
             ? NoContent()
-            : BadRequest(result.Error.Message);
+            : ApiResultHttpMapper.FromError(result.Error);
     }
 }

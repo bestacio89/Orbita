@@ -7,6 +7,7 @@ using Orbita.Application.Identity;
 using Orbita.Contracts.Authorization;
 using Orbita.Contracts.Commands.Projects;
 using Orbita.Contracts.Persistence;
+using Orbita.Domain.Common;
 using Orbita.Domain.Entities;
 using Orbita.Domain.Enums;
 using Orbita.Domain.Services;
@@ -24,28 +25,36 @@ public sealed class CreateProjectCommandHandler(
     {
         if (!GlobalRoleCapabilityMatrix.HasCapability(currentUser.GlobalRoles, CapabilityNames.ProjectCreate))
         {
-            return "The current identity cannot create projects.".ToFailure<Guid>();
+            return new Error("Forbidden", "The current identity cannot create projects.").ToFailure<Guid>();
         }
 
         var actor = await actorResolver.GetOrProvisionAsync(cancellationToken);
         if (actor is null)
         {
-            return "A validated Entra identity is required.".ToFailure<Guid>();
+            return new Error("Unauthorized", "A validated Entra identity is required.").ToFailure<Guid>();
         }
 
-        var project = Project.CreateManually(
-            request.Client,
-            request.Name,
-            request.Reference,
-            request.StartDate,
-            request.ContractualEndDate,
-            request.ContractType,
-            actor.Id,
-            timeProvider.GetUtcNow());
+        Project project;
+        try
+        {
+            project = Project.CreateManually(
+                request.Client,
+                request.Name,
+                request.Reference,
+                request.StartDate,
+                request.ContractualEndDate,
+                request.ContractType,
+                actor.Id,
+                timeProvider.GetUtcNow());
+        }
+        catch (BusinessRuleException exception)
+        {
+            return Error.Validation("Project", exception.Message).ToFailure<Guid>();
+        }
 
         if (await projects.GetByUniqueKeyAsync(project.UniqueKey, cancellationToken) is not null)
         {
-            return "A project with the same commercial identity already exists.".ToFailure<Guid>();
+            return new Error("Conflict", "A project with the same commercial identity already exists.").ToFailure<Guid>();
         }
 
         project.AssignUser(actor.Id, ProjectRole.ProjectManager, timeProvider.GetUtcNow(), actor.Id);
@@ -68,18 +77,32 @@ public sealed class UpdateProjectDatesCommandHandler(
             return Error.NotFound("Project", request.ProjectId).ToFailure<Result>();
         }
 
+        var actor = await actorResolver.GetOrProvisionAsync(cancellationToken);
+        if (actor is null)
+        {
+            return new Error("Unauthorized", "A validated Entra identity is required.").ToFailure<Result>();
+        }
+
+        if (!CanManageProject(project, actor.Id, currentUser.GlobalRoles))
+        {
+            return Error.NotFound("Project", request.ProjectId).ToFailure<Result>();
+        }
+
         if (project.Version != request.ExpectedVersion)
         {
-            return "The project has changed. Reload it before applying this update.".ToFailure<Result>();
+            return new Error("Conflict", "The project has changed. Reload it before applying this update.")
+                .ToFailure<Result>();
         }
 
-        var actor = await actorResolver.GetOrProvisionAsync(cancellationToken);
-        if (actor is null || !CanManageProject(project, actor.Id, currentUser.GlobalRoles))
+        try
         {
-            return "The current identity cannot update this project.".ToFailure<Result>();
+            project.SetDates(request.StartDate, request.ContractualEndDate, request.ForecastEndDate);
+        }
+        catch (BusinessRuleException exception)
+        {
+            return Error.Validation("Dates", exception.Message).ToFailure<Result>();
         }
 
-        project.SetDates(request.StartDate, request.ContractualEndDate, request.ForecastEndDate);
         await projects.UpdateAsync(project, cancellationToken);
         return Result.Success();
     }
@@ -98,7 +121,7 @@ public sealed class ArchiveProjectCommandHandler(
     {
         if (!GlobalRoleCapabilityMatrix.HasCapability(currentUser.GlobalRoles, CapabilityNames.ProjectArchive))
         {
-            return "The current identity cannot archive projects.".ToFailure<Result>();
+            return new Error("Forbidden", "The current identity cannot archive projects.").ToFailure<Result>();
         }
 
         var project = await projects.GetByIdAsync(request.ProjectId, cancellationToken);
@@ -109,7 +132,8 @@ public sealed class ArchiveProjectCommandHandler(
 
         if (project.Version != request.ExpectedVersion)
         {
-            return "The project has changed. Reload it before applying this update.".ToFailure<Result>();
+            return new Error("Conflict", "The project has changed. Reload it before applying this update.")
+                .ToFailure<Result>();
         }
 
         project.Archive();
@@ -134,23 +158,38 @@ public sealed class AssignProjectUserCommandHandler(
             return Error.NotFound("Project", request.ProjectId).ToFailure<Result>();
         }
 
+        var actor = await actorResolver.GetOrProvisionAsync(cancellationToken);
+        if (actor is null)
+        {
+            return new Error("Unauthorized", "A validated Entra identity is required.").ToFailure<Result>();
+        }
+
+        if (!CanManageAssignments(project, actor.Id, currentUser.GlobalRoles))
+        {
+            return Error.NotFound("Project", request.ProjectId).ToFailure<Result>();
+        }
+
         if (project.Version != request.ExpectedVersion)
         {
-            return "The project has changed. Reload it before applying this update.".ToFailure<Result>();
+            return new Error("Conflict", "The project has changed. Reload it before applying this update.")
+                .ToFailure<Result>();
         }
 
-        var actor = await actorResolver.GetOrProvisionAsync(cancellationToken);
-        if (actor is null || !CanManageAssignments(project, actor.Id, currentUser.GlobalRoles))
+        var assignedUser = await users.GetByIdAsync(request.UserId, cancellationToken);
+        if (assignedUser is null || !assignedUser.IsActive)
         {
-            return "The current identity cannot manage this project's assignments.".ToFailure<Result>();
+            return Error.NotFound("Active user", request.UserId).ToFailure<Result>();
         }
 
-        if (await users.GetByIdAsync(request.UserId, cancellationToken) is null)
+        try
         {
-            return Error.NotFound("User", request.UserId).ToFailure<Result>();
+            project.AssignUser(request.UserId, request.Role, timeProvider.GetUtcNow(), actor.Id);
+        }
+        catch (BusinessRuleException exception)
+        {
+            return Error.Validation("Assignment", exception.Message).ToFailure<Result>();
         }
 
-        project.AssignUser(request.UserId, request.Role, timeProvider.GetUtcNow(), actor.Id);
         await projects.UpdateAsync(project, cancellationToken);
         return Result.Success();
     }
@@ -174,17 +213,22 @@ public sealed class RemoveProjectAssignmentCommandHandler(
             return Error.NotFound("Project", request.ProjectId).ToFailure<Result>();
         }
 
-        if (project.Version != request.ExpectedVersion)
+        var actor = await actorResolver.GetOrProvisionAsync(cancellationToken);
+        if (actor is null)
         {
-            return "The project has changed. Reload it before applying this update.".ToFailure<Result>();
+            return new Error("Unauthorized", "A validated Entra identity is required.").ToFailure<Result>();
         }
 
-        var actor = await actorResolver.GetOrProvisionAsync(cancellationToken);
-        if (actor is null ||
-            !GlobalRoleCapabilityMatrix.HasCapability(currentUser.GlobalRoles, CapabilityNames.ProjectManageAssignments) &&
+        if (!GlobalRoleCapabilityMatrix.HasCapability(currentUser.GlobalRoles, CapabilityNames.ProjectManageAssignments) &&
             !ProjectAccessPolicy.IsProjectManager(project, actor.Id))
         {
-            return "The current identity cannot manage this project's assignments.".ToFailure<Result>();
+            return Error.NotFound("Project", request.ProjectId).ToFailure<Result>();
+        }
+
+        if (project.Version != request.ExpectedVersion)
+        {
+            return new Error("Conflict", "The project has changed. Reload it before applying this update.")
+                .ToFailure<Result>();
         }
 
         if (!project.RemoveAssignment(request.UserId))
