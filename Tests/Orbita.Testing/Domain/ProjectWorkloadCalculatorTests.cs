@@ -51,6 +51,29 @@ public sealed class ProjectWorkloadCalculatorTests
     }
 
     [Fact]
+    public void Automatic_remaining_effort_is_allocated_using_each_profiles_unconsumed_workload()
+    {
+        var project = CreateProject();
+        var overconsumedProfile = new ProjectProfile { Name = "Overconsumed", LegalEntity = "FO" };
+        var remainingProfile = new ProjectProfile { Name = "Remaining", LegalEntity = "FO" };
+        project.Profiles.AddRange([overconsumedProfile, remainingProfile]);
+
+        var task = new WorkTask { ProjectId = project.Id, Reference = "R1", Title = "R1" };
+        task.Efforts.AddRange([
+            new TaskEffort { ProjectId = project.Id, TaskId = task.Id, ProjectProfileId = overconsumedProfile.Id, SoldEffort = 2m },
+            new TaskEffort { ProjectId = project.Id, TaskId = task.Id, ProjectProfileId = remainingProfile.Id, SoldEffort = 2m }
+        ]);
+        task.TimeEntries.Add(Entry(project.Id, task.Id, overconsumedProfile.Id, 3m));
+        project.Tasks.Add(task);
+
+        var result = ProjectWorkloadCalculator.Calculate(project);
+
+        Assert.Equal(1m, result.RemainingEffort);
+        Assert.Equal(0m, result.Profiles.Single(profile => profile.ProjectProfileId == overconsumedProfile.Id).RemainingEffort);
+        Assert.Equal(1m, result.Profiles.Single(profile => profile.ProjectProfileId == remainingProfile.Id).RemainingEffort);
+    }
+
+    [Fact]
     public void Cancelled_task_is_excluded_from_planned_progress_but_keeps_actual_effort()
     {
         var project = CreateProject();

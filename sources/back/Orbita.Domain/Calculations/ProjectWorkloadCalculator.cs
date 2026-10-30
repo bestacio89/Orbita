@@ -32,12 +32,17 @@ public static class ProjectWorkloadCalculator
             var taskPlanned = plannedByProfile.Values.Sum();
             var taskActual = actualByProfile.Values.Sum();
             var taskRemaining = task.RemainingEffort ?? Math.Max(0m, taskPlanned - taskActual);
+            var residualByProfile = plannedByProfile.ToDictionary(
+                pair => pair.Key,
+                pair => Math.Max(0m, pair.Value - actualByProfile.GetValueOrDefault(pair.Key)));
+            var residualTotal = residualByProfile.Values.Sum();
 
             foreach (var (profileId, profilePlanned) in plannedByProfile)
             {
-                var profileRemaining = task.RemainingEffort is not null
-                    ? taskPlanned > 0m ? taskRemaining * profilePlanned / taskPlanned : 0m
-                    : Math.Max(0m, profilePlanned - actualByProfile.GetValueOrDefault(profileId));
+                var allocationWeight = residualTotal > 0m
+                    ? residualByProfile[profileId] / residualTotal
+                    : taskPlanned > 0m ? profilePlanned / taskPlanned : 0m;
+                var profileRemaining = taskRemaining * allocationWeight;
 
                 remainingByProfile[profileId] = remainingByProfile.GetValueOrDefault(profileId) + profileRemaining;
             }
