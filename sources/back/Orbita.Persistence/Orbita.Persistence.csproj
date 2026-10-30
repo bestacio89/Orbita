@@ -1,0 +1,30 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <Import Project="../../../common.targets" />
+
+  <ItemGroup>
+    <PackageReference Include="Orbita.Common.Caching" />
+    <PackageReference Include="Orbita.Common.EntityFramework" />
+    <PackageReference Include="Orbita.Common.Hosting" />
+    <PackageReference Include="Microsoft.EntityFrameworkCore" />
+    <PackageReference Include="Microsoft.CodeAnalysis.Common" />
+    <PackageReference Include="Microsoft.EntityFrameworkCore.Design">
+      <PrivateAssets>all</PrivateAssets>
+      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+    </PackageReference>
+  </ItemGroup>
+
+  <ItemGroup>
+    <Folder Include="Configurations\" />
+    <Folder Include="Depots\" />
+    <Folder Include="Migrations\" />
+    <Folder Include="Persistence\Seeders\" />
+    <Folder Include="Semoirs\" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\Orbita.Contracts\Orbita.Contracts.csproj" />
+    <ProjectReference Include="..\Orbita.Domain\Orbita.Domain.csproj" />
+  </ItemGroup>
+
+</Project>

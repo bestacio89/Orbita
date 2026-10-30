@@ -1,0 +1,34 @@
+<Solution>
+  <Folder Name="/1- Core/">
+    <Project Path="sources/back/Orbita.Application/Orbita.Application.csproj" />
+    <Project Path="sources/back/Orbita.Contracts/Orbita.Contracts.csproj" />
+    <Project Path="sources/back/Orbita.Domain/Orbita.Domain.csproj" />
+  </Folder>
+  <Folder Name="/2-Infrastructure/">
+    <Project Path="sources/back/Orbita.ClientHttp/Orbita.ClientHttp.csproj" />
+    <Project Path="sources/back/Orbita.Consumer/Orbita.Consumer.csproj" />
+    <Project Path="sources/back/Orbita.Persistence/Orbita.Persistence.csproj" />
+  </Folder>
+  <Folder Name="/3- Adapters/">
+    <Project Path="sources/back/Orbita.API/Orbita.API.csproj" />
+  </Folder>
+  <Folder Name="/4- Tests/">
+    <Project Path="tests/Orbita.Testing/Orbita.Testing.csproj" />
+    <Project Path="tests/Orbita.Testing.ArchitecturalReports/Orbita.Testing.ArchitecturalReports.csproj" />
+  </Folder>
+  <Folder Name="/Infrastructure/">
+    <File Path="main.bicep" />
+  </Folder>
+  <Folder Name="/Infrastructure/Modules/" />
+  <Folder Name="/Infrastructure/Modules/MongoDB/" />
+  <Folder Name="/Infrastructure/Modules/Multidatabase/" />
+  <Folder Name="/Infrastructure/Modules/PosgrsSql/" />
+  <Folder Name="/Infrastructure/Modules/SingleDatabase/" />
+  <Folder Name="/Solution Elements/">
+    <File Path=".editorconfig" />
+    <File Path=".gitignore" />
+    <File Path="common.targets" />
+    <File Path="Directory.Packages.props" />
+    <File Path="README.md" />
+  </Folder>
+</Solution>

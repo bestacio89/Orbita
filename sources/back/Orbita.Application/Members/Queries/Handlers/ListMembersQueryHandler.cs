@@ -1,0 +1,35 @@
+
+
+using Orbita.Common.Business.Domain;
+using Orbita.Common.Mapping.Abstractions;
+using Orbita.Common.Mediator.Handlers;
+using Orbita.Common.Mediator.Results;
+using Orbita.Contracts.DTOs;
+using Orbita.Domain.Entities;
+
+using Orbita.Contracts.Queries.Members;
+using Orbita.Persistence;
+using Orbita.Common.EntityFramework.Repositories;
+
+namespace Orbita.Application.Members.Queries;
+
+public sealed class ListMembersQueryHandler
+    : IQueryHandler<ListMembersQuery, Result<IReadOnlyCollection<MemberDto>>>
+{
+    private readonly EntityRepository<ApplicationDbContext, Member, int> _memberRepository;
+    private readonly IOrbitaMapper _mapper;
+
+    public ListMembersQueryHandler(EntityRepository<ApplicationDbContext, Member, int> memberRepository, IOrbitaMapper mapper)
+    {
+        _memberRepository = memberRepository;
+        _mapper = mapper;
+    }
+
+    public async Task<Result<IReadOnlyCollection<MemberDto>>> Handle(ListMembersQuery request, CancellationToken cancellationToken)
+    {
+        var members = await _memberRepository.GetAllAsync(cancellationToken);
+        var mapped = _mapper.Map<IReadOnlyCollection<Member>,IReadOnlyCollection<MemberDto>>((IReadOnlyCollection<Member>)members);
+
+        return mapped.ToResult();
+    }
+}

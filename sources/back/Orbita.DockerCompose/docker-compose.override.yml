@@ -1,0 +1,31 @@
+version: '3.4'
+
+services:
+  Orbita.Api:
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Docker
+      - ASPNETCORE_URLS=https://+:443;http://+:80
+    ports:
+      - "80:80"
+      - "443:443"
+    volumes:
+      - ${APPDATA}/Microsoft/UserSecrets:/root/.microsoft/usersecrets:ro
+      - ${APPDATA}/ASP.NET/Https:/root/.aspnet/https:ro
+    networks:
+      - nt_Orbita
+    container_name: Orbita_api
+    
+  Orbita.Consumer:
+    environment:
+      - DOTNET_ENVIRONMENT=Docker
+    restart: always  
+    volumes:
+      - ${APPDATA}/Microsoft/UserSecrets:/root/.microsoft/usersecrets:ro
+      - ${APPDATA}/ASP.NET/Https:/root/.aspnet/https:ro
+    networks:
+      - nt_Orbita
+    container_name: Orbita_consumer
+    
+networks:
+  nt_Orbita:
+    name: nt_Orbita

@@ -1,0 +1,52 @@
+parameters:
+  projectName: 'TestOrbita'
+  environmentName: ''
+  azureServiceConnection: ''
+  resourceGroupName: ''
+  resourceGroupLocation: ''
+  applicationVersion: ''
+  repositoryName: ''
+  languages: ''
+  mutualizeOpenAI: ''
+  registrerPAL: ''
+  messagingType: 'Kafka' # ðŸ‘ˆ extendable (Kafka | RabbitMQ | Both | None)
+  actionGroupName: 'Health Check Action Group'
+
+jobs:
+- job: Deploy
+  displayName: "ðŸš€ Deploy Infra with Built Image"
+  pool:
+    vmImage: 'ubuntu-latest'
+
+  steps:
+    # ----------------------------------------
+    # ðŸ”½ Download image tag artifact
+    # ----------------------------------------
+    - download: current
+      artifact: docker-image-info
+      displayName: "ðŸ”½ Download Image Tag"
+
+    - bash: |
+        IMAGE_TAG=$(jq -r .image docker-image-info/image-info.json)
+        echo "Using image tag: $IMAGE_TAG"
+        echo "##vso[task.setvariable variable=IMAGE_TAG]$IMAGE_TAG"
+      displayName: "ðŸ“¤ Extract Image Tag"
+
+    # ----------------------------------------
+    # ðŸš€ Deploy Bicep with exact image
+    # ----------------------------------------
+    - task: AzureCLI@2
+      displayName: "ðŸš€ Deploy with Bicep"
+      inputs:
+        azureSubscription: ${{ parameters.azureServiceConnection }}
+        scriptType: bash
+        scriptLocation: inlineScript
+        inlineScript: |
+          az deployment group create \
+            --resource-group ${{ parameters.resourceGroupName }} \
+            --template-file main.bicep \
+            --parameters @parameters.json \
+              containerImage="$(IMAGE_TAG)" \
+              environmentShortName="${{ parameters.environmentName }}" \
+              projectShortName="${{ parameters.projectName }}"
+
