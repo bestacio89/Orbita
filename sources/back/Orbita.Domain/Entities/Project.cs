@@ -43,6 +43,38 @@ public sealed class Project : DomainEntity
     public ProjectSettings Settings { get; private set; } = new();
     public List<ProjectTaskType> TaskTypes { get; private set; } = [];
 
+    // Project-owned persistence collections. Application queries load only the navigations needed by each use case.
+    public List<ProjectField> Fields { get; private set; } = [];
+    public List<TspImportRecord> TspImports { get; private set; } = [];
+    public List<ProjectProfile> Profiles { get; private set; } = [];
+    public List<AgencyRate> AgencyRates { get; private set; } = [];
+    public List<SoldProfilePlanning> SoldProfilePlanning { get; private set; } = [];
+    public List<SoldPhasePlanning> SoldPhasePlanning { get; private set; } = [];
+    public List<PurchaseBudgetLine> PurchaseBudget { get; private set; } = [];
+    public List<ExpenseBudgetLine> ExpenseBudget { get; private set; } = [];
+    public List<ProjectSupplier> Suppliers { get; private set; } = [];
+    public List<ProjectMetric> Metrics { get; private set; } = [];
+    public List<InvoiceMilestone> InvoiceMilestones { get; private set; } = [];
+    public List<ProjectAxis> Axes { get; private set; } = [];
+    public List<ProjectLot> Lots { get; private set; } = [];
+    public List<ProjectPhase> Phases { get; private set; } = [];
+    public List<ProjectStep> Steps { get; private set; } = [];
+    public List<AiReferenceValue> AiReferenceValues { get; private set; } = [];
+    public List<WorkTask> Tasks { get; private set; } = [];
+    public List<ActualPurchase> ActualPurchases { get; private set; } = [];
+    public List<ActualExpense> ActualExpenses { get; private set; } = [];
+    public List<ProjectAction> Actions { get; private set; } = [];
+    public List<ProjectDecision> Decisions { get; private set; } = [];
+    public List<ProjectRisk> Risks { get; private set; } = [];
+    public List<ProjectMilestone> Milestones { get; private set; } = [];
+    public List<PlanningDate> PlanningDates { get; private set; } = [];
+    public List<PlanningElement> PlanningElements { get; private set; } = [];
+    public List<ReferencePlan> ReferencePlans { get; private set; } = [];
+    public List<ForecastProfile> ForecastProfiles { get; private set; } = [];
+    public List<IndicatorSnapshot> IndicatorSnapshots { get; private set; } = [];
+    public List<ProjectNotification> Notifications { get; private set; } = [];
+    public List<ProjectJournalEntry> JournalEntries { get; private set; } = [];
+
     public IReadOnlyCollection<ProjectAssignment> Assignments => _assignments.AsReadOnly();
 
     public static Project CreateManually(
