@@ -13,5 +13,9 @@ internal sealed class ProjectAssignmentConfiguration : IEntityTypeConfiguration<
         builder.HasIndex(assignment => new { assignment.ProjectId, assignment.UserId }).IsUnique();
         builder.HasIndex(assignment => assignment.UserId);
         builder.Property(assignment => assignment.Role).HasConversion<int>();
+        builder.HasOne<User>().WithMany().HasForeignKey(assignment => assignment.UserId)
+            .OnDelete(DeleteBehavior.Restrict);
+        builder.HasOne<User>().WithMany().HasForeignKey(assignment => assignment.GrantedByUserId)
+            .OnDelete(DeleteBehavior.Restrict);
     }
 }

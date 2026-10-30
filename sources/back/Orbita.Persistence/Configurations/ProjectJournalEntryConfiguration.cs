@@ -16,5 +16,7 @@ internal sealed class ProjectJournalEntryConfiguration : IEntityTypeConfiguratio
         builder.Property(entry => entry.MemberName).HasMaxLength(128).IsRequired();
         builder.Property(entry => entry.PreviousValue).HasMaxLength(4000);
         builder.Property(entry => entry.NewValue).HasMaxLength(4000);
+        builder.HasOne<User>().WithMany().HasForeignKey(entry => entry.UserId)
+            .OnDelete(DeleteBehavior.Restrict);
     }
 }

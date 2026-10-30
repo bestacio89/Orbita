@@ -18,5 +18,11 @@ internal sealed class ProjectDraftConfiguration : IEntityTypeConfiguration<Proje
         builder.Property(draft => draft.Source).HasMaxLength(512);
         builder.Property(draft => draft.Content).IsRequired();
         builder.Property(draft => draft.Origin).HasConversion<int>();
+        builder.HasOne<User>().WithMany().HasForeignKey(draft => draft.AuthorUserId)
+            .OnDelete(DeleteBehavior.Restrict);
+        builder.HasOne<User>().WithMany().HasForeignKey(draft => draft.CoAuthorUserId)
+            .OnDelete(DeleteBehavior.Restrict);
+        builder.HasOne<User>().WithMany().HasForeignKey(draft => draft.ModifiedByUserId)
+            .OnDelete(DeleteBehavior.Restrict);
     }
 }

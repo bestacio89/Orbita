@@ -23,6 +23,8 @@ internal sealed class ProjectConfiguration : IEntityTypeConfiguration<Project>
         builder.Property(project => project.SalesRepresentative).HasMaxLength(256);
         builder.Property(project => project.ClientContact).HasMaxLength(256);
         builder.Property(project => project.ContractType).HasMaxLength(100);
+        builder.HasOne<User>().WithMany().HasForeignKey(project => project.CreatedByUserId)
+            .OnDelete(DeleteBehavior.Restrict);
 
         builder.OwnsOne(project => project.Settings, settings =>
         {
