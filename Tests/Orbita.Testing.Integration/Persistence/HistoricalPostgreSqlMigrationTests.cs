@@ -1,5 +1,6 @@
 using Franz.Common.Mediator.Dispatchers;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Diagnostics;
 using Microsoft.Extensions.DependencyInjection;
 using Npgsql;
 using Orbita.Persistence;
@@ -18,6 +19,10 @@ public sealed class HistoricalPostgreSqlMigrationTests
         using var services = new ServiceCollection().BuildServiceProvider();
         var options = new DbContextOptionsBuilder<ApplicationDbContext>()
             .UseNpgsql(postgres.GetConnectionString())
+            // This test deliberately executes the historical Magellan baseline before the Orbita
+            // forward migration exists. Keep the exception local to this legacy-baseline test.
+            // The final Orbita migration tests must run without suppressing this warning.
+            .ConfigureWarnings(warnings => warnings.Ignore(RelationalEventId.PendingModelChangesWarning))
             .Options;
 
         await using var context = new ApplicationDbContext(options, new FranzDispatcher(services));
