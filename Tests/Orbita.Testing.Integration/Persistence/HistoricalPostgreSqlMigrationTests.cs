@@ -147,7 +147,7 @@ public sealed class HistoricalPostgreSqlMigrationTests
             context.Database.ExecuteSqlInterpolatedAsync(
                 $"""DELETE FROM "Projets" WHERE "Id" = {projectId}"""));
 
-        Assert.Equal(PostgresErrorCodes.ForeignKeyViolation, parentDelete.SqlState);
+        Assert.Equal(PostgresErrorCodes.RestrictViolation, parentDelete.SqlState);
     }
     [Fact]
     public async Task Historical_task_updates_are_preserved_when_the_second_migration_consolidates_comments()
