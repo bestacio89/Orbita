@@ -37,6 +37,9 @@ jobs:
       - name: Run unit tests
         run: dotnet test Tests/Orbita.Testing.Unit/Orbita.Testing.Unit.csproj --configuration Release --no-build --no-restore --logger "console;verbosity=normal"
 
+      - name: Run PostgreSQL integration tests
+        run: dotnet test Tests/Orbita.Testing.Integration/Orbita.Testing.Integration.csproj --configuration Release --no-build --no-restore --logger "console;verbosity=normal"
+
       - name: Run architecture tests
         run: dotnet test Tests/Orbita.Testing/Orbita.Testing.csproj --configuration Release --no-build --no-restore --logger "console;verbosity=normal"
 
