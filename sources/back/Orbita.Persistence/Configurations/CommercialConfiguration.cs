@@ -48,8 +48,6 @@ internal sealed class SoldPhasePlanningConfiguration : IEntityTypeConfiguration<
         builder.ToTable("SoldPhasePlannings");
         builder.Property(value => value.Phase).HasMaxLength(50);
         builder.Property(value => value.EnteredDailyCostRate).HasMaxLength(100);
-        builder.HasMany(value => value.Months).WithOne()
-            .HasForeignKey(month => month.SoldPhasePlanningId);
     }
 }
 
@@ -59,6 +57,8 @@ internal sealed class SoldPhaseMonthConfiguration : IEntityTypeConfiguration<Sol
     {
         builder.ToTable("SoldPhaseMonths");
         builder.HasOne<Project>().WithMany().HasForeignKey(value => value.ProjectId)
+            .OnDelete(DeleteBehavior.Cascade);
+        builder.HasOne<SoldPhasePlanning>().WithMany().HasForeignKey(value => value.SoldPhasePlanningId)
             .OnDelete(DeleteBehavior.Cascade);
         builder.Property(value => value.Month).HasMaxLength(7).IsRequired();
         builder.HasIndex(value => new { value.SoldPhasePlanningId, value.Month }).IsUnique();
