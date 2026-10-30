@@ -59,6 +59,7 @@ public sealed class TspAgencyRate
 
 public sealed class TspReadTask
 {
+    public string SourceId { get; init; } = string.Empty;
     public int? SourceRow { get; init; }
     public string AxisCode { get; init; } = string.Empty;
     public string LotCode { get; init; } = string.Empty;

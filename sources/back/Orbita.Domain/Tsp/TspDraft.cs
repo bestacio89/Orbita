@@ -71,6 +71,7 @@ public sealed class TspInvoiceMilestone
     public string Name { get; set; } = string.Empty;
     public decimal Percentage { get; set; }
     public string? Month { get; set; }
+    public string? AxisCode { get; set; }
 }
 
 public sealed class TspPurchase

@@ -25,7 +25,7 @@ public sealed class TspWorkbookReaderTests
     {
         using var workbook = File.OpenRead(OutilsTests.Donnees($"{fixtureName}.xlsx"));
 
-        var result = new TspWorkbookReader().Read(workbook, $"{fixtureName}.xlsx", ReferenceDate);
+        var result = new TspWorkbookReader().ReadReference(workbook, $"{fixtureName}.xlsx", ReferenceDate);
         var expected = OutilsTests.Lire($"{fixtureName}.lecture-attendue.json").AsObject();
         var actual = OutilsTests.VersJson(result).AsObject();
 
@@ -33,6 +33,20 @@ public sealed class TspWorkbookReaderTests
         {
             OutilsTests.VerifierIdentique(expected[field], actual[field], $"{fixtureName} > {field}");
         }
+    }
+
+    [Fact]
+    public void Semantic_read_model_uses_stable_profile_keys_and_preserves_source_task_ids()
+    {
+        using var workbook = File.OpenRead(OutilsTests.Donnees("tsp-exemple-a.xlsx"));
+
+        var result = new TspWorkbookReader().Read(workbook, "tsp-exemple-a.xlsx", ReferenceDate);
+
+        Assert.NotEmpty(result.Profiles);
+        Assert.Equal(Enumerable.Range(0, result.Profiles.Count).Select(index => $"profile-{index}"), result.Profiles.Select(profile => profile.Id));
+        var task = result.Tasks.First(task => !task.IsSection);
+        Assert.NotEmpty(task.SourceId);
+        Assert.All(task.SoldEffortByProfile.Keys, key => Assert.Contains(result.Profiles, profile => profile.Id == key));
     }
 
     [Fact]
