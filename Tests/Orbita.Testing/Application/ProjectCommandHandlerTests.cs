@@ -1,8 +1,10 @@
 using Orbita.Application.Identity;
 using Orbita.Application.Projects.Commands;
+using Orbita.Application.Projects.Queries;
 using Orbita.Contracts.Authorization;
 using Orbita.Contracts.Commands.Projects;
 using Orbita.Contracts.Persistence;
+using Orbita.Contracts.Queries.Projects;
 using Orbita.Domain.Entities;
 using Orbita.Domain.Enums;
 using Xunit;
@@ -142,6 +144,41 @@ public sealed class ProjectCommandHandlerTests
         Assert.Equal("NotFound", result.Error?.Code);
         Assert.DoesNotContain(project.Assignments, assignment => assignment.UserId == inactive.Id);
         Assert.Equal(0, project.Version);
+    }
+
+    [Fact]
+    public async Task Global_manager_can_only_list_and_read_assigned_projects()
+    {
+        var harness = new Harness([GlobalRoleNames.Manager]);
+        var assigned = CreateProject();
+        assigned.AssignUser(harness.Actor.Id, ProjectRole.Reader, Now, harness.Actor.Id);
+        var unassigned = Project.CreateManually("Other", "Private", null, Start, End, "Forfait", null, Now);
+        harness.Projects.Seed(assigned);
+        harness.Projects.Seed(unassigned);
+
+        var list = await new ListProjectsQueryHandler(
+            harness.Projects, harness.ActorResolver, harness.CurrentUser)
+            .Handle(new ListProjectsQuery(), CancellationToken.None);
+        var visible = Assert.Single(list.Value);
+        Assert.Equal(assigned.Id, visible.Id);
+
+        var hidden = await new GetProjectByIdQueryHandler(
+            harness.Projects, harness.ActorResolver, harness.CurrentUser)
+            .Handle(new GetProjectByIdQuery(unassigned.Id), CancellationToken.None);
+        Assert.False(hidden.IsSuccess);
+        Assert.Equal("NotFound", hidden.Error?.Code);
+    }
+
+    [Fact]
+    public async Task Project_listing_requires_global_read_capability()
+    {
+        var harness = new Harness([]);
+        var result = await new ListProjectsQueryHandler(
+            harness.Projects, harness.ActorResolver, harness.CurrentUser)
+            .Handle(new ListProjectsQuery(), CancellationToken.None);
+
+        Assert.False(result.IsSuccess);
+        Assert.Equal("Forbidden", result.Error?.Code);
     }
 
     private static Project CreateProject() =>
