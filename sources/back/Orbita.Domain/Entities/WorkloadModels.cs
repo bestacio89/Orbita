@@ -29,7 +29,7 @@ public sealed class WorkTask : ProjectEntity
     public string? Lot { get; set; }
     public Guid? TaskTypeId { get; set; }
     public bool TaskTypeWasExplicitlySet { get; set; }
-    public TaskStatus? Status { get; private set; }
+    public ProjectTaskStatus? Status { get; private set; }
     public decimal? Progress { get; private set; }
     public decimal? RemainingEffort { get; set; }
     public DateOnly? PlannedStartDate { get; private set; }
@@ -65,13 +65,13 @@ public sealed class WorkTask : ProjectEntity
     /// Changes task status. Validation sets progress to 100%; leaving validation resets progress to 75%,
     /// or to 0% when the task returns to ToDo.
     /// </summary>
-    public bool SetStatus(TaskStatus status, DateOnly today)
+    public bool SetStatus(ProjectTaskStatus status, DateOnly today)
     {
         EnsureEditable();
-        var wasValidated = Status == TaskStatus.Validated;
+        var wasValidated = Status == ProjectTaskStatus.Validated;
         var progressWasReduced = false;
 
-        if (status == TaskStatus.Validated)
+        if (status == ProjectTaskStatus.Validated)
         {
             Progress = 1m;
             RemainingEffort = null;
@@ -82,7 +82,7 @@ public sealed class WorkTask : ProjectEntity
             ValidatedOn = null;
             if (wasValidated && (Progress ?? 0m) >= 1m)
             {
-                Progress = status == TaskStatus.ToDo ? 0m : 0.75m;
+                Progress = status == ProjectTaskStatus.ToDo ? 0m : 0.75m;
                 progressWasReduced = true;
             }
         }
@@ -101,14 +101,14 @@ public sealed class WorkTask : ProjectEntity
             throw new BusinessRuleException("Task progress must be between 0% and 100%.");
         }
 
-        if (Status == TaskStatus.Validated && progress < 1m)
+        if (Status == ProjectTaskStatus.Validated && progress < 1m)
         {
-            Status = TaskStatus.InProgress;
+            Status = ProjectTaskStatus.InProgress;
             ValidatedOn = null;
         }
 
         Progress = progress;
-        return progress == 1m && Status != TaskStatus.Validated;
+        return progress == 1m && Status != ProjectTaskStatus.Validated;
     }
 
     /// <summary>Updates forecast dates. Dates remain editable even when the task is cancelled.</summary>

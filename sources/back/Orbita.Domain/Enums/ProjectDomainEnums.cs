@@ -13,7 +13,7 @@ public enum ProjectStatus { Preparation, InProgress, Archived }
 public enum ProjectOrigin { TspImport, ManualCreation, TspAuthoring }
 public enum DraftOrigin { Blank, TspImport, ExistingProjectCopy }
 public enum ElementOrigin { Tsp, Added }
-public enum TaskStatus { ToDo, InProgress, Blocked, InAcceptance, Validated }
+public enum ProjectTaskStatus { ToDo, InProgress, Blocked, InAcceptance, Validated }
 public enum ScopeChangeKind { NewTask, AdditionalEffort, Cancellation, Reinstatement, Reassignment }
 public enum ActionStatus { ToDo, InProgress, Done, Cancelled }
 public enum DecisionStatus { Approved, PendingApproval, Rejected }

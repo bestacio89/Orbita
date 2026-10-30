@@ -15,20 +15,20 @@ public sealed class WorkloadAndCommercialTests
         var task = new WorkTask();
         task.SetProgress(0.5m);
 
-        task.SetStatus(TaskStatus.Validated, Today);
+        task.SetStatus(ProjectTaskStatus.Validated, Today);
 
         Assert.Equal(1m, task.Progress);
         Assert.Equal(Today, task.ValidatedOn);
     }
 
     [Theory]
-    [InlineData(TaskStatus.InProgress, 0.75)]
-    [InlineData(TaskStatus.InAcceptance, 0.75)]
-    [InlineData(TaskStatus.ToDo, 0)]
-    public void Leaving_validated_status_reduces_progress(TaskStatus nextStatus, double expectedProgress)
+    [InlineData(ProjectTaskStatus.InProgress, 0.75)]
+    [InlineData(ProjectTaskStatus.InAcceptance, 0.75)]
+    [InlineData(ProjectTaskStatus.ToDo, 0)]
+    public void Leaving_validated_status_reduces_progress(ProjectTaskStatus nextStatus, double expectedProgress)
     {
         var task = new WorkTask();
-        task.SetStatus(TaskStatus.Validated, Today);
+        task.SetStatus(ProjectTaskStatus.Validated, Today);
 
         var reduced = task.SetStatus(nextStatus, Today);
 
@@ -41,10 +41,10 @@ public sealed class WorkloadAndCommercialTests
     public void Reaching_one_hundred_percent_does_not_automatically_validate_a_task()
     {
         var task = new WorkTask();
-        task.SetStatus(TaskStatus.InProgress, Today);
+        task.SetStatus(ProjectTaskStatus.InProgress, Today);
 
         Assert.True(task.SetProgress(1m));
-        Assert.Equal(TaskStatus.InProgress, task.Status);
+        Assert.Equal(ProjectTaskStatus.InProgress, task.Status);
     }
 
     [Fact]
@@ -58,7 +58,7 @@ public sealed class WorkloadAndCommercialTests
         });
 
         Assert.True(task.IsCancelled);
-        Assert.Throws<BusinessRuleException>(() => task.SetStatus(TaskStatus.InProgress, Today));
+        Assert.Throws<BusinessRuleException>(() => task.SetStatus(ProjectTaskStatus.InProgress, Today));
 
         task.ScopeChanges.Add(new ScopeChange
         {
