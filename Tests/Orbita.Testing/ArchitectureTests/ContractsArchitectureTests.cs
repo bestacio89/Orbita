@@ -171,8 +171,7 @@ namespace Orbita.Testing.ArchitectureTests
       }
 
       ArchRuleDefinition.Classes().That().Are(dtoObjects)
-        .Should().BeRecords()
-        .OrShould().BeImmutable()
+        .Should().BeImmutable()
         .Because("Read DTOs should be immutable records or immutable classes")
         .WithoutRequiringPositiveResults()
         .Check(BaseArchitecture);
