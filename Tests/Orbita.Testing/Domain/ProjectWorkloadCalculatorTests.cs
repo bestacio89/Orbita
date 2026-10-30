@@ -99,6 +99,33 @@ public sealed class ProjectWorkloadCalculatorTests
     }
 
     [Fact]
+    public void Calculation_is_pure_and_does_not_mutate_project_input()
+    {
+        var project = CreateProject();
+        var profile = new ProjectProfile { Name = "Consultant", LegalEntity = "FO" };
+        project.Profiles.Add(profile);
+        var task = CreateTask(project.Id, "R1", profile.Id, 5m);
+        task.SetStatus(ProjectTaskStatus.InProgress, Today);
+        task.SetProgress(0.5m);
+        task.TimeEntries.Add(Entry(project.Id, task.Id, profile.Id, 1m));
+        project.Tasks.Add(task);
+
+        var statusBefore = task.Status;
+        var progressBefore = task.Progress;
+        var remainingBefore = task.RemainingEffort;
+        var first = ProjectWorkloadCalculator.Calculate(project);
+        var second = ProjectWorkloadCalculator.Calculate(project);
+
+        Assert.Equal(statusBefore, task.Status);
+        Assert.Equal(progressBefore, task.Progress);
+        Assert.Equal(remainingBefore, task.RemainingEffort);
+        Assert.Equal(first.PlannedEffort, second.PlannedEffort);
+        Assert.Equal(first.ActualEffort, second.ActualEffort);
+        Assert.Equal(first.RemainingEffort, second.RemainingEffort);
+        Assert.Equal(first.Progress, second.Progress);
+    }
+
+    [Fact]
     public void Daily_overload_is_detected_across_tasks_for_the_same_profile()
     {
         var project = CreateProject();

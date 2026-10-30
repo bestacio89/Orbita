@@ -115,9 +115,9 @@ public static class ProjectWorkloadCalculator
         var progress = plannedTotal > 0m ? validatedEffort / plannedTotal : 0m;
 
         return new ProjectWorkloadResult(
-            tasks,
-            profileResults,
-            overloads,
+            tasks.AsReadOnly(),
+            profileResults.AsReadOnly(),
+            overloads.AsReadOnly(),
             plannedTotal,
             actualTotal,
             remainingTotal,
