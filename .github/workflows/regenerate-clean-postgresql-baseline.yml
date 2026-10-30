@@ -34,7 +34,8 @@ jobs:
         shell: bash
         run: |
           dotnet clean Orbita.slnx --configuration Release
-          find . -type d \\( -name bin -o -name obj \\) -prune -exec rm -rf {} +
+          find . -type d -name bin -prune -exec rm -rf '{}' +
+          find . -type d -name obj -prune -exec rm -rf '{}' +
 
       - name: Restore solution
         run: dotnet restore Orbita.slnx
