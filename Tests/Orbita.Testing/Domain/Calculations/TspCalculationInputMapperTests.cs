@@ -86,6 +86,6 @@ public sealed class TspCalculationInputMapperTests
         var result = MoteurCalcul.Calculer(input, new DateOnly(2026, 10, 30));
 
         Assert.Equal(2m, Assert.Single(result.Tasks).Charge);
-        Assert.Equal(2m, result.Financier.Jours);
+        Assert.Equal(2m, result.Synthese.Jours);
     }
 }
