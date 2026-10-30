@@ -213,6 +213,7 @@ public sealed class ProjectDraftApplicationHandlerTests
 
         public FakeUserRepository Users { get; }
         public FakeProjectDraftRepository Drafts { get; }
+        public ICurrentUserContext CurrentUser => _context;
         public User Actor { get; private set; }
         public TimeProvider TimeProvider { get; }
         public CurrentActorResolver ActorResolver { get; }
