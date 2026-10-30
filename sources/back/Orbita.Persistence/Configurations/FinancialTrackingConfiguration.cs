@@ -49,6 +49,8 @@ internal sealed class ExpenseImportConfiguration : IEntityTypeConfiguration<Expe
     public void Configure(EntityTypeBuilder<ExpenseImport> builder)
     {
         builder.ToTable("ExpenseImports");
+        builder.HasOne<Project>().WithMany().HasForeignKey(value => value.ProjectId)
+            .OnDelete(DeleteBehavior.Cascade);
         builder.Property(value => value.Source).HasMaxLength(100);
         builder.Property(value => value.FileName).HasMaxLength(260);
         builder.HasOne<User>().WithMany().HasForeignKey(value => value.ImportedByUserId)

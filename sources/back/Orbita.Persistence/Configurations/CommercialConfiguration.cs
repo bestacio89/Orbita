@@ -58,6 +58,8 @@ internal sealed class SoldPhaseMonthConfiguration : IEntityTypeConfiguration<Sol
     public void Configure(EntityTypeBuilder<SoldPhaseMonth> builder)
     {
         builder.ToTable("SoldPhaseMonths");
+        builder.HasOne<Project>().WithMany().HasForeignKey(value => value.ProjectId)
+            .OnDelete(DeleteBehavior.Cascade);
         builder.Property(value => value.Month).HasMaxLength(7).IsRequired();
         builder.HasIndex(value => new { value.SoldPhasePlanningId, value.Month }).IsUnique();
     }
@@ -126,6 +128,8 @@ internal sealed class InvoiceMilestonePhaseConfiguration : IEntityTypeConfigurat
     public void Configure(EntityTypeBuilder<InvoiceMilestonePhase> builder)
     {
         builder.ToTable("InvoiceMilestonePhases");
+        builder.HasOne<Project>().WithMany().HasForeignKey(value => value.ProjectId)
+            .OnDelete(DeleteBehavior.Cascade);
         builder.HasOne<InvoiceMilestone>().WithMany().HasForeignKey(value => value.InvoiceMilestoneId)
             .OnDelete(DeleteBehavior.Cascade);
         builder.HasOne<ProjectPhase>().WithMany().HasForeignKey(value => value.PhaseId)
