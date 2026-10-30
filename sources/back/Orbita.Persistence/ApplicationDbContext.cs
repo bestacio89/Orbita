@@ -68,33 +68,27 @@ public sealed class ApplicationDbContext : DbContextBase
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
-        // Preserve Franz.Common conventions, including the global soft-delete filter.
         base.OnModelCreating(modelBuilder);
+        modelBuilder.ApplyConfigurationsFromAssembly(typeof(ApplicationDbContext).Assembly);
 
-        // DomainEntity and ProjectEntity provide code reuse, not EF inheritance.
-        // Establish independent persistence roots before applying relationships so EF
-        // conventions cannot bind configured relationships to an intermediate CLR base.
+        // DomainEntity and ProjectEntity are code-reuse bases, not persistence inheritance.
+        // Detach each concrete entity from the CLR base hierarchy so EF creates one table per
+        // domain entity instead of a shared TPH/TPT hierarchy.
         var domainEntityTypes = modelBuilder.Model.GetEntityTypes()
             .Where(entityType =>
                 typeof(DomainEntity).IsAssignableFrom(entityType.ClrType) &&
                 entityType.ClrType != typeof(DomainEntity) &&
                 entityType.ClrType != typeof(ProjectEntity))
-            .Select(entityType => entityType.ClrType)
             .ToArray();
 
-        foreach (var clrType in domainEntityTypes)
+        foreach (var entityType in domainEntityTypes)
         {
-            modelBuilder.Entity(clrType).HasBaseType((Type?)null);
+            modelBuilder.Entity(entityType.ClrType).HasBaseType((Type?)null);
         }
 
-        // These abstract types are implementation bases and must not become database
-        // entities. Their inherited scalar properties remain part of concrete entities.
         modelBuilder.Ignore<ProjectEntity>();
         modelBuilder.Ignore<DomainEntity>();
         modelBuilder.Ignore<Entity<Guid>>();
-
-        // Apply explicit mappings only after the persistence model has its final roots.
-        modelBuilder.ApplyConfigurationsFromAssembly(typeof(ApplicationDbContext).Assembly);
 
         // Every Franz-backed domain entity uses the same optimistic-concurrency contract.
         foreach (var entityType in modelBuilder.Model.GetEntityTypes())
