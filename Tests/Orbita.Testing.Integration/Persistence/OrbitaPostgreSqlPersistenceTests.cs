@@ -253,7 +253,9 @@ public sealed class OrbitaPostgreSqlPersistenceTests : IClassFixture<PostgreSqlP
         var exception = await Assert.ThrowsAsync<DbUpdateConcurrencyException>(
             () => new UserRepository(secondContext).UpdateAsync(second));
 
-        Assert.Contains("Users", exception.Message, StringComparison.Ordinal);
+        var entry = Assert.Single(exception.Entries);
+        Assert.Same(second, entry.Entity);
+        Assert.Equal(nameof(User.Version), entry.Metadata.FindProperty(nameof(User.Version))?.Name);
     }
 
     [Fact]
@@ -283,34 +285,70 @@ public sealed class OrbitaPostgreSqlPersistenceTests : IClassFixture<PostgreSqlP
         ApplicationDbContext context,
         string commandText)
     {
-        await using var command = context.Database.GetDbConnection().CreateCommand();
-        command.CommandText = commandText;
-        await using var reader = await command.ExecuteReaderAsync();
+        var connection = context.Database.GetDbConnection();
+        var openedHere = connection.State != System.Data.ConnectionState.Open;
 
-        var values = new List<string>();
-        while (await reader.ReadAsync())
+        if (openedHere)
         {
-            values.Add(reader.GetString(0));
+            await context.Database.OpenConnectionAsync();
         }
 
-        return values.ToArray();
+        try
+        {
+            await using var command = connection.CreateCommand();
+            command.CommandText = commandText;
+            await using var reader = await command.ExecuteReaderAsync();
+
+            var values = new List<string>();
+            while (await reader.ReadAsync())
+            {
+                values.Add(reader.GetString(0));
+            }
+
+            return values.ToArray();
+        }
+        finally
+        {
+            if (openedHere)
+            {
+                await context.Database.CloseConnectionAsync();
+            }
+        }
     }
 
     private static async Task<HashSet<(string First, string Second)>> ReadPairsAsync(
         ApplicationDbContext context,
         string commandText)
     {
-        await using var command = context.Database.GetDbConnection().CreateCommand();
-        command.CommandText = commandText;
-        await using var reader = await command.ExecuteReaderAsync();
+        var connection = context.Database.GetDbConnection();
+        var openedHere = connection.State != System.Data.ConnectionState.Open;
 
-        var values = new HashSet<(string First, string Second)>();
-        while (await reader.ReadAsync())
+        if (openedHere)
         {
-            values.Add((reader.GetString(0), reader.GetString(1)));
+            await context.Database.OpenConnectionAsync();
         }
 
-        return values;
+        try
+        {
+            await using var command = connection.CreateCommand();
+            command.CommandText = commandText;
+            await using var reader = await command.ExecuteReaderAsync();
+
+            var values = new HashSet<(string First, string Second)>();
+            while (await reader.ReadAsync())
+            {
+                values.Add((reader.GetString(0), reader.GetString(1)));
+            }
+
+            return values;
+        }
+        finally
+        {
+            if (openedHere)
+            {
+                await context.Database.CloseConnectionAsync();
+            }
+        }
     }
 
     private static PostgresException FindPostgresException(Exception exception)
