@@ -20,10 +20,6 @@ public sealed class ApplicationDbContext : DbContextBase
     public DbSet<User> Users => Set<User>();
     public DbSet<ProjectJournalEntry> ProjectJournalEntries => Set<ProjectJournalEntry>();
 
-    // The bookstore sample remains temporarily until its application and API surface is retired.
-    public DbSet<Book> Books => Set<Book>();
-    public DbSet<Member> Members => Set<Member>();
-
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
         base.OnModelCreating(modelBuilder);
@@ -96,17 +92,5 @@ public sealed class ApplicationDbContext : DbContextBase
             builder.Property(entry => entry.NewValue);
         });
 
-        modelBuilder.Entity<Book>(builder =>
-        {
-            builder.OwnsOne(book => book.Isbn, value => value.Property(item => item.Value).HasColumnName("Isbn").IsRequired());
-            builder.OwnsOne(book => book.Title, value => value.Property(item => item.Value).HasColumnName("Title").IsRequired());
-            builder.OwnsOne(book => book.Author, value => value.Property(item => item.Value).HasColumnName("Author").IsRequired());
-        });
-
-        modelBuilder.Entity<Member>(builder =>
-        {
-            builder.OwnsOne(member => member.Name, value => value.Property(item => item.Value).HasColumnName("Name").IsRequired());
-            builder.OwnsOne(member => member.Email, value => value.Property(item => item.Value).HasColumnName("Email").IsRequired());
-        });
     }
 }

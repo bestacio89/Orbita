@@ -11,6 +11,7 @@ using Franz.Common.Mediator.Extensions;
 using Franz.Common.Mediator.Polly;
 using Orbita.Domain.Entities;
 using Orbita.Persistence;
+using Orbita.Domain.Entities;
 using Serilog;
 
 var builder = WebApplication.CreateBuilder(args);
