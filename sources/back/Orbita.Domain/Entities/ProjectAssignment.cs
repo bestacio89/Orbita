@@ -22,6 +22,11 @@ public sealed class ProjectAssignment : ProjectEntity
             throw new ArgumentException("A user identifier is required.", nameof(userId));
         }
 
+        if (!Enum.IsDefined(role))
+        {
+            throw new ArgumentOutOfRangeException(nameof(role));
+        }
+
         ProjectId = projectId;
         UserId = userId;
         Role = role;
@@ -34,5 +39,13 @@ public sealed class ProjectAssignment : ProjectEntity
     public DateTimeOffset AssignedAt { get; private set; }
     public Guid? GrantedByUserId { get; private set; }
 
-    public void ChangeRole(ProjectRole role) => Role = role;
+    public void ChangeRole(ProjectRole role)
+    {
+        if (!Enum.IsDefined(role))
+        {
+            throw new ArgumentOutOfRangeException(nameof(role));
+        }
+
+        Role = role;
+    }
 }
