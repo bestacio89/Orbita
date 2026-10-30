@@ -67,10 +67,13 @@ jobs:
         run: |
           migration_file="$(find sources/back/Orbita.Persistence/Migrations -maxdepth 1 -type f -name '*_InitialOrbitaSchema.cs' -print -quit)"
           test -n "$migration_file"
-          if grep -E 'DropTable|DropColumn|RenameTable|RenameColumn' "$migration_file"; then
-            echo "A clean initial migration must not drop or rename historical schema objects."
+          up_file="$(mktemp)"
+          awk '/protected override void Up/{in_up=1} /protected override void Down/{in_up=0} in_up{print}' "$migration_file" > "$up_file"
+          if grep -E 'DropTable|DropColumn|RenameTable|RenameColumn' "$up_file"; then
+            echo "A clean initial migration must not drop or rename historical schema objects in Up()."
             exit 1
           fi
+          rm "$up_file"
           test "$(find sources/back/Orbita.Persistence/Migrations -maxdepth 1 -type f -name '*.cs' | wc -l)" -eq 3
 
       - name: Verify EF model snapshot
