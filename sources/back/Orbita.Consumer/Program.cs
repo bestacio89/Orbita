@@ -22,7 +22,7 @@ public static class Program
 
         // Register the domain and application handlers used by inbound messages.
         builder.Services.AddBusiness(typeof(Book).Assembly);
-        builder.Services.AddOrbitaMediator(new[] { typeof(ApplicationServiceCollectionExtensions).Assembly });
+        builder.Services.AddFranzMediator(new[] { typeof(ApplicationServiceCollectionExtensions).Assembly });
 
         // Provider-neutral database wiring; select the engine through configuration.
         builder.Services.AddRelationalDatabase<ApplicationDbContext>(environment, configuration);
