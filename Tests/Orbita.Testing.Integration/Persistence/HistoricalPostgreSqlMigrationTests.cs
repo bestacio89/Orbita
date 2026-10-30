@@ -149,4 +149,76 @@ public sealed class HistoricalPostgreSqlMigrationTests
 
         Assert.Equal(PostgresErrorCodes.ForeignKeyViolation, parentDelete.SqlState);
     }
+    [Fact]
+    public async Task Historical_task_updates_are_preserved_when_the_second_migration_consolidates_comments()
+    {
+        await using var postgres = new PostgreSqlBuilder("postgres:18").Build();
+        await postgres.StartAsync();
+
+        using var services = new ServiceCollection().BuildServiceProvider();
+        var options = new DbContextOptionsBuilder<ApplicationDbContext>()
+            .UseNpgsql(postgres.GetConnectionString())
+            .Options;
+
+        await using var context = new ApplicationDbContext(options, new FranzDispatcher(services));
+        var migrator = context.GetService<IMigrator>();
+
+        await migrator.MigrateAsync("20261019121926_Postgresqlmigration");
+
+        var projectId = Guid.NewGuid();
+        var taskId = Guid.NewGuid();
+        var updateId = Guid.NewGuid();
+        var occurredAt = DateTime.UtcNow;
+
+        await context.Database.ExecuteSqlInterpolatedAsync($"""
+            INSERT INTO "Projets"
+                ("Id", "Nom", "Client", "Statut", "Remise", "RemiseSaisie", "Origine",
+                 "CreeLe", "Parametres_Regroupement", "Parametres_NombreMois", "Version")
+            VALUES
+                ({projectId}, {"Migration test"}, {"Orbita"}, {"Actif"}, {0m}, {false},
+                 {"Manuel"}, {DateTimeOffset.UtcNow}, {"Mois"}, {12}, {1})
+            """);
+
+        await context.Database.ExecuteSqlInterpolatedAsync($"""
+            INSERT INTO "Taches"
+                ("Id", "Repere", "Position", "Origine", "CodeAxeTsp", "LotTsp", "PhaseTsp",
+                 "EtapeTsp", "LibelleTsp", "Hypothese", "MarqueurLivrable", "EstSection",
+                 "ColonneLivrable", "TypeSaisi", "Commentaire", "Version", "ProjetId")
+            VALUES
+                ({taskId}, {"TASK-01"}, {1}, {"Tsp"}, {"AX-01"}, {"LOT-01"}, {"PHASE-01"},
+                 {"STEP-01"}, {"Historical task"}, {""}, {""}, {false},
+                 {false}, {false}, {""}, {1}, {projectId})
+            """);
+
+        await context.Database.ExecuteSqlInterpolatedAsync($"""
+            INSERT INTO "MisesAJourTache"
+                ("Id", "TacheId", "Le", "Texte", "Version", "ProjetId")
+            VALUES
+                ({updateId}, {taskId}, {occurredAt}, {"Historical task update"}, {1}, {projectId})
+            """);
+
+        await migrator.MigrateAsync(HistoricalBaseline);
+
+        var preservedUpdates = await context.Database.SqlQuery<int>($"""
+            SELECT COUNT(*) AS "Value"
+            FROM "Commentaires"
+            WHERE "Id" = {updateId}
+              AND "CibleType" = {"Tache"}
+              AND "CibleId" = {taskId}
+              AND "Texte" = {"Historical task update"}
+              AND "ProjetId" = {projectId}
+            """).SingleAsync();
+
+        Assert.Equal(1, preservedUpdates);
+
+        var legacyTableCount = await context.Database.SqlQuery<int>($"""
+            SELECT COUNT(*) AS "Value"
+            FROM information_schema.tables
+            WHERE table_schema = 'public'
+              AND table_name = 'MisesAJourTache'
+            """).SingleAsync();
+
+        Assert.Equal(0, legacyTableCount);
+    }
+
 }
