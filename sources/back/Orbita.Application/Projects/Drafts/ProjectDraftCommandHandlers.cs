@@ -24,7 +24,7 @@ public sealed class CreateProjectDraftCommandHandler(
     {
         if (!GlobalRoleCapabilityMatrix.HasCapability(currentUser.GlobalRoles, CapabilityNames.DraftWriteOwn))
         {
-            return "The current identity cannot create project drafts.".ToFailure<Guid>();
+            return new Error("Forbidden", "The current identity cannot create project drafts.").ToFailure<Guid>();
         }
 
         var actor = await actorResolver.GetOrProvisionAsync(cancellationToken);
@@ -55,7 +55,7 @@ public sealed class CreateProjectDraftCommandHandler(
         }
         catch (BusinessRuleException exception)
         {
-            return exception.Message.ToFailure<Guid>();
+            return Error.Validation("Draft", exception.Message).ToFailure<Guid>();
         }
     }
 }
@@ -71,7 +71,7 @@ public sealed class UpdateProjectDraftContentCommandHandler(
         var actor = await actorResolver.GetOrProvisionAsync(cancellationToken);
         if (actor is null)
         {
-            return "A validated Entra identity is required.".ToFailure<Result>();
+            return new Error("Unauthorized", "A validated Entra identity is required.").ToFailure<Result>();
         }
 
         var draft = await drafts.GetByIdAsync(request.DraftId, cancellationToken);
@@ -82,7 +82,7 @@ public sealed class UpdateProjectDraftContentCommandHandler(
 
         if (draft.Version != request.ExpectedVersion)
         {
-            return "The draft has changed. Reload it before applying this update.".ToFailure<Result>();
+            return new Error("Conflict", "The draft has changed. Reload it before applying this update.").ToFailure<Result>();
         }
 
         try
@@ -101,7 +101,7 @@ public sealed class UpdateProjectDraftContentCommandHandler(
         }
         catch (BusinessRuleException exception)
         {
-            return exception.Message.ToFailure<Result>();
+            return Error.Validation("Draft", exception.Message).ToFailure<Result>();
         }
     }
 }
@@ -118,7 +118,7 @@ public sealed class InviteDraftCoAuthorCommandHandler(
         var actor = await actorResolver.GetOrProvisionAsync(cancellationToken);
         if (actor is null)
         {
-            return "A validated Entra identity is required.".ToFailure<Result>();
+            return new Error("Unauthorized", "A validated Entra identity is required.").ToFailure<Result>();
         }
 
         var draft = await drafts.GetByIdAsync(request.DraftId, cancellationToken);
@@ -129,17 +129,17 @@ public sealed class InviteDraftCoAuthorCommandHandler(
 
         if (draft.AuthorUserId != actor.Id)
         {
-            return "Only the draft author can manage co-author access.".ToFailure<Result>();
+            return new Error("Forbidden", "Only the draft author can manage co-author access.").ToFailure<Result>();
         }
 
         if (draft.Version != request.ExpectedVersion)
         {
-            return "The draft has changed. Reload it before applying this update.".ToFailure<Result>();
+            return new Error("Conflict", "The draft has changed. Reload it before applying this update.").ToFailure<Result>();
         }
 
         if (request.CoAuthorUserId == Guid.Empty || request.CoAuthorUserId == actor.Id)
         {
-            return "The co-author must be a different, valid user.".ToFailure<Result>();
+            return Error.Validation("CoAuthorUserId", "The co-author must be a different, valid user.").ToFailure<Result>();
         }
 
         var coAuthor = await users.GetByIdAsync(request.CoAuthorUserId, cancellationToken);
@@ -156,7 +156,7 @@ public sealed class InviteDraftCoAuthorCommandHandler(
         }
         catch (BusinessRuleException exception)
         {
-            return exception.Message.ToFailure<Result>();
+            return Error.Validation("Draft", exception.Message).ToFailure<Result>();
         }
     }
 }
@@ -172,7 +172,7 @@ public sealed class RemoveDraftCoAuthorCommandHandler(
         var actor = await actorResolver.GetOrProvisionAsync(cancellationToken);
         if (actor is null)
         {
-            return "A validated Entra identity is required.".ToFailure<Result>();
+            return new Error("Unauthorized", "A validated Entra identity is required.").ToFailure<Result>();
         }
 
         var draft = await drafts.GetByIdAsync(request.DraftId, cancellationToken);
@@ -183,12 +183,12 @@ public sealed class RemoveDraftCoAuthorCommandHandler(
 
         if (draft.AuthorUserId != actor.Id)
         {
-            return "Only the draft author can manage co-author access.".ToFailure<Result>();
+            return new Error("Forbidden", "Only the draft author can manage co-author access.").ToFailure<Result>();
         }
 
         if (draft.Version != request.ExpectedVersion)
         {
-            return "The draft has changed. Reload it before applying this update.".ToFailure<Result>();
+            return new Error("Conflict", "The draft has changed. Reload it before applying this update.").ToFailure<Result>();
         }
 
         try
@@ -199,7 +199,7 @@ public sealed class RemoveDraftCoAuthorCommandHandler(
         }
         catch (BusinessRuleException exception)
         {
-            return exception.Message.ToFailure<Result>();
+            return Error.Validation("Draft", exception.Message).ToFailure<Result>();
         }
     }
 }
@@ -214,7 +214,7 @@ public sealed class DeleteProjectDraftCommandHandler(
         var actor = await actorResolver.GetOrProvisionAsync(cancellationToken);
         if (actor is null)
         {
-            return "A validated Entra identity is required.".ToFailure<Result>();
+            return new Error("Unauthorized", "A validated Entra identity is required.").ToFailure<Result>();
         }
 
         var draft = await drafts.GetByIdAsync(request.DraftId, cancellationToken);
@@ -225,12 +225,12 @@ public sealed class DeleteProjectDraftCommandHandler(
 
         if (draft.AuthorUserId != actor.Id)
         {
-            return "Only the draft author can delete this draft.".ToFailure<Result>();
+            return new Error("Forbidden", "Only the draft author can delete this draft.").ToFailure<Result>();
         }
 
         if (draft.Version != request.ExpectedVersion)
         {
-            return "The draft has changed. Reload it before applying this update.".ToFailure<Result>();
+            return new Error("Conflict", "The draft has changed. Reload it before applying this update.").ToFailure<Result>();
         }
 
         await drafts.DeleteAsync(draft, cancellationToken);

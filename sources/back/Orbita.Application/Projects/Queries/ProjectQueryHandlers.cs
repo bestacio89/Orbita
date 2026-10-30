@@ -48,13 +48,13 @@ public sealed class ListProjectsQueryHandler(
     {
         if (request.Page < 1 || request.PageSize is < 1 or > 100)
         {
-            return "Page must be positive and page size must be between 1 and 100.".ToFailure<IReadOnlyCollection<ProjectSummaryDto>>();
+            return Error.Validation("Pagination", "Page must be positive and page size must be between 1 and 100.").ToFailure<IReadOnlyCollection<ProjectSummaryDto>>();
         }
 
         var actor = await actorResolver.GetOrProvisionAsync(cancellationToken);
         if (actor is null)
         {
-            return "A validated Entra identity is required.".ToFailure<IReadOnlyCollection<ProjectSummaryDto>>();
+            return new Error("Unauthorized", "A validated Entra identity is required.").ToFailure<IReadOnlyCollection<ProjectSummaryDto>>();
         }
 
         var canReadAll = GlobalRoleCapabilityMatrix.HasCapability(currentUser.GlobalRoles, CapabilityNames.ProjectRead);

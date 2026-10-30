@@ -23,7 +23,7 @@ public sealed class ListProjectDraftsQueryHandler(
         var actor = await actorResolver.GetOrProvisionAsync(cancellationToken);
         if (actor is null)
         {
-            return "A validated Entra identity is required.".ToFailure<IReadOnlyCollection<ProjectDraftSummaryDto>>();
+            return new Error("Unauthorized", "A validated Entra identity is required.").ToFailure<IReadOnlyCollection<ProjectDraftSummaryDto>>();
         }
 
         var accessible = await drafts.GetAccessibleByUserAsync(actor.Id, cancellationToken);
@@ -65,7 +65,7 @@ public sealed class GetProjectDraftByIdQueryHandler(
         var actor = await actorResolver.GetOrProvisionAsync(cancellationToken);
         if (actor is null)
         {
-            return "A validated Entra identity is required.".ToFailure<ProjectDraftDto>();
+            return new Error("Unauthorized", "A validated Entra identity is required.").ToFailure<ProjectDraftDto>();
         }
 
         var draft = await drafts.GetByIdAsync(request.DraftId, cancellationToken);

@@ -1,5 +1,6 @@
 #nullable enable
 
+using Franz.Common.Mediator.Errors;
 using Franz.Common.Mediator.Handlers;
 using Franz.Common.Mediator.Results;
 using Orbita.Application.Identity;
@@ -23,7 +24,7 @@ public sealed class GetCurrentUserQueryHandler(
         var user = await actorResolver.GetOrProvisionAsync(cancellationToken);
         if (user is null)
         {
-            return "A validated Entra identity is required.".ToFailure<CurrentUserDto>();
+            return new Error("Unauthorized", "A validated Entra identity is required.").ToFailure<CurrentUserDto>();
         }
 
         user.RecordLogin(timeProvider.GetUtcNow());
