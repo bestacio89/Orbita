@@ -23,9 +23,27 @@ Do not hand-author or mechanically trim EF migration operations. Generate the mi
 
 ## Current status
 
-The migration chain currently present in the branch is not compliant with this decision. The file 20261030194059_InitialOrbitaSchema was generated against the historical Magellan snapshot and includes destructive drops and legacy renames. It is not a clean Orbita baseline and must be replaced.
+Validated on 2026-10-30.
 
-This document does not mark the migration reset as complete. The replacement must be generated from the actual checked-out project, not approximated through text edits.
+The historical Magellan migration classes, designer files, and snapshot have been removed from the active Orbita migration assembly. The current branch contains exactly these three migration source files:
+
+- `20261030204648_InitialOrbitaSchema.cs`
+- `20261030204648_InitialOrbitaSchema.Designer.cs`
+- `ApplicationDbContextModelSnapshot.cs`
+
+The migration was generated with EF Core 10.0.14 from the checked-out `ApplicationDbContext` model after clearing build outputs and removing the previous migration sources. The migration's `Up()` method contains no `DropTable`, `DropColumn`, `RenameTable`, or `RenameColumn` operations. The `Down()` method contains the expected reverse operations for rolling back the initial schema.
+
+Validation completed successfully:
+
+- EF tooling reported no migrations before the new baseline was generated.
+- `dotnet ef migrations has-pending-model-changes` passed after generation.
+- Release build passed.
+- Unit tests passed.
+- PostgreSQL 18 Testcontainers integration tests passed, including migration application to an empty database and schema verification.
+- Architecture tests passed.
+- Architectural tribunal tests passed.
+
+The generated baseline is now the authoritative Orbita schema lineage. This does not perform or imply a data-preserving import from Magellan. Any such import remains a separate workflow with its own source contract, mapping, validation, and idempotency guarantees.
 
 ## Generation procedure
 
@@ -64,4 +82,4 @@ Any future Magellan data import must be isolated from the Orbita migration assem
 - Do not use SQLite or EF InMemory to claim PostgreSQL correctness.
 - Do not preserve legacy schema compatibility in Orbita's migration history.
 - Do not silently coerce unknown source values during a future import.
-- Do not claim the baseline is complete until the clean migration has been generated and the PostgreSQL integration suite passes.
+- Keep the clean baseline isolated from historical Magellan migration lineage; validate future schema changes through generated migrations and PostgreSQL integration tests.
