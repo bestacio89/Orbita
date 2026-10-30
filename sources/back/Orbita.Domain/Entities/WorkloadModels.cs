@@ -161,4 +161,3 @@ public sealed class ScopeChange : ProjectEntity
     public decimal PersonDays { get; set; }
     public Guid? DecisionId { get; set; }
 }
-\n
