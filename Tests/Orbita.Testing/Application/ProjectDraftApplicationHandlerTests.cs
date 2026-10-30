@@ -57,7 +57,7 @@ public sealed class ProjectDraftApplicationHandlerTests
             Client = "Client",
             ProjectName = "Original"
         }), harness.Actor.Id, Now);
-        draft.InviteCoAuthor(harness.Actor.Id, coAuthor.Id, Now.AddMinutes(1));
+        draft.InviteCoAuthor(harness.Actor.Id, coAuthor.Id, Now);
         draft.Version = 2;
         harness.Drafts.Seed(draft);
         harness.SwitchIdentity(coAuthor);
@@ -163,7 +163,7 @@ public sealed class ProjectDraftApplicationHandlerTests
         var coAuthor = User.Provision(Guid.NewGuid(), Guid.NewGuid(), "Co", "Author", "co@example.test", Now);
         harness.Users.Seed(coAuthor);
         var draft = ProjectDraft.Create("Client", "Project", null, DraftOrigin.Blank, Serialize(new TspProjectSheet()), harness.Actor.Id, Now);
-        draft.InviteCoAuthor(harness.Actor.Id, coAuthor.Id, Now.AddMinutes(1));
+        draft.InviteCoAuthor(harness.Actor.Id, coAuthor.Id, Now);
         draft.Version = 1;
         harness.Drafts.Seed(draft);
 
@@ -219,7 +219,7 @@ public sealed class ProjectDraftApplicationHandlerTests
 
         public void SwitchIdentity(User user)
         {
-            _context.SetIdentity(user.TenantId, user.ObjectId);
+            _context.SetIdentity(user.TenantId, user.ObjectId, user.FirstName, user.LastName, user.Email);
             Actor = user;
         }
     }
@@ -230,16 +230,19 @@ public sealed class ProjectDraftApplicationHandlerTests
         public Guid? UserId => null;
         public Guid? TenantId { get; private set; } = Guid.NewGuid();
         public Guid? ObjectId { get; private set; } = Guid.NewGuid();
-        public string? FirstName => null;
-        public string? LastName => null;
-        public string? DisplayName => null;
-        public string? Email => null;
+        public string? FirstName { get; private set; }
+        public string? LastName { get; private set; }
+        public string? DisplayName => string.Join(' ', new[] { FirstName, LastName }.Where(value => !string.IsNullOrWhiteSpace(value)));
+        public string? Email { get; private set; }
         public IReadOnlyCollection<string> GlobalRoles => roles;
 
-        public void SetIdentity(Guid tenantId, Guid objectId)
+        public void SetIdentity(Guid tenantId, Guid objectId, string? firstName, string? lastName, string? email)
         {
             TenantId = tenantId;
             ObjectId = objectId;
+            FirstName = firstName;
+            LastName = lastName;
+            Email = email;
         }
     }
 
