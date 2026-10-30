@@ -17,42 +17,62 @@ namespace Orbita.Persistence.Migrations
         {
 #pragma warning disable 612, 618
             modelBuilder
-                .HasAnnotation("ProductVersion", "10.0.10")
+                .HasAnnotation("ProductVersion", "10.0.14")
                 .HasAnnotation("Relational:MaxIdentifierLength", 63);
 
             NpgsqlModelBuilderExtensions.UseIdentityByDefaultColumns(modelBuilder);
 
-            modelBuilder.Entity("PilotageForfaits.Domain.Entites.Absence", b =>
+            modelBuilder.Entity("Orbita.Domain.Entities.Absence", b =>
                 {
                     b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("uuid");
 
-                    b.Property<DateOnly>("Jour")
+                    b.Property<string>("CreatedBy")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<DateOnly>("Date")
                         .HasColumnType("date");
 
-                    b.Property<string>("Moment")
-                        .IsRequired()
-                        .HasMaxLength(30)
-                        .HasColumnType("character varying(30)");
-
-                    b.Property<string>("PersonneCle")
-                        .IsRequired()
-                        .HasMaxLength(200)
-                        .HasColumnType("character varying(200)");
-
-                    b.Property<string>("PersonneNom")
-                        .IsRequired()
-                        .HasMaxLength(200)
-                        .HasColumnType("character varying(200)");
-
-                    b.Property<DateTimeOffset>("SaisieLe")
+                    b.Property<DateTimeOffset>("DateCreated")
                         .HasColumnType("timestamp with time zone");
 
-                    b.Property<Guid?>("SaisieParId")
+                    b.Property<DateTimeOffset>("DateDeleted")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<string>("DeletedBy")
+                        .HasColumnType("text");
+
+                    b.Property<bool>("IsDeleted")
+                        .HasColumnType("boolean");
+
+                    b.Property<string>("LastModifiedBy")
+                        .HasColumnType("text");
+
+                    b.Property<DateTimeOffset>("LastModifiedDate")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<int>("Period")
+                        .HasColumnType("integer");
+
+                    b.Property<string>("PersonKey")
+                        .IsRequired()
+                        .HasMaxLength(200)
+                        .HasColumnType("character varying(200)");
+
+                    b.Property<string>("PersonName")
+                        .IsRequired()
+                        .HasMaxLength(200)
+                        .HasColumnType("character varying(200)");
+
+                    b.Property<DateTimeOffset>("RecordedAt")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<Guid?>("RecordedByUserId")
                         .HasColumnType("uuid");
 
-                    b.Property<Guid?>("UtilisateurId")
+                    b.Property<Guid?>("UserId")
                         .HasColumnType("uuid");
 
                     b.Property<int>("Version")
@@ -61,876 +81,78 @@ namespace Orbita.Persistence.Migrations
 
                     b.HasKey("Id");
 
-                    b.HasIndex("SaisieParId");
+                    b.HasIndex("RecordedByUserId");
 
-                    b.HasIndex("UtilisateurId");
+                    b.HasIndex("UserId");
 
-                    b.HasIndex("PersonneCle", "Jour")
+                    b.HasIndex("PersonKey", "Date")
                         .IsUnique();
 
                     b.ToTable("Absences", (string)null);
                 });
 
-            modelBuilder.Entity("PilotageForfaits.Domain.Entites.AchatReel", b =>
+            modelBuilder.Entity("Orbita.Domain.Entities.ActualExpense", b =>
                 {
                     b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("uuid");
 
-                    b.Property<string>("Commentaire")
-                        .IsRequired()
+                    b.Property<decimal>("Amount")
+                        .HasColumnType("numeric");
+
+                    b.Property<int>("Category")
+                        .HasColumnType("integer");
+
+                    b.Property<string>("Collaborator")
+                        .HasMaxLength(256)
+                        .HasColumnType("character varying(256)");
+
+                    b.Property<string>("Comment")
                         .HasMaxLength(4000)
                         .HasColumnType("character varying(4000)");
 
-                    b.Property<decimal>("CoutUnitaire")
-                        .HasPrecision(18, 6)
-                        .HasColumnType("numeric(18,6)");
-
-                    b.Property<DateTimeOffset>("CreeLe")
+                    b.Property<DateTimeOffset>("CreatedAt")
                         .HasColumnType("timestamp with time zone");
 
-                    b.Property<Guid?>("CreeParId")
-                        .HasColumnType("uuid");
-
-                    b.Property<DateOnly>("Date")
-                        .HasColumnType("date");
-
-                    b.Property<string>("Designation")
-                        .IsRequired()
-                        .HasMaxLength(400)
-                        .HasColumnType("character varying(400)");
-
-                    b.Property<string>("Fournisseur")
-                        .HasMaxLength(400)
-                        .HasColumnType("character varying(400)");
-
-                    b.Property<Guid?>("LigneBudgetAchatId")
-                        .HasColumnType("uuid");
-
-                    b.Property<Guid>("ProjetId")
-                        .HasColumnType("uuid");
-
-                    b.Property<decimal>("Quantite")
-                        .HasPrecision(18, 6)
-                        .HasColumnType("numeric(18,6)");
-
-                    b.Property<decimal>("Refacture")
-                        .HasPrecision(18, 6)
-                        .HasColumnType("numeric(18,6)");
-
-                    b.Property<string>("Statut")
-                        .IsRequired()
-                        .HasMaxLength(30)
-                        .HasColumnType("character varying(30)");
-
-                    b.Property<int>("Version")
-                        .IsConcurrencyToken()
-                        .HasColumnType("integer");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("CreeParId");
-
-                    b.HasIndex("LigneBudgetAchatId");
-
-                    b.HasIndex("ProjetId");
-
-                    b.ToTable("AchatsReels", null, t =>
-                        {
-                            t.HasCheckConstraint("CK_AchatsReels_Positifs", "\"Quantite\" > 0 AND \"CoutUnitaire\" >= 0 AND \"Refacture\" >= 0");
-                        });
-                });
-
-            modelBuilder.Entity("PilotageForfaits.Domain.Entites.ActionProjet", b =>
-                {
-                    b.Property<Guid>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("uuid");
-
-                    b.Property<string>("Commentaire")
-                        .IsRequired()
-                        .HasMaxLength(4000)
-                        .HasColumnType("character varying(4000)");
-
-                    b.Property<DateOnly>("CreeeLe")
-                        .HasColumnType("date");
-
-                    b.Property<Guid?>("CreeeParId")
-                        .HasColumnType("uuid");
-
-                    b.Property<DateOnly?>("DateCible")
-                        .HasColumnType("date");
-
-                    b.Property<DateOnly?>("FaiteLe")
-                        .HasColumnType("date");
-
-                    b.Property<string>("Instance")
-                        .HasMaxLength(400)
-                        .HasColumnType("character varying(400)");
-
-                    b.Property<string>("Libelle")
-                        .IsRequired()
-                        .HasMaxLength(1000)
-                        .HasColumnType("character varying(1000)");
-
-                    b.Property<string>("Porteur")
-                        .IsRequired()
-                        .HasMaxLength(400)
-                        .HasColumnType("character varying(400)");
-
-                    b.Property<Guid?>("PorteurId")
-                        .HasColumnType("uuid");
-
-                    b.Property<decimal>("Progression")
-                        .HasPrecision(18, 6)
-                        .HasColumnType("numeric(18,6)");
-
-                    b.Property<Guid>("ProjetId")
-                        .HasColumnType("uuid");
-
-                    b.Property<string>("Reference")
-                        .IsRequired()
-                        .HasMaxLength(20)
-                        .HasColumnType("character varying(20)");
-
-                    b.Property<string>("Statut")
-                        .IsRequired()
-                        .HasMaxLength(30)
-                        .HasColumnType("character varying(30)");
-
-                    b.Property<Guid?>("TacheId")
-                        .HasColumnType("uuid");
-
-                    b.Property<int>("Version")
-                        .IsConcurrencyToken()
-                        .HasColumnType("integer");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("CreeeParId");
-
-                    b.HasIndex("PorteurId");
-
-                    b.HasIndex("ProjetId");
-
-                    b.HasIndex("TacheId");
-
-                    b.HasIndex("ProjetId", "Reference")
-                        .IsUnique();
-
-                    b.ToTable("Actions", (string)null);
-                });
-
-            modelBuilder.Entity("PilotageForfaits.Domain.Entites.Atelier", b =>
-                {
-                    b.Property<Guid>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("uuid");
-
-                    b.Property<DateOnly?>("DatePlanifiee")
-                        .HasColumnType("date");
-
-                    b.Property<DateOnly?>("EnvoyeeLe")
-                        .HasColumnType("date");
-
-                    b.Property<TimeOnly?>("HeureDebut")
-                        .HasColumnType("time without time zone");
-
-                    b.Property<TimeOnly?>("HeureFin")
-                        .HasColumnType("time without time zone");
-
-                    b.Property<bool>("InvitationEnvoyee")
-                        .HasColumnType("boolean");
-
-                    b.Property<Guid>("ProjetId")
-                        .HasColumnType("uuid");
-
-                    b.Property<Guid>("TacheId")
-                        .HasColumnType("uuid");
-
-                    b.Property<int>("Version")
-                        .IsConcurrencyToken()
-                        .HasColumnType("integer");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("ProjetId");
-
-                    b.HasIndex("TacheId")
-                        .IsUnique();
-
-                    b.ToTable("Ateliers", (string)null);
-                });
-
-            modelBuilder.Entity("PilotageForfaits.Domain.Entites.Axe", b =>
-                {
-                    b.Property<Guid>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("uuid");
-
-                    b.Property<string>("Code")
-                        .IsRequired()
-                        .HasMaxLength(50)
-                        .HasColumnType("character varying(50)");
-
-                    b.Property<DateOnly?>("DateLimite")
-                        .HasColumnType("date");
-
-                    b.Property<string>("Nom")
-                        .IsRequired()
-                        .HasMaxLength(400)
-                        .HasColumnType("character varying(400)");
-
-                    b.Property<int>("Ordre")
-                        .HasColumnType("integer");
-
-                    b.Property<Guid>("ProjetId")
-                        .HasColumnType("uuid");
-
-                    b.Property<int>("Version")
-                        .IsConcurrencyToken()
-                        .HasColumnType("integer");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("ProjetId");
-
-                    b.HasIndex("ProjetId", "Code")
-                        .IsUnique();
-
-                    b.ToTable("Axes", (string)null);
-                });
-
-            modelBuilder.Entity("PilotageForfaits.Domain.Entites.Lot", b =>
-                {
-                    b.Property<Guid>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("uuid");
-
-                    b.Property<string>("Code")
-                        .IsRequired()
-                        .HasMaxLength(50)
-                        .HasColumnType("character varying(50)");
-
-                    b.Property<string>("Nom")
-                        .IsRequired()
-                        .HasMaxLength(400)
-                        .HasColumnType("character varying(400)");
-
-                    b.Property<Guid>("ProjetId")
-                        .HasColumnType("uuid");
-
-                    b.Property<int>("Version")
-                        .IsConcurrencyToken()
-                        .HasColumnType("integer");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("ProjetId");
-
-                    b.HasIndex("ProjetId", "Code")
-                        .IsUnique();
-
-                    b.ToTable("Lots", (string)null);
-                });
-
-            modelBuilder.Entity("PilotageForfaits.Domain.Entites.BrouillonProjet", b =>
-                {
-                    b.Property<Guid>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("uuid");
-
-                    b.Property<string>("Client")
-                        .IsRequired()
-                        .HasMaxLength(400)
-                        .HasColumnType("character varying(400)");
-
-                    b.Property<Guid?>("CoRedacteurId")
-                        .HasColumnType("uuid");
-
-                    b.Property<string>("Contenu")
+                    b.Property<string>("CreatedBy")
                         .IsRequired()
                         .HasColumnType("text");
 
-                    b.Property<DateTimeOffset>("CreeLe")
-                        .HasColumnType("timestamp with time zone");
-
-                    b.Property<Guid>("CreeParId")
-                        .HasColumnType("uuid");
-
-                    b.Property<DateTimeOffset>("ModifieLe")
-                        .HasColumnType("timestamp with time zone");
-
-                    b.Property<Guid?>("ModifieParId")
-                        .HasColumnType("uuid");
-
-                    b.Property<string>("Nom")
-                        .IsRequired()
-                        .HasMaxLength(400)
-                        .HasColumnType("character varying(400)");
-
-                    b.Property<string>("Origine")
-                        .IsRequired()
-                        .HasMaxLength(30)
-                        .HasColumnType("character varying(30)");
-
-                    b.Property<string>("Reference")
-                        .HasMaxLength(400)
-                        .HasColumnType("character varying(400)");
-
-                    b.Property<string>("Source")
-                        .HasMaxLength(400)
-                        .HasColumnType("character varying(400)");
-
-                    b.Property<int>("Version")
-                        .IsConcurrencyToken()
-                        .HasColumnType("integer");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("CoRedacteurId");
-
-                    b.HasIndex("CreeParId");
-
-                    b.HasIndex("ModifieParId");
-
-                    b.ToTable("BrouillonsProjet", (string)null);
-                });
-
-            modelBuilder.Entity("PilotageForfaits.Domain.Entites.ChampFiche", b =>
-                {
-                    b.Property<Guid>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("uuid");
-
-                    b.Property<string>("Cle")
-                        .HasMaxLength(50)
-                        .HasColumnType("character varying(50)");
-
-                    b.Property<string>("Libelle")
-                        .IsRequired()
-                        .HasMaxLength(400)
-                        .HasColumnType("character varying(400)");
-
-                    b.Property<int>("Ordre")
-                        .HasColumnType("integer");
-
-                    b.Property<Guid>("ProjetId")
-                        .HasColumnType("uuid");
-
-                    b.Property<string>("Valeur")
-                        .IsRequired()
-                        .HasMaxLength(2000)
-                        .HasColumnType("character varying(2000)");
-
-                    b.Property<int>("Version")
-                        .IsConcurrencyToken()
-                        .HasColumnType("integer");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("ProjetId");
-
-                    b.ToTable("ChampsFiche", (string)null);
-                });
-
-            modelBuilder.Entity("PilotageForfaits.Domain.Entites.ChargeTache", b =>
-                {
-                    b.Property<Guid>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("uuid");
-
-                    b.Property<DateTimeOffset?>("AjouteeLe")
-                        .HasColumnType("timestamp with time zone");
-
-                    b.Property<Guid?>("AjouteeParId")
-                        .HasColumnType("uuid");
-
-                    b.Property<decimal>("ChargeAjoutee")
-                        .HasPrecision(18, 6)
-                        .HasColumnType("numeric(18,6)");
-
-                    b.Property<decimal>("ChargeVendue")
-                        .HasPrecision(18, 6)
-                        .HasColumnType("numeric(18,6)");
-
-                    b.Property<string>("MotifAjout")
-                        .HasMaxLength(2000)
-                        .HasColumnType("character varying(2000)");
-
-                    b.Property<Guid>("ProfilProjetId")
-                        .HasColumnType("uuid");
-
-                    b.Property<Guid>("ProjetId")
-                        .HasColumnType("uuid");
-
-                    b.Property<Guid>("TacheId")
-                        .HasColumnType("uuid");
-
-                    b.Property<int>("Version")
-                        .IsConcurrencyToken()
-                        .HasColumnType("integer");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("AjouteeParId");
-
-                    b.HasIndex("ProfilProjetId");
-
-                    b.HasIndex("ProjetId");
-
-                    b.HasIndex("TacheId", "ProfilProjetId")
-                        .IsUnique();
-
-                    b.ToTable("ChargesTache", null, t =>
-                        {
-                            t.HasCheckConstraint("CK_ChargesTache_Positives", "\"ChargeVendue\" >= 0 AND \"ChargeAjoutee\" >= 0");
-                        });
-                });
-
-            modelBuilder.Entity("PilotageForfaits.Domain.Entites.Consomme", b =>
-                {
-                    b.Property<Guid>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("uuid");
-
-                    b.Property<DateOnly>("Jour")
-                        .HasColumnType("date");
-
-                    b.Property<decimal>("JoursHomme")
-                        .HasPrecision(18, 6)
-                        .HasColumnType("numeric(18,6)");
-
-                    b.Property<Guid>("ProfilProjetId")
-                        .HasColumnType("uuid");
-
-                    b.Property<Guid>("ProjetId")
-                        .HasColumnType("uuid");
-
-                    b.Property<DateTimeOffset>("SaisiLe")
-                        .HasColumnType("timestamp with time zone");
-
-                    b.Property<Guid?>("SaisiParId")
-                        .HasColumnType("uuid");
-
-                    b.Property<Guid>("TacheId")
-                        .HasColumnType("uuid");
-
-                    b.Property<int>("Version")
-                        .IsConcurrencyToken()
-                        .HasColumnType("integer");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("ProjetId");
-
-                    b.HasIndex("SaisiParId");
-
-                    b.HasIndex("ProfilProjetId", "Jour");
-
-                    b.HasIndex("TacheId", "ProfilProjetId", "Jour")
-                        .IsUnique();
-
-                    b.ToTable("Consommes", null, t =>
-                        {
-                            t.HasCheckConstraint("CK_Consommes_Positif", "\"JoursHomme\" > 0");
-                        });
-                });
-
-            modelBuilder.Entity("PilotageForfaits.Domain.Entites.DatesPlanReference", b =>
-                {
-                    b.Property<Guid>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("uuid");
-
-                    b.Property<string>("Cle")
-                        .IsRequired()
-                        .HasMaxLength(200)
-                        .HasColumnType("character varying(200)");
-
-                    b.Property<DateOnly?>("Debut")
-                        .HasColumnType("date");
-
-                    b.Property<DateOnly?>("Fin")
-                        .HasColumnType("date");
-
-                    b.Property<Guid>("PlanReferenceId")
-                        .HasColumnType("uuid");
-
-                    b.Property<Guid>("ProjetId")
-                        .HasColumnType("uuid");
-
-                    b.Property<int>("Version")
-                        .IsConcurrencyToken()
-                        .HasColumnType("integer");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("ProjetId");
-
-                    b.HasIndex("PlanReferenceId", "Cle")
-                        .IsUnique();
-
-                    b.ToTable("DatesPlanReference", (string)null);
-                });
-
-            modelBuilder.Entity("PilotageForfaits.Domain.Entites.DatesPlanning", b =>
-                {
-                    b.Property<Guid>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("uuid");
-
-                    b.Property<string>("Cle")
-                        .IsRequired()
-                        .HasMaxLength(200)
-                        .HasColumnType("character varying(200)");
-
-                    b.Property<DateOnly?>("Debut")
-                        .HasColumnType("date");
-
-                    b.Property<DateOnly?>("Fin")
-                        .HasColumnType("date");
-
-                    b.Property<string>("Nom")
-                        .HasMaxLength(200)
-                        .HasColumnType("character varying(200)");
-
-                    b.Property<Guid>("ProjetId")
-                        .HasColumnType("uuid");
-
-                    b.Property<int>("Version")
-                        .IsConcurrencyToken()
-                        .HasColumnType("integer");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("ProjetId");
-
-                    b.HasIndex("ProjetId", "Cle")
-                        .IsUnique();
-
-                    b.ToTable("DatesPlanning", (string)null);
-                });
-
-            modelBuilder.Entity("PilotageForfaits.Domain.Entites.Decision", b =>
-                {
-                    b.Property<Guid>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("uuid");
-
-                    b.Property<string>("Commentaire")
-                        .IsRequired()
-                        .HasMaxLength(4000)
-                        .HasColumnType("character varying(4000)");
-
-                    b.Property<Guid?>("CreeeParId")
+                    b.Property<Guid?>("CreatedByUserId")
                         .HasColumnType("uuid");
 
                     b.Property<DateOnly>("Date")
                         .HasColumnType("date");
 
-                    b.Property<string>("Decideur")
-                        .HasMaxLength(400)
-                        .HasColumnType("character varying(400)");
+                    b.Property<DateTimeOffset>("DateCreated")
+                        .HasColumnType("timestamp with time zone");
 
-                    b.Property<string>("Impact")
-                        .HasMaxLength(400)
-                        .HasColumnType("character varying(400)");
+                    b.Property<DateTimeOffset>("DateDeleted")
+                        .HasColumnType("timestamp with time zone");
 
-                    b.Property<string>("Instance")
-                        .HasMaxLength(400)
-                        .HasColumnType("character varying(400)");
+                    b.Property<string>("DeletedBy")
+                        .HasColumnType("text");
 
-                    b.Property<string>("Libelle")
-                        .IsRequired()
+                    b.Property<string>("Description")
                         .HasMaxLength(1000)
                         .HasColumnType("character varying(1000)");
 
-                    b.Property<Guid>("ProjetId")
+                    b.Property<Guid?>("ExpenseImportId")
                         .HasColumnType("uuid");
 
-                    b.Property<string>("Reference")
-                        .IsRequired()
-                        .HasMaxLength(20)
-                        .HasColumnType("character varying(20)");
-
-                    b.Property<string>("Statut")
-                        .IsRequired()
-                        .HasMaxLength(30)
-                        .HasColumnType("character varying(30)");
-
-                    b.Property<int>("Version")
-                        .IsConcurrencyToken()
-                        .HasColumnType("integer");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("CreeeParId");
-
-                    b.HasIndex("ProjetId");
-
-                    b.HasIndex("ProjetId", "Reference")
-                        .IsUnique();
-
-                    b.ToTable("Decisions", (string)null);
-                });
-
-            modelBuilder.Entity("PilotageForfaits.Domain.Entites.Destinataire", b =>
-                {
-                    b.Property<Guid>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("uuid");
-
-                    b.Property<Guid>("AtelierId")
-                        .HasColumnType("uuid");
-
-                    b.Property<string>("NomOuEmail")
-                        .IsRequired()
-                        .HasMaxLength(400)
-                        .HasColumnType("character varying(400)");
-
-                    b.Property<int>("Ordre")
-                        .HasColumnType("integer");
-
-                    b.Property<Guid>("ProjetId")
-                        .HasColumnType("uuid");
-
-                    b.Property<Guid?>("UtilisateurId")
-                        .HasColumnType("uuid");
-
-                    b.Property<int>("Version")
-                        .IsConcurrencyToken()
-                        .HasColumnType("integer");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("AtelierId");
-
-                    b.HasIndex("ProjetId");
-
-                    b.HasIndex("UtilisateurId");
-
-                    b.ToTable("Destinataires", (string)null);
-                });
-
-            modelBuilder.Entity("PilotageForfaits.Domain.Entites.Echeance", b =>
-                {
-                    b.Property<Guid>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("uuid");
-
-                    b.Property<string>("AxeCode")
-                        .HasMaxLength(50)
-                        .HasColumnType("character varying(50)");
-
-                    b.Property<string>("Commentaire")
-                        .IsRequired()
-                        .HasMaxLength(4000)
-                        .HasColumnType("character varying(4000)");
-
-                    b.Property<DateOnly?>("DatePrevue")
-                        .HasColumnType("date");
-
-                    b.Property<DateOnly?>("FactureeLe")
-                        .HasColumnType("date");
-
-                    b.Property<string>("MoisTsp")
-                        .HasMaxLength(7)
-                        .HasColumnType("character varying(7)");
-
-                    b.Property<decimal?>("MontantFacture")
-                        .HasPrecision(18, 6)
-                        .HasColumnType("numeric(18,6)");
-
-                    b.Property<string>("Nom")
-                        .IsRequired()
-                        .HasMaxLength(400)
-                        .HasColumnType("character varying(400)");
-
-                    b.Property<int>("Numero")
-                        .HasColumnType("integer");
-
-                    b.Property<DateOnly?>("PayeeLe")
-                        .HasColumnType("date");
-
-                    b.Property<decimal>("Pourcentage")
-                        .HasPrecision(18, 6)
-                        .HasColumnType("numeric(18,6)");
-
-                    b.Property<Guid>("ProjetId")
-                        .HasColumnType("uuid");
-
-                    b.Property<int>("Version")
-                        .IsConcurrencyToken()
-                        .HasColumnType("integer");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("ProjetId");
-
-                    b.HasIndex("ProjetId", "AxeCode")
-                        .IsUnique();
-
-                    b.HasIndex("ProjetId", "Numero")
-                        .IsUnique();
-
-                    b.ToTable("Echeances", (string)null);
-                });
-
-            modelBuilder.Entity("PilotageForfaits.Domain.Entites.ElementPlanning", b =>
-                {
-                    b.Property<Guid>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("uuid");
-
-                    b.Property<string>("Cle")
-                        .IsRequired()
-                        .HasMaxLength(200)
-                        .HasColumnType("character varying(200)");
-
-                    b.Property<string>("Nature")
-                        .IsRequired()
-                        .HasMaxLength(30)
-                        .HasColumnType("character varying(30)");
-
-                    b.Property<Guid>("ProjetId")
-                        .HasColumnType("uuid");
-
-                    b.Property<int>("Version")
-                        .IsConcurrencyToken()
-                        .HasColumnType("integer");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("ProjetId");
-
-                    b.HasIndex("ProjetId", "Nature", "Cle")
-                        .IsUnique();
-
-                    b.ToTable("ElementsPlanning", (string)null);
-                });
-
-            modelBuilder.Entity("PilotageForfaits.Domain.Entites.EntreeJournal", b =>
-                {
-                    b.Property<Guid>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("uuid");
-
-                    b.Property<string>("AncienneValeur")
-                        .HasMaxLength(4000)
-                        .HasColumnType("character varying(4000)");
-
-                    b.Property<string>("Champ")
-                        .IsRequired()
-                        .HasMaxLength(400)
-                        .HasColumnType("character varying(400)");
-
-                    b.Property<DateTime>("Le")
-                        .HasColumnType("timestamp with time zone");
-
-                    b.Property<string>("NouvelleValeur")
-                        .HasMaxLength(4000)
-                        .HasColumnType("character varying(4000)");
-
-                    b.Property<string>("Objet")
-                        .IsRequired()
-                        .HasMaxLength(400)
-                        .HasColumnType("character varying(400)");
-
-                    b.Property<Guid?>("ObjetId")
-                        .HasColumnType("uuid");
-
-                    b.Property<Guid>("ProjetId")
-                        .HasColumnType("uuid");
-
-                    b.Property<Guid?>("UtilisateurId")
-                        .HasColumnType("uuid");
-
-                    b.Property<int>("Version")
-                        .IsConcurrencyToken()
-                        .HasColumnType("integer");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("ProjetId");
-
-                    b.HasIndex("UtilisateurId");
-
-                    b.HasIndex("ProjetId", "Le");
-
-                    b.ToTable("Journal", (string)null);
-                });
-
-            modelBuilder.Entity("PilotageForfaits.Domain.Entites.Etape", b =>
-                {
-                    b.Property<Guid>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("uuid");
-
-                    b.Property<string>("Libelle")
-                        .IsRequired()
-                        .HasMaxLength(400)
-                        .HasColumnType("character varying(400)");
-
-                    b.Property<int>("Ordre")
-                        .HasColumnType("integer");
-
-                    b.Property<Guid>("ProjetId")
-                        .HasColumnType("uuid");
-
-                    b.Property<int>("Version")
-                        .IsConcurrencyToken()
-                        .HasColumnType("integer");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("ProjetId");
-
-                    b.ToTable("Etapes", (string)null);
-                });
-
-            modelBuilder.Entity("PilotageForfaits.Domain.Entites.EvolutionPerimetre", b =>
-                {
-                    b.Property<Guid>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("uuid");
-
-                    b.Property<bool>("AvenantReduction")
+                    b.Property<bool>("IsDeleted")
                         .HasColumnType("boolean");
 
-                    b.Property<Guid?>("DecisionId")
-                        .HasColumnType("uuid");
+                    b.Property<bool>("IsRebillable")
+                        .HasColumnType("boolean");
 
-                    b.Property<decimal>("JoursHomme")
-                        .HasPrecision(18, 6)
-                        .HasColumnType("numeric(18,6)");
+                    b.Property<string>("LastModifiedBy")
+                        .HasColumnType("text");
 
-                    b.Property<DateTimeOffset>("Le")
+                    b.Property<DateTimeOffset>("LastModifiedDate")
                         .HasColumnType("timestamp with time zone");
 
-                    b.Property<string>("Motif")
-                        .IsRequired()
-                        .HasMaxLength(2000)
-                        .HasColumnType("character varying(2000)");
-
-                    b.Property<string>("Nature")
-                        .IsRequired()
-                        .HasMaxLength(30)
-                        .HasColumnType("character varying(30)");
-
-                    b.Property<Guid?>("ParId")
-                        .HasColumnType("uuid");
-
-                    b.Property<Guid?>("ProfilProjetId")
-                        .HasColumnType("uuid");
-
-                    b.Property<Guid?>("ProfilSourceId")
-                        .HasColumnType("uuid");
-
-                    b.Property<Guid>("ProjetId")
-                        .HasColumnType("uuid");
-
-                    b.Property<Guid>("TacheId")
+                    b.Property<Guid>("ProjectId")
                         .HasColumnType("uuid");
 
                     b.Property<int>("Version")
@@ -939,68 +161,86 @@ namespace Orbita.Persistence.Migrations
 
                     b.HasKey("Id");
 
-                    b.HasIndex("DecisionId");
+                    b.HasIndex("CreatedByUserId");
 
-                    b.HasIndex("ParId");
+                    b.HasIndex("ExpenseImportId");
 
-                    b.HasIndex("ProfilProjetId");
+                    b.HasIndex("ProjectId");
 
-                    b.HasIndex("ProfilSourceId");
+                    b.HasIndex("ProjectId", "Date");
 
-                    b.HasIndex("ProjetId");
-
-                    b.HasIndex("TacheId");
-
-                    b.ToTable("EvolutionsPerimetre", (string)null);
+                    b.ToTable("ActualExpenses", null, t =>
+                        {
+                            t.HasCheckConstraint("CK_ActualExpenses_Amount_Positive", "\"Amount\" > 0");
+                        });
                 });
 
-            modelBuilder.Entity("PilotageForfaits.Domain.Entites.FraisReel", b =>
+            modelBuilder.Entity("Orbita.Domain.Entities.ActualPurchase", b =>
                 {
                     b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("uuid");
 
-                    b.Property<string>("Categorie")
-                        .IsRequired()
-                        .HasMaxLength(30)
-                        .HasColumnType("character varying(30)");
-
-                    b.Property<string>("Collaborateur")
-                        .IsRequired()
-                        .HasMaxLength(400)
-                        .HasColumnType("character varying(400)");
-
-                    b.Property<string>("Commentaire")
-                        .IsRequired()
+                    b.Property<string>("Comment")
                         .HasMaxLength(4000)
                         .HasColumnType("character varying(4000)");
 
-                    b.Property<DateTimeOffset>("CreeLe")
+                    b.Property<DateTimeOffset>("CreatedAt")
                         .HasColumnType("timestamp with time zone");
 
-                    b.Property<Guid?>("CreeParId")
+                    b.Property<string>("CreatedBy")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<Guid?>("CreatedByUserId")
                         .HasColumnType("uuid");
 
                     b.Property<DateOnly>("Date")
                         .HasColumnType("date");
 
-                    b.Property<Guid?>("ImportFraisId")
-                        .HasColumnType("uuid");
+                    b.Property<DateTimeOffset>("DateCreated")
+                        .HasColumnType("timestamp with time zone");
 
-                    b.Property<string>("Libelle")
-                        .IsRequired()
-                        .HasMaxLength(400)
-                        .HasColumnType("character varying(400)");
+                    b.Property<DateTimeOffset>("DateDeleted")
+                        .HasColumnType("timestamp with time zone");
 
-                    b.Property<decimal>("Montant")
-                        .HasPrecision(18, 6)
-                        .HasColumnType("numeric(18,6)");
+                    b.Property<string>("DeletedBy")
+                        .HasColumnType("text");
 
-                    b.Property<Guid>("ProjetId")
-                        .HasColumnType("uuid");
+                    b.Property<string>("Description")
+                        .HasMaxLength(1000)
+                        .HasColumnType("character varying(1000)");
 
-                    b.Property<bool>("Refacturable")
+                    b.Property<bool>("IsDeleted")
                         .HasColumnType("boolean");
+
+                    b.Property<string>("LastModifiedBy")
+                        .HasColumnType("text");
+
+                    b.Property<DateTimeOffset>("LastModifiedDate")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<Guid>("ProjectId")
+                        .HasColumnType("uuid");
+
+                    b.Property<Guid?>("PurchaseBudgetLineId")
+                        .HasColumnType("uuid");
+
+                    b.Property<decimal>("Quantity")
+                        .HasColumnType("numeric");
+
+                    b.Property<decimal>("RebillAmount")
+                        .HasColumnType("numeric");
+
+                    b.Property<int>("Status")
+                        .HasColumnType("integer");
+
+                    b.Property<string>("Supplier")
+                        .HasMaxLength(256)
+                        .HasColumnType("character varying(256)");
+
+                    b.Property<decimal>("UnitCost")
+                        .HasColumnType("numeric");
 
                     b.Property<int>("Version")
                         .IsConcurrencyToken()
@@ -1008,220 +248,70 @@ namespace Orbita.Persistence.Migrations
 
                     b.HasKey("Id");
 
-                    b.HasIndex("CreeParId");
+                    b.HasIndex("CreatedByUserId");
 
-                    b.HasIndex("ImportFraisId");
+                    b.HasIndex("ProjectId");
 
-                    b.HasIndex("ProjetId");
+                    b.HasIndex("PurchaseBudgetLineId");
 
-                    b.ToTable("FraisReels", null, t =>
+                    b.HasIndex("ProjectId", "Date");
+
+                    b.ToTable("ActualPurchases", null, t =>
                         {
-                            t.HasCheckConstraint("CK_FraisReels_Positif", "\"Montant\" > 0");
+                            t.HasCheckConstraint("CK_ActualPurchases_Amounts", "\"Quantity\" > 0 AND \"UnitCost\" >= 0 AND \"RebillAmount\" >= 0");
                         });
                 });
 
-            modelBuilder.Entity("PilotageForfaits.Domain.Entites.GrilleAgence", b =>
+            modelBuilder.Entity("Orbita.Domain.Entities.AgencyRate", b =>
                 {
                     b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("uuid");
 
-                    b.Property<decimal>("CjmParis")
-                        .HasPrecision(18, 6)
-                        .HasColumnType("numeric(18,6)");
-
-                    b.Property<decimal>("CjmRegion")
-                        .HasPrecision(18, 6)
-                        .HasColumnType("numeric(18,6)");
-
-                    b.Property<int>("Ordre")
-                        .HasColumnType("integer");
-
-                    b.Property<string>("Profil")
+                    b.Property<string>("CreatedBy")
                         .IsRequired()
-                        .HasMaxLength(400)
-                        .HasColumnType("character varying(400)");
+                        .HasColumnType("text");
 
-                    b.Property<Guid>("ProjetId")
-                        .HasColumnType("uuid");
-
-                    b.Property<decimal>("TjmParis")
-                        .HasPrecision(18, 6)
-                        .HasColumnType("numeric(18,6)");
-
-                    b.Property<decimal>("TjmRegion")
-                        .HasPrecision(18, 6)
-                        .HasColumnType("numeric(18,6)");
-
-                    b.Property<int>("Version")
-                        .IsConcurrencyToken()
-                        .HasColumnType("integer");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("ProjetId");
-
-                    b.ToTable("GrillesAgence", (string)null);
-                });
-
-            modelBuilder.Entity("PilotageForfaits.Domain.Entites.Habilitation", b =>
-                {
-                    b.Property<Guid>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("uuid");
-
-                    b.Property<Guid?>("AccordeeParId")
-                        .HasColumnType("uuid");
-
-                    b.Property<DateTimeOffset>("Depuis")
+                    b.Property<DateTimeOffset>("DateCreated")
                         .HasColumnType("timestamp with time zone");
 
-                    b.Property<Guid>("ProjetId")
-                        .HasColumnType("uuid");
-
-                    b.Property<string>("Role")
-                        .IsRequired()
-                        .HasMaxLength(30)
-                        .HasColumnType("character varying(30)");
-
-                    b.Property<Guid>("UtilisateurId")
-                        .HasColumnType("uuid");
-
-                    b.Property<int>("Version")
-                        .IsConcurrencyToken()
-                        .HasColumnType("integer");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("AccordeeParId");
-
-                    b.HasIndex("ProjetId");
-
-                    b.HasIndex("UtilisateurId", "ProjetId")
-                        .IsUnique();
-
-                    b.ToTable("Habilitations", (string)null);
-                });
-
-            modelBuilder.Entity("PilotageForfaits.Domain.Entites.ImportFrais", b =>
-                {
-                    b.Property<Guid>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("uuid");
-
-                    b.Property<DateTimeOffset>("ImporteLe")
+                    b.Property<DateTimeOffset>("DateDeleted")
                         .HasColumnType("timestamp with time zone");
 
-                    b.Property<Guid?>("ImporteParId")
-                        .HasColumnType("uuid");
+                    b.Property<string>("DeletedBy")
+                        .HasColumnType("text");
 
-                    b.Property<string>("NomFichier")
-                        .IsRequired()
-                        .HasMaxLength(260)
-                        .HasColumnType("character varying(260)");
-
-                    b.Property<int>("NombreLignes")
-                        .HasColumnType("integer");
-
-                    b.Property<Guid>("ProjetId")
-                        .HasColumnType("uuid");
-
-                    b.Property<string>("Source")
-                        .IsRequired()
-                        .HasMaxLength(400)
-                        .HasColumnType("character varying(400)");
-
-                    b.Property<int>("Version")
-                        .IsConcurrencyToken()
-                        .HasColumnType("integer");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("ImporteParId");
-
-                    b.HasIndex("ProjetId");
-
-                    b.ToTable("ImportsFrais", (string)null);
-                });
-
-            modelBuilder.Entity("PilotageForfaits.Domain.Entites.ImportTsp", b =>
-                {
-                    b.Property<Guid>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("uuid");
-
-                    b.Property<DateTimeOffset>("ImporteLe")
-                        .HasColumnType("timestamp with time zone");
-
-                    b.Property<Guid?>("ImporteParId")
-                        .HasColumnType("uuid");
-
-                    b.Property<Guid?>("MasquesParId")
-                        .HasColumnType("uuid");
-
-                    b.Property<string>("NomFichier")
-                        .IsRequired()
-                        .HasMaxLength(260)
-                        .HasColumnType("character varying(260)");
-
-                    b.Property<string>("PointsReleves")
-                        .IsRequired()
-                        .HasMaxLength(4000)
-                        .HasColumnType("character varying(4000)");
-
-                    b.Property<Guid>("ProjetId")
-                        .HasColumnType("uuid");
-
-                    b.Property<string>("SourcePlanning")
-                        .HasMaxLength(400)
-                        .HasColumnType("character varying(400)");
-
-                    b.Property<string>("SourcePlanningPhases")
-                        .HasMaxLength(400)
-                        .HasColumnType("character varying(400)");
-
-                    b.Property<int>("Version")
-                        .IsConcurrencyToken()
-                        .HasColumnType("integer");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("ImporteParId");
-
-                    b.HasIndex("MasquesParId");
-
-                    b.HasIndex("ProjetId");
-
-                    b.ToTable("ImportsTsp", (string)null);
-                });
-
-            modelBuilder.Entity("PilotageForfaits.Domain.Entites.Jalon", b =>
-                {
-                    b.Property<Guid>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("uuid");
-
-                    b.Property<bool>("AConfirmer")
+                    b.Property<bool>("IsDeleted")
                         .HasColumnType("boolean");
 
-                    b.Property<DateOnly>("Debut")
-                        .HasColumnType("date");
+                    b.Property<string>("LastModifiedBy")
+                        .HasColumnType("text");
 
-                    b.Property<DateOnly?>("Fin")
-                        .HasColumnType("date");
+                    b.Property<DateTimeOffset>("LastModifiedDate")
+                        .HasColumnType("timestamp with time zone");
 
-                    b.Property<string>("Libelle")
+                    b.Property<int>("Order")
+                        .HasColumnType("integer");
+
+                    b.Property<decimal>("ParisDailyCostRate")
+                        .HasColumnType("numeric");
+
+                    b.Property<decimal>("ParisDailyRate")
+                        .HasColumnType("numeric");
+
+                    b.Property<string>("Profile")
                         .IsRequired()
                         .HasMaxLength(200)
                         .HasColumnType("character varying(200)");
 
-                    b.Property<Guid>("ProjetId")
+                    b.Property<Guid>("ProjectId")
                         .HasColumnType("uuid");
 
-                    b.Property<string>("Type")
-                        .IsRequired()
-                        .HasMaxLength(30)
-                        .HasColumnType("character varying(30)");
+                    b.Property<decimal>("RegionalDailyCostRate")
+                        .HasColumnType("numeric");
+
+                    b.Property<decimal>("RegionalDailyRate")
+                        .HasColumnType("numeric");
 
                     b.Property<int>("Version")
                         .IsConcurrencyToken()
@@ -1229,24 +319,500 @@ namespace Orbita.Persistence.Migrations
 
                     b.HasKey("Id");
 
-                    b.HasIndex("ProjetId");
+                    b.HasIndex("ProjectId");
 
-                    b.ToTable("Jalons", (string)null);
+                    b.HasIndex("ProjectId", "Order");
+
+                    b.ToTable("AgencyRates", (string)null);
                 });
 
-            modelBuilder.Entity("PilotageForfaits.Domain.Entites.LienEcheancePhase", b =>
+            modelBuilder.Entity("Orbita.Domain.Entities.AiReferenceValue", b =>
                 {
                     b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("uuid");
 
-                    b.Property<Guid>("EcheanceId")
+                    b.Property<string>("CreatedBy")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<DateTimeOffset>("DateCreated")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<DateTimeOffset>("DateDeleted")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<string>("DeletedBy")
+                        .HasColumnType("text");
+
+                    b.Property<bool>("IsDeleted")
+                        .HasColumnType("boolean");
+
+                    b.Property<string>("Label")
+                        .IsRequired()
+                        .HasMaxLength(400)
+                        .HasColumnType("character varying(400)");
+
+                    b.Property<string>("LastModifiedBy")
+                        .HasColumnType("text");
+
+                    b.Property<DateTimeOffset>("LastModifiedDate")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<int>("ListKind")
+                        .HasColumnType("integer");
+
+                    b.Property<int>("Order")
+                        .HasColumnType("integer");
+
+                    b.Property<Guid>("ProjectId")
                         .HasColumnType("uuid");
+
+                    b.Property<int>("Version")
+                        .IsConcurrencyToken()
+                        .HasColumnType("integer");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("ProjectId");
+
+                    b.HasIndex("ProjectId", "ListKind", "Label")
+                        .IsUnique();
+
+                    b.ToTable("AiReferenceValues", (string)null);
+                });
+
+            modelBuilder.Entity("Orbita.Domain.Entities.Deliverable", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uuid");
+
+                    b.Property<DateOnly?>("ClientValidatedOn")
+                        .HasColumnType("date");
+
+                    b.Property<string>("CreatedBy")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<DateTimeOffset>("DateCreated")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<DateTimeOffset>("DateDeleted")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<string>("DeletedBy")
+                        .HasColumnType("text");
+
+                    b.Property<bool>("IsDeleted")
+                        .HasColumnType("boolean");
+
+                    b.Property<string>("LastModifiedBy")
+                        .HasColumnType("text");
+
+                    b.Property<DateTimeOffset>("LastModifiedDate")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<Guid>("ProjectId")
+                        .HasColumnType("uuid");
+
+                    b.Property<string>("StorageUri")
+                        .HasMaxLength(1000)
+                        .HasColumnType("character varying(1000)");
+
+                    b.Property<Guid>("TaskId")
+                        .HasColumnType("uuid");
+
+                    b.Property<int>("Version")
+                        .IsConcurrencyToken()
+                        .HasColumnType("integer");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("ProjectId");
+
+                    b.HasIndex("TaskId")
+                        .IsUnique();
+
+                    b.ToTable("Deliverables", (string)null);
+                });
+
+            modelBuilder.Entity("Orbita.Domain.Entities.ExpenseBudgetLine", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uuid");
+
+                    b.Property<string>("Comment")
+                        .HasMaxLength(4000)
+                        .HasColumnType("character varying(4000)");
+
+                    b.Property<string>("CreatedBy")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<DateTimeOffset>("DateCreated")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<DateTimeOffset>("DateDeleted")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<string>("DeletedBy")
+                        .HasColumnType("text");
+
+                    b.Property<string>("Description")
+                        .HasMaxLength(1000)
+                        .HasColumnType("character varying(1000)");
+
+                    b.Property<bool>("IsDeleted")
+                        .HasColumnType("boolean");
+
+                    b.Property<string>("LastModifiedBy")
+                        .HasColumnType("text");
+
+                    b.Property<DateTimeOffset>("LastModifiedDate")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<int>("Order")
+                        .HasColumnType("integer");
+
+                    b.Property<Guid>("ProjectId")
+                        .HasColumnType("uuid");
+
+                    b.Property<decimal>("Quantity")
+                        .HasColumnType("numeric");
+
+                    b.Property<decimal>("RebillAmount")
+                        .HasColumnType("numeric");
+
+                    b.Property<decimal>("UnitCost")
+                        .HasColumnType("numeric");
+
+                    b.Property<int>("Version")
+                        .IsConcurrencyToken()
+                        .HasColumnType("integer");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("ProjectId");
+
+                    b.HasIndex("ProjectId", "Order");
+
+                    b.ToTable("ExpenseBudgetLines", (string)null);
+                });
+
+            modelBuilder.Entity("Orbita.Domain.Entities.ExpenseImport", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uuid");
+
+                    b.Property<string>("CreatedBy")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<DateTimeOffset>("DateCreated")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<DateTimeOffset>("DateDeleted")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<string>("DeletedBy")
+                        .HasColumnType("text");
+
+                    b.Property<string>("FileName")
+                        .HasMaxLength(260)
+                        .HasColumnType("character varying(260)");
+
+                    b.Property<DateTimeOffset>("ImportedAt")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<Guid?>("ImportedByUserId")
+                        .HasColumnType("uuid");
+
+                    b.Property<bool>("IsDeleted")
+                        .HasColumnType("boolean");
+
+                    b.Property<string>("LastModifiedBy")
+                        .HasColumnType("text");
+
+                    b.Property<DateTimeOffset>("LastModifiedDate")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<Guid>("ProjectId")
+                        .HasColumnType("uuid");
+
+                    b.Property<int>("RowCount")
+                        .HasColumnType("integer");
+
+                    b.Property<string>("Source")
+                        .HasMaxLength(100)
+                        .HasColumnType("character varying(100)");
+
+                    b.Property<int>("Version")
+                        .IsConcurrencyToken()
+                        .HasColumnType("integer");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("ImportedByUserId");
+
+                    b.HasIndex("ProjectId");
+
+                    b.HasIndex("ProjectId", "ImportedAt");
+
+                    b.ToTable("ExpenseImports", (string)null);
+                });
+
+            modelBuilder.Entity("Orbita.Domain.Entities.ForecastProfile", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uuid");
+
+                    b.Property<string>("CreatedBy")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<DateTimeOffset>("DateCreated")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<DateTimeOffset>("DateDeleted")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<string>("DeletedBy")
+                        .HasColumnType("text");
+
+                    b.Property<bool>("IsDeleted")
+                        .HasColumnType("boolean");
+
+                    b.Property<string>("LastModifiedBy")
+                        .HasColumnType("text");
+
+                    b.Property<DateTimeOffset>("LastModifiedDate")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<string>("Month")
+                        .IsRequired()
+                        .HasMaxLength(7)
+                        .HasColumnType("character varying(7)");
+
+                    b.Property<decimal>("PersonDays")
+                        .HasColumnType("numeric");
+
+                    b.Property<Guid>("ProjectId")
+                        .HasColumnType("uuid");
+
+                    b.Property<Guid>("ProjectProfileId")
+                        .HasColumnType("uuid");
+
+                    b.Property<int>("Version")
+                        .IsConcurrencyToken()
+                        .HasColumnType("integer");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("ProjectId");
+
+                    b.HasIndex("ProjectProfileId", "Month")
+                        .IsUnique();
+
+                    b.ToTable("ForecastProfiles", (string)null);
+                });
+
+            modelBuilder.Entity("Orbita.Domain.Entities.IndicatorSnapshot", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uuid");
+
+                    b.Property<decimal>("ActualEffort")
+                        .HasColumnType("numeric");
+
+                    b.Property<string>("CreatedBy")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<DateOnly>("Date")
+                        .HasColumnType("date");
+
+                    b.Property<DateTimeOffset>("DateCreated")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<DateTimeOffset>("DateDeleted")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<string>("DeletedBy")
+                        .HasColumnType("text");
+
+                    b.Property<decimal>("FinalCost")
+                        .HasColumnType("numeric");
+
+                    b.Property<decimal>("ForecastEffort")
+                        .HasColumnType("numeric");
+
+                    b.Property<DateOnly?>("ForecastEndDate")
+                        .HasColumnType("date");
+
+                    b.Property<bool>("IsDeleted")
+                        .HasColumnType("boolean");
+
+                    b.Property<int>("Kind")
+                        .HasColumnType("integer");
+
+                    b.Property<string>("LastModifiedBy")
+                        .HasColumnType("text");
+
+                    b.Property<DateTimeOffset>("LastModifiedDate")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<decimal>("Margin")
+                        .HasColumnType("numeric");
+
+                    b.Property<decimal>("NetMargin")
+                        .HasColumnType("numeric");
+
+                    b.Property<decimal>("NetMarginRate")
+                        .HasColumnType("numeric");
+
+                    b.Property<decimal>("PlannedEffort")
+                        .HasColumnType("numeric");
+
+                    b.Property<Guid>("ProjectId")
+                        .HasColumnType("uuid");
+
+                    b.Property<decimal>("RemainingEffort")
+                        .HasColumnType("numeric");
+
+                    b.Property<int>("Version")
+                        .IsConcurrencyToken()
+                        .HasColumnType("integer");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("ProjectId");
+
+                    b.HasIndex("ProjectId", "Date", "Kind")
+                        .IsUnique();
+
+                    b.ToTable("IndicatorSnapshots", (string)null);
+                });
+
+            modelBuilder.Entity("Orbita.Domain.Entities.InvoiceMilestone", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uuid");
+
+                    b.Property<string>("Comment")
+                        .HasMaxLength(4000)
+                        .HasColumnType("character varying(4000)");
+
+                    b.Property<string>("CreatedBy")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<DateTimeOffset>("DateCreated")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<DateTimeOffset>("DateDeleted")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<string>("DeletedBy")
+                        .HasColumnType("text");
+
+                    b.Property<decimal?>("InvoicedAmount")
+                        .HasColumnType("numeric");
+
+                    b.Property<DateOnly?>("InvoicedOn")
+                        .HasColumnType("date");
+
+                    b.Property<bool>("IsDeleted")
+                        .HasColumnType("boolean");
+
+                    b.Property<string>("LastModifiedBy")
+                        .HasColumnType("text");
+
+                    b.Property<DateTimeOffset>("LastModifiedDate")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasMaxLength(200)
+                        .HasColumnType("character varying(200)");
+
+                    b.Property<int>("Number")
+                        .HasColumnType("integer");
+
+                    b.Property<DateOnly?>("PaidOn")
+                        .HasColumnType("date");
+
+                    b.Property<decimal>("Percentage")
+                        .HasColumnType("numeric");
+
+                    b.Property<DateOnly?>("PlannedDate")
+                        .HasColumnType("date");
+
+                    b.Property<Guid>("ProjectId")
+                        .HasColumnType("uuid");
+
+                    b.Property<string>("TriggerAxisCode")
+                        .HasMaxLength(50)
+                        .HasColumnType("character varying(50)");
+
+                    b.Property<string>("TspMonth")
+                        .HasMaxLength(7)
+                        .HasColumnType("character varying(7)");
+
+                    b.Property<int>("Version")
+                        .IsConcurrencyToken()
+                        .HasColumnType("integer");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("ProjectId");
+
+                    b.HasIndex("ProjectId", "Number")
+                        .IsUnique();
+
+                    b.ToTable("InvoiceMilestones", (string)null);
+                });
+
+            modelBuilder.Entity("Orbita.Domain.Entities.InvoiceMilestonePhase", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uuid");
+
+                    b.Property<string>("CreatedBy")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<DateTimeOffset>("DateCreated")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<DateTimeOffset>("DateDeleted")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<string>("DeletedBy")
+                        .HasColumnType("text");
+
+                    b.Property<Guid>("InvoiceMilestoneId")
+                        .HasColumnType("uuid");
+
+                    b.Property<bool>("IsDeleted")
+                        .HasColumnType("boolean");
+
+                    b.Property<string>("LastModifiedBy")
+                        .HasColumnType("text");
+
+                    b.Property<DateTimeOffset>("LastModifiedDate")
+                        .HasColumnType("timestamp with time zone");
 
                     b.Property<Guid>("PhaseId")
                         .HasColumnType("uuid");
 
-                    b.Property<Guid>("ProjetId")
+                    b.Property<Guid>("ProjectId")
                         .HasColumnType("uuid");
 
                     b.Property<int>("Version")
@@ -1254,891 +820,245 @@ namespace Orbita.Persistence.Migrations
                         .HasColumnType("integer");
 
                     b.HasKey("Id");
-
-                    b.HasIndex("EcheanceId");
 
                     b.HasIndex("PhaseId")
                         .IsUnique();
 
-                    b.HasIndex("ProjetId");
+                    b.HasIndex("ProjectId");
 
-                    b.ToTable("LiensEcheancePhase", (string)null);
-                });
-
-            modelBuilder.Entity("PilotageForfaits.Domain.Entites.LigneBudgetAchat", b =>
-                {
-                    b.Property<Guid>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("uuid");
-
-                    b.Property<string>("Commentaire")
-                        .IsRequired()
-                        .HasMaxLength(4000)
-                        .HasColumnType("character varying(4000)");
-
-                    b.Property<decimal>("CoutUnitaire")
-                        .HasPrecision(18, 6)
-                        .HasColumnType("numeric(18,6)");
-
-                    b.Property<string>("Designation")
-                        .IsRequired()
-                        .HasMaxLength(400)
-                        .HasColumnType("character varying(400)");
-
-                    b.Property<int>("Ordre")
-                        .HasColumnType("integer");
-
-                    b.Property<Guid>("ProjetId")
-                        .HasColumnType("uuid");
-
-                    b.Property<decimal>("Quantite")
-                        .HasPrecision(18, 6)
-                        .HasColumnType("numeric(18,6)");
-
-                    b.Property<decimal>("Revente")
-                        .HasPrecision(18, 6)
-                        .HasColumnType("numeric(18,6)");
-
-                    b.Property<string>("Type")
-                        .IsRequired()
-                        .HasMaxLength(400)
-                        .HasColumnType("character varying(400)");
-
-                    b.Property<int>("Version")
-                        .IsConcurrencyToken()
-                        .HasColumnType("integer");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("ProjetId");
-
-                    b.ToTable("BudgetsAchat", (string)null);
-                });
-
-            modelBuilder.Entity("PilotageForfaits.Domain.Entites.LigneBudgetFrais", b =>
-                {
-                    b.Property<Guid>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("uuid");
-
-                    b.Property<string>("Commentaire")
-                        .IsRequired()
-                        .HasMaxLength(4000)
-                        .HasColumnType("character varying(4000)");
-
-                    b.Property<decimal>("CoutUnitaire")
-                        .HasPrecision(18, 6)
-                        .HasColumnType("numeric(18,6)");
-
-                    b.Property<string>("Libelle")
-                        .IsRequired()
-                        .HasMaxLength(400)
-                        .HasColumnType("character varying(400)");
-
-                    b.Property<int>("Ordre")
-                        .HasColumnType("integer");
-
-                    b.Property<Guid>("ProjetId")
-                        .HasColumnType("uuid");
-
-                    b.Property<decimal>("Quantite")
-                        .HasPrecision(18, 6)
-                        .HasColumnType("numeric(18,6)");
-
-                    b.Property<decimal>("Refacture")
-                        .HasPrecision(18, 6)
-                        .HasColumnType("numeric(18,6)");
-
-                    b.Property<int>("Version")
-                        .IsConcurrencyToken()
-                        .HasColumnType("integer");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("ProjetId");
-
-                    b.ToTable("BudgetsFrais", (string)null);
-                });
-
-            modelBuilder.Entity("PilotageForfaits.Domain.Entites.LignePlanReference", b =>
-                {
-                    b.Property<Guid>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("uuid");
-
-                    b.Property<string>("Cause")
-                        .HasMaxLength(30)
-                        .HasColumnType("character varying(30)");
-
-                    b.Property<decimal>("ChargePrevue")
-                        .HasPrecision(18, 6)
-                        .HasColumnType("numeric(18,6)");
-
-                    b.Property<DateOnly?>("DebutPrevu")
-                        .HasColumnType("date");
-
-                    b.Property<DateOnly?>("FinPrevue")
-                        .HasColumnType("date");
-
-                    b.Property<string>("Motif")
-                        .HasMaxLength(1000)
-                        .HasColumnType("character varying(1000)");
-
-                    b.Property<Guid>("PlanReferenceId")
-                        .HasColumnType("uuid");
-
-                    b.Property<Guid>("ProjetId")
-                        .HasColumnType("uuid");
-
-                    b.Property<Guid>("TacheId")
-                        .HasColumnType("uuid");
-
-                    b.Property<int>("Version")
-                        .IsConcurrencyToken()
-                        .HasColumnType("integer");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("ProjetId");
-
-                    b.HasIndex("TacheId");
-
-                    b.HasIndex("PlanReferenceId", "TacheId")
+                    b.HasIndex("InvoiceMilestoneId", "PhaseId")
                         .IsUnique();
 
-                    b.ToTable("LignesPlanReference", (string)null);
+                    b.ToTable("InvoiceMilestonePhases", (string)null);
                 });
 
-            modelBuilder.Entity("PilotageForfaits.Domain.Entites.Livrable", b =>
+            modelBuilder.Entity("Orbita.Domain.Entities.PlanningDate", b =>
                 {
                     b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("uuid");
 
-                    b.Property<string>("LienStockage")
-                        .HasMaxLength(1000)
-                        .HasColumnType("character varying(1000)");
-
-                    b.Property<Guid>("ProjetId")
-                        .HasColumnType("uuid");
-
-                    b.Property<Guid>("TacheId")
-                        .HasColumnType("uuid");
-
-                    b.Property<DateOnly?>("ValideParClientLe")
-                        .HasColumnType("date");
-
-                    b.Property<int>("Version")
-                        .IsConcurrencyToken()
-                        .HasColumnType("integer");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("ProjetId");
-
-                    b.HasIndex("TacheId")
-                        .IsUnique();
-
-                    b.ToTable("Livrables", (string)null);
-                });
-
-            modelBuilder.Entity("PilotageForfaits.Domain.Entites.Metrique", b =>
-                {
-                    b.Property<Guid>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("uuid");
-
-                    b.Property<string>("Etape")
-                        .IsRequired()
-                        .HasMaxLength(400)
-                        .HasColumnType("character varying(400)");
-
-                    b.Property<int>("Ordre")
-                        .HasColumnType("integer");
-
-                    b.Property<decimal>("Pourcentage")
-                        .HasPrecision(18, 6)
-                        .HasColumnType("numeric(18,6)");
-
-                    b.Property<Guid>("ProjetId")
-                        .HasColumnType("uuid");
-
-                    b.Property<int>("Version")
-                        .IsConcurrencyToken()
-                        .HasColumnType("integer");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("ProjetId");
-
-                    b.ToTable("Metriques", (string)null);
-                });
-
-            modelBuilder.Entity("PilotageForfaits.Domain.Entites.Commentaire", b =>
-                {
-                    b.Property<Guid>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("uuid");
-
-                    b.Property<Guid?>("AuteurId")
-                        .HasColumnType("uuid");
-
-                    b.Property<Guid>("CibleId")
-                        .HasColumnType("uuid");
-
-                    b.Property<string>("CibleType")
-                        .IsRequired()
-                        .HasMaxLength(30)
-                        .HasColumnType("character varying(30)");
-
-                    b.Property<DateTime>("Le")
-                        .HasColumnType("timestamp with time zone");
-
-                    b.Property<DateTime?>("ModifieLe")
-                        .HasColumnType("timestamp with time zone");
-
-                    b.Property<Guid>("ProjetId")
-                        .HasColumnType("uuid");
-
-                    b.Property<string>("Texte")
-                        .IsRequired()
-                        .HasMaxLength(4000)
-                        .HasColumnType("character varying(4000)");
-
-                    b.Property<int>("Version")
-                        .IsConcurrencyToken()
-                        .HasColumnType("integer");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("AuteurId");
-
-                    b.HasIndex("ProjetId");
-
-                    b.HasIndex("ProjetId", "CibleType", "CibleId", "Le");
-
-                    b.ToTable("Commentaires", (string)null);
-                });
-
-            modelBuilder.Entity("PilotageForfaits.Domain.Entites.Notification", b =>
-                {
-                    b.Property<Guid>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("uuid");
-
-                    b.Property<DateOnly>("DateCible")
-                        .HasColumnType("date");
-
-                    b.Property<Guid>("DestinataireId")
-                        .HasColumnType("uuid");
-
-                    b.Property<DateTimeOffset?>("EnvoyeeLe")
-                        .HasColumnType("timestamp with time zone");
-
-                    b.Property<string>("Nature")
-                        .IsRequired()
-                        .HasMaxLength(30)
-                        .HasColumnType("character varying(30)");
-
-                    b.Property<Guid>("ObjetId")
-                        .HasColumnType("uuid");
-
-                    b.Property<Guid>("ProjetId")
-                        .HasColumnType("uuid");
-
-                    b.Property<string>("StatutEnvoi")
-                        .IsRequired()
-                        .HasMaxLength(30)
-                        .HasColumnType("character varying(30)");
-
-                    b.Property<int>("Version")
-                        .IsConcurrencyToken()
-                        .HasColumnType("integer");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("DestinataireId");
-
-                    b.HasIndex("ProjetId");
-
-                    b.HasIndex("StatutEnvoi", "DateCible");
-
-                    b.ToTable("Notifications", (string)null);
-                });
-
-            modelBuilder.Entity("PilotageForfaits.Domain.Entites.PersonneAjoutee", b =>
-                {
-                    b.Property<Guid>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("uuid");
-
-                    b.Property<string>("Cle")
-                        .IsRequired()
-                        .HasMaxLength(200)
-                        .HasColumnType("character varying(200)");
-
-                    b.Property<string>("Nom")
-                        .IsRequired()
-                        .HasMaxLength(200)
-                        .HasColumnType("character varying(200)");
-
-                    b.Property<Guid>("ProjetId")
-                        .HasColumnType("uuid");
-
-                    b.Property<int>("Version")
-                        .IsConcurrencyToken()
-                        .HasColumnType("integer");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("ProjetId");
-
-                    b.HasIndex("ProjetId", "Cle")
-                        .IsUnique();
-
-                    b.ToTable("PersonnesAjoutees", (string)null);
-                });
-
-            modelBuilder.Entity("PilotageForfaits.Domain.Entites.Phase", b =>
-                {
-                    b.Property<Guid>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("uuid");
-
-                    b.Property<string>("Code")
-                        .IsRequired()
-                        .HasMaxLength(50)
-                        .HasColumnType("character varying(50)");
-
-                    b.Property<bool>("ListeReference")
-                        .HasColumnType("boolean");
-
-                    b.Property<int>("Ordre")
-                        .HasColumnType("integer");
-
-                    b.Property<Guid>("ProjetId")
-                        .HasColumnType("uuid");
-
-                    b.Property<int>("Version")
-                        .IsConcurrencyToken()
-                        .HasColumnType("integer");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("ProjetId");
-
-                    b.HasIndex("ProjetId", "Code")
-                        .IsUnique();
-
-                    b.ToTable("Phases", (string)null);
-                });
-
-            modelBuilder.Entity("PilotageForfaits.Domain.Entites.PhotoIndicateurs", b =>
-                {
-                    b.Property<Guid>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("uuid");
-
-                    b.Property<decimal>("Atterrissage")
-                        .HasPrecision(18, 6)
-                        .HasColumnType("numeric(18,6)");
-
-                    b.Property<decimal>("Consomme")
-                        .HasPrecision(18, 6)
-                        .HasColumnType("numeric(18,6)");
-
-                    b.Property<decimal>("CoutFinal")
-                        .HasPrecision(18, 6)
-                        .HasColumnType("numeric(18,6)");
-
-                    b.Property<DateOnly>("Date")
-                        .HasColumnType("date");
-
-                    b.Property<DateOnly?>("FinPrevue")
-                        .HasColumnType("date");
-
-                    b.Property<decimal>("Marge")
-                        .HasPrecision(18, 6)
-                        .HasColumnType("numeric(18,6)");
-
-                    b.Property<decimal>("MargeNette")
-                        .HasPrecision(18, 6)
-                        .HasColumnType("numeric(18,6)");
-
-                    b.Property<string>("Nature")
-                        .IsRequired()
-                        .HasMaxLength(30)
-                        .HasColumnType("character varying(30)");
-
-                    b.Property<decimal>("Prevu")
-                        .HasPrecision(18, 6)
-                        .HasColumnType("numeric(18,6)");
-
-                    b.Property<Guid>("ProjetId")
-                        .HasColumnType("uuid");
-
-                    b.Property<decimal>("ResteAFaire")
-                        .HasPrecision(18, 6)
-                        .HasColumnType("numeric(18,6)");
-
-                    b.Property<decimal>("TauxMargeNette")
-                        .HasPrecision(18, 6)
-                        .HasColumnType("numeric(18,6)");
-
-                    b.Property<int>("Version")
-                        .IsConcurrencyToken()
-                        .HasColumnType("integer");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("ProjetId");
-
-                    b.HasIndex("ProjetId", "Date", "Nature")
-                        .IsUnique();
-
-                    b.ToTable("PhotosIndicateurs", (string)null);
-                });
-
-            modelBuilder.Entity("PilotageForfaits.Domain.Entites.PlanReference", b =>
-                {
-                    b.Property<Guid>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("uuid");
-
-                    b.Property<DateOnly>("Date")
-                        .HasColumnType("date");
-
-                    b.Property<Guid?>("FigeParId")
-                        .HasColumnType("uuid");
-
-                    b.Property<string>("Libelle")
-                        .IsRequired()
-                        .HasMaxLength(200)
-                        .HasColumnType("character varying(200)");
-
-                    b.Property<Guid>("ProjetId")
-                        .HasColumnType("uuid");
-
-                    b.Property<int>("Version")
-                        .IsConcurrencyToken()
-                        .HasColumnType("integer");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("FigeParId");
-
-                    b.HasIndex("ProjetId");
-
-                    b.ToTable("PlansReference", (string)null);
-                });
-
-            modelBuilder.Entity("PilotageForfaits.Domain.Entites.PlanningVenduPhase", b =>
-                {
-                    b.Property<Guid>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("uuid");
-
-                    b.Property<string>("CjmSaisi")
-                        .HasMaxLength(100)
-                        .HasColumnType("character varying(100)");
-
-                    b.Property<int>("Ordre")
-                        .HasColumnType("integer");
-
-                    b.Property<string>("Phase")
-                        .IsRequired()
-                        .HasMaxLength(50)
-                        .HasColumnType("character varying(50)");
-
-                    b.Property<Guid>("ProjetId")
-                        .HasColumnType("uuid");
-
-                    b.Property<int>("Version")
-                        .IsConcurrencyToken()
-                        .HasColumnType("integer");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("ProjetId");
-
-                    b.ToTable("PlanningsVendusPhase", (string)null);
-                });
-
-            modelBuilder.Entity("PilotageForfaits.Domain.Entites.PlanningVenduPhaseMois", b =>
-                {
-                    b.Property<Guid>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("uuid");
-
-                    b.Property<decimal>("JoursHomme")
-                        .HasPrecision(18, 6)
-                        .HasColumnType("numeric(18,6)");
-
-                    b.Property<string>("Mois")
-                        .IsRequired()
-                        .HasMaxLength(7)
-                        .HasColumnType("character varying(7)");
-
-                    b.Property<Guid>("PlanningVenduPhaseId")
-                        .HasColumnType("uuid");
-
-                    b.Property<Guid>("ProjetId")
-                        .HasColumnType("uuid");
-
-                    b.Property<int>("Version")
-                        .IsConcurrencyToken()
-                        .HasColumnType("integer");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("ProjetId");
-
-                    b.HasIndex("PlanningVenduPhaseId", "Mois")
-                        .IsUnique();
-
-                    b.ToTable("PlanningsVendusPhaseMois", (string)null);
-                });
-
-            modelBuilder.Entity("PilotageForfaits.Domain.Entites.PlanningVenduProfil", b =>
-                {
-                    b.Property<Guid>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("uuid");
-
-                    b.Property<decimal>("JoursHomme")
-                        .HasPrecision(18, 6)
-                        .HasColumnType("numeric(18,6)");
-
-                    b.Property<string>("Mois")
-                        .IsRequired()
-                        .HasMaxLength(7)
-                        .HasColumnType("character varying(7)");
-
-                    b.Property<Guid>("ProfilProjetId")
-                        .HasColumnType("uuid");
-
-                    b.Property<Guid>("ProjetId")
-                        .HasColumnType("uuid");
-
-                    b.Property<int>("Version")
-                        .IsConcurrencyToken()
-                        .HasColumnType("integer");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("ProjetId");
-
-                    b.HasIndex("ProfilProjetId", "Mois")
-                        .IsUnique();
-
-                    b.ToTable("PlanningsVendusProfil", (string)null);
-                });
-
-            modelBuilder.Entity("PilotageForfaits.Domain.Entites.PointHebdo", b =>
-                {
-                    b.Property<Guid>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("uuid");
-
-                    b.Property<string>("Cle")
-                        .IsRequired()
-                        .HasMaxLength(20)
-                        .HasColumnType("character varying(20)");
-
-                    b.Property<string>("Contenu")
+                    b.Property<string>("CreatedBy")
                         .IsRequired()
                         .HasColumnType("text");
 
-                    b.Property<DateTime>("MajLe")
+                    b.Property<DateTimeOffset>("DateCreated")
                         .HasColumnType("timestamp with time zone");
 
-                    b.Property<Guid?>("ParId")
-                        .HasColumnType("uuid");
-
-                    b.Property<Guid>("ProjetId")
-                        .HasColumnType("uuid");
-
-                    b.Property<int>("Version")
-                        .IsConcurrencyToken()
-                        .HasColumnType("integer");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("ParId");
-
-                    b.HasIndex("ProjetId");
-
-                    b.HasIndex("ProjetId", "Cle")
-                        .IsUnique();
-
-                    b.ToTable("PointsHebdo", (string)null);
-                });
-
-            modelBuilder.Entity("PilotageForfaits.Domain.Entites.Prestataire", b =>
-                {
-                    b.Property<Guid>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("uuid");
-
-                    b.Property<string>("Commentaire")
-                        .IsRequired()
-                        .HasMaxLength(4000)
-                        .HasColumnType("character varying(4000)");
-
-                    b.Property<decimal>("CoutJour")
-                        .HasPrecision(18, 6)
-                        .HasColumnType("numeric(18,6)");
-
-                    b.Property<string>("Designation")
-                        .IsRequired()
-                        .HasMaxLength(400)
-                        .HasColumnType("character varying(400)");
-
-                    b.Property<decimal>("NombreJours")
-                        .HasPrecision(18, 6)
-                        .HasColumnType("numeric(18,6)");
-
-                    b.Property<int>("Ordre")
-                        .HasColumnType("integer");
-
-                    b.Property<Guid>("ProjetId")
-                        .HasColumnType("uuid");
-
-                    b.Property<string>("Societe")
-                        .IsRequired()
-                        .HasMaxLength(400)
-                        .HasColumnType("character varying(400)");
-
-                    b.Property<decimal>("Tjm")
-                        .HasPrecision(18, 6)
-                        .HasColumnType("numeric(18,6)");
-
-                    b.Property<int>("Version")
-                        .IsConcurrencyToken()
-                        .HasColumnType("integer");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("ProjetId");
-
-                    b.ToTable("Prestataires", (string)null);
-                });
-
-            modelBuilder.Entity("PilotageForfaits.Domain.Entites.PrevisionnelProfil", b =>
-                {
-                    b.Property<Guid>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("uuid");
-
-                    b.Property<decimal>("JoursHomme")
-                        .HasPrecision(18, 6)
-                        .HasColumnType("numeric(18,6)");
-
-                    b.Property<string>("Mois")
-                        .IsRequired()
-                        .HasMaxLength(7)
-                        .HasColumnType("character varying(7)");
-
-                    b.Property<Guid>("ProfilProjetId")
-                        .HasColumnType("uuid");
-
-                    b.Property<Guid>("ProjetId")
-                        .HasColumnType("uuid");
-
-                    b.Property<int>("Version")
-                        .IsConcurrencyToken()
-                        .HasColumnType("integer");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("ProjetId");
-
-                    b.HasIndex("ProfilProjetId", "Mois")
-                        .IsUnique();
-
-                    b.ToTable("PrevisionnelsProfil", (string)null);
-                });
-
-            modelBuilder.Entity("PilotageForfaits.Domain.Entites.ProfilProjet", b =>
-                {
-                    b.Property<Guid>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("uuid");
-
-                    b.Property<DateTimeOffset?>("AjouteLe")
+                    b.Property<DateTimeOffset>("DateDeleted")
                         .HasColumnType("timestamp with time zone");
 
-                    b.Property<Guid?>("AjouteParId")
-                        .HasColumnType("uuid");
+                    b.Property<string>("DeletedBy")
+                        .HasColumnType("text");
 
-                    b.Property<decimal>("Cjm")
-                        .HasPrecision(18, 6)
-                        .HasColumnType("numeric(18,6)");
+                    b.Property<DateOnly?>("EndDate")
+                        .HasColumnType("date");
 
-                    b.Property<string>("Collaborateur")
-                        .IsRequired()
-                        .HasMaxLength(400)
-                        .HasColumnType("character varying(400)");
-
-                    b.Property<string>("Entite")
-                        .IsRequired()
-                        .HasMaxLength(20)
-                        .HasColumnType("character varying(20)");
-
-                    b.Property<bool>("EstAgentIa")
+                    b.Property<bool>("IsDeleted")
                         .HasColumnType("boolean");
 
-                    b.Property<decimal>("Frais")
-                        .HasPrecision(18, 6)
-                        .HasColumnType("numeric(18,6)");
-
-                    b.Property<string>("MotifAjout")
-                        .HasMaxLength(2000)
-                        .HasColumnType("character varying(2000)");
-
-                    b.Property<string>("Nom")
+                    b.Property<string>("Key")
                         .IsRequired()
-                        .HasMaxLength(400)
-                        .HasColumnType("character varying(400)");
-
-                    b.Property<string>("Origine")
-                        .IsRequired()
-                        .HasMaxLength(30)
-                        .HasColumnType("character varying(30)");
-
-                    b.Property<decimal?>("Prcs")
-                        .HasPrecision(18, 6)
-                        .HasColumnType("numeric(18,6)");
-
-                    b.Property<Guid>("ProjetId")
-                        .HasColumnType("uuid");
-
-                    b.Property<int>("Rang")
-                        .HasColumnType("integer");
-
-                    b.Property<decimal>("Tjm")
-                        .HasPrecision(18, 6)
-                        .HasColumnType("numeric(18,6)");
-
-                    b.Property<Guid?>("UtilisateurId")
-                        .HasColumnType("uuid");
-
-                    b.Property<int>("Version")
-                        .IsConcurrencyToken()
-                        .HasColumnType("integer");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("AjouteParId");
-
-                    b.HasIndex("ProjetId");
-
-                    b.HasIndex("UtilisateurId");
-
-                    b.HasIndex("ProjetId", "Rang");
-
-                    b.ToTable("ProfilsProjet", (string)null);
-                });
-
-            modelBuilder.Entity("PilotageForfaits.Domain.Entites.Projet", b =>
-                {
-                    b.Property<Guid>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("uuid");
-
-                    b.Property<string>("Agence")
-                        .HasMaxLength(400)
-                        .HasColumnType("character varying(400)");
-
-                    b.Property<decimal?>("CaInitial")
-                        .HasPrecision(18, 6)
-                        .HasColumnType("numeric(18,6)");
-
-                    b.Property<string>("CleUnicite")
                         .HasMaxLength(200)
                         .HasColumnType("character varying(200)");
 
+                    b.Property<string>("LastModifiedBy")
+                        .HasColumnType("text");
+
+                    b.Property<DateTimeOffset>("LastModifiedDate")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<string>("Name")
+                        .HasMaxLength(200)
+                        .HasColumnType("character varying(200)");
+
+                    b.Property<Guid>("ProjectId")
+                        .HasColumnType("uuid");
+
+                    b.Property<DateOnly?>("StartDate")
+                        .HasColumnType("date");
+
+                    b.Property<int>("Version")
+                        .IsConcurrencyToken()
+                        .HasColumnType("integer");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("ProjectId");
+
+                    b.HasIndex("ProjectId", "Key")
+                        .IsUnique();
+
+                    b.ToTable("PlanningDates", (string)null);
+                });
+
+            modelBuilder.Entity("Orbita.Domain.Entities.PlanningElement", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uuid");
+
+                    b.Property<string>("CreatedBy")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<DateTimeOffset>("DateCreated")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<DateTimeOffset>("DateDeleted")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<string>("DeletedBy")
+                        .HasColumnType("text");
+
+                    b.Property<bool>("IsDeleted")
+                        .HasColumnType("boolean");
+
+                    b.Property<string>("Key")
+                        .IsRequired()
+                        .HasMaxLength(200)
+                        .HasColumnType("character varying(200)");
+
+                    b.Property<int>("Kind")
+                        .HasColumnType("integer");
+
+                    b.Property<string>("LastModifiedBy")
+                        .HasColumnType("text");
+
+                    b.Property<DateTimeOffset>("LastModifiedDate")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<Guid>("ProjectId")
+                        .HasColumnType("uuid");
+
+                    b.Property<int>("Version")
+                        .IsConcurrencyToken()
+                        .HasColumnType("integer");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("ProjectId");
+
+                    b.HasIndex("ProjectId", "Kind", "Key")
+                        .IsUnique();
+
+                    b.ToTable("PlanningElements", (string)null);
+                });
+
+            modelBuilder.Entity("Orbita.Domain.Entities.Project", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uuid");
+
+                    b.Property<string>("Agency")
+                        .HasMaxLength(256)
+                        .HasColumnType("character varying(256)");
+
                     b.Property<string>("Client")
                         .IsRequired()
-                        .HasMaxLength(400)
-                        .HasColumnType("character varying(400)");
+                        .HasMaxLength(256)
+                        .HasColumnType("character varying(256)");
+
+                    b.Property<string>("ClientContact")
+                        .HasMaxLength(256)
+                        .HasColumnType("character varying(256)");
 
                     b.Property<string>("Code")
                         .HasMaxLength(50)
                         .HasColumnType("character varying(50)");
 
-                    b.Property<string>("Commercial")
-                        .HasMaxLength(400)
-                        .HasColumnType("character varying(400)");
+                    b.Property<string>("ContractType")
+                        .HasMaxLength(100)
+                        .HasColumnType("character varying(100)");
 
-                    b.Property<string>("ContactClient")
-                        .HasMaxLength(400)
-                        .HasColumnType("character varying(400)");
+                    b.Property<DateOnly?>("ContractualEndDate")
+                        .HasColumnType("date");
 
-                    b.Property<DateTimeOffset>("CreeLe")
+                    b.Property<DateTimeOffset>("CreatedAt")
                         .HasColumnType("timestamp with time zone");
 
-                    b.Property<Guid?>("CreeParId")
+                    b.Property<string>("CreatedBy")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<Guid?>("CreatedByUserId")
                         .HasColumnType("uuid");
 
-                    b.Property<DateOnly?>("Debut")
-                        .HasColumnType("date");
+                    b.Property<DateTimeOffset>("DateCreated")
+                        .HasColumnType("timestamp with time zone");
 
-                    b.Property<string>("Directeur")
-                        .HasMaxLength(400)
-                        .HasColumnType("character varying(400)");
+                    b.Property<DateTimeOffset>("DateDeleted")
+                        .HasColumnType("timestamp with time zone");
 
-                    b.Property<DateOnly?>("FinContractuelle")
-                        .HasColumnType("date");
+                    b.Property<string>("DeletedBy")
+                        .HasColumnType("text");
 
-                    b.Property<DateOnly?>("FinPrevue")
-                        .HasColumnType("date");
+                    b.Property<string>("Director")
+                        .HasMaxLength(256)
+                        .HasColumnType("character varying(256)");
 
-                    b.Property<string>("Nom")
-                        .IsRequired()
-                        .HasMaxLength(400)
-                        .HasColumnType("character varying(400)");
+                    b.Property<decimal>("Discount")
+                        .HasColumnType("numeric");
 
-                    b.Property<string>("Origine")
-                        .IsRequired()
-                        .HasMaxLength(30)
-                        .HasColumnType("character varying(30)");
-
-                    b.Property<decimal?>("PctPilotage")
-                        .HasPrecision(18, 6)
-                        .HasColumnType("numeric(18,6)");
-
-                    b.Property<decimal?>("PctProvision")
-                        .HasPrecision(18, 6)
-                        .HasColumnType("numeric(18,6)");
-
-                    b.Property<string>("Reference")
-                        .HasMaxLength(400)
-                        .HasColumnType("character varying(400)");
-
-                    b.Property<decimal>("Remise")
-                        .HasPrecision(18, 6)
-                        .HasColumnType("numeric(18,6)");
-
-                    b.Property<bool>("RemiseSaisie")
+                    b.Property<bool>("DiscountWasSpecified")
                         .HasColumnType("boolean");
 
-                    b.Property<string>("ResponsableSL")
-                        .HasMaxLength(400)
-                        .HasColumnType("character varying(400)");
+                    b.Property<DateOnly?>("ForecastEndDate")
+                        .HasColumnType("date");
+
+                    b.Property<decimal?>("InitialRevenue")
+                        .HasColumnType("numeric");
+
+                    b.Property<bool>("IsDeleted")
+                        .HasColumnType("boolean");
+
+                    b.Property<string>("LastModifiedBy")
+                        .HasColumnType("text");
+
+                    b.Property<DateTimeOffset>("LastModifiedDate")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<decimal?>("ManagementPercentage")
+                        .HasColumnType("numeric");
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasMaxLength(256)
+                        .HasColumnType("character varying(256)");
+
+                    b.Property<int>("Origin")
+                        .HasColumnType("integer");
+
+                    b.Property<decimal?>("ProvisionPercentage")
+                        .HasColumnType("numeric");
+
+                    b.Property<string>("Reference")
+                        .HasMaxLength(128)
+                        .HasColumnType("character varying(128)");
+
+                    b.Property<string>("SalesRepresentative")
+                        .HasMaxLength(256)
+                        .HasColumnType("character varying(256)");
 
                     b.Property<string>("ServiceLine")
-                        .HasMaxLength(400)
-                        .HasColumnType("character varying(400)");
+                        .HasMaxLength(256)
+                        .HasColumnType("character varying(256)");
 
-                    b.Property<string>("Statut")
+                    b.Property<string>("ServiceLineManager")
+                        .HasMaxLength(256)
+                        .HasColumnType("character varying(256)");
+
+                    b.Property<DateOnly?>("StartDate")
+                        .HasColumnType("date");
+
+                    b.Property<int>("Status")
+                        .HasColumnType("integer");
+
+                    b.Property<string>("UniqueKey")
                         .IsRequired()
-                        .HasMaxLength(30)
-                        .HasColumnType("character varying(30)");
-
-                    b.Property<string>("TypeContrat")
-                        .HasMaxLength(400)
-                        .HasColumnType("character varying(400)");
+                        .HasMaxLength(512)
+                        .HasColumnType("character varying(512)");
 
                     b.Property<int>("Version")
                         .IsConcurrencyToken()
@@ -2146,17 +1066,1041 @@ namespace Orbita.Persistence.Migrations
 
                     b.HasKey("Id");
 
-                    b.HasIndex("CleUnicite")
+                    b.HasIndex("CreatedByUserId");
+
+                    b.HasIndex("UniqueKey")
                         .IsUnique();
 
-                    b.HasIndex("CreeParId");
-
-                    b.HasIndex("Statut");
-
-                    b.ToTable("Projets", (string)null);
+                    b.ToTable("Projects", (string)null);
                 });
 
-            modelBuilder.Entity("PilotageForfaits.Domain.Entites.Risque", b =>
+            modelBuilder.Entity("Orbita.Domain.Entities.ProjectAction", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uuid");
+
+                    b.Property<string>("Comment")
+                        .HasMaxLength(4000)
+                        .HasColumnType("character varying(4000)");
+
+                    b.Property<DateOnly?>("CompletedOn")
+                        .HasColumnType("date");
+
+                    b.Property<string>("CreatedBy")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<Guid?>("CreatedByUserId")
+                        .HasColumnType("uuid");
+
+                    b.Property<DateOnly>("CreatedOn")
+                        .HasColumnType("date");
+
+                    b.Property<DateTimeOffset>("DateCreated")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<DateTimeOffset>("DateDeleted")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<string>("DeletedBy")
+                        .HasColumnType("text");
+
+                    b.Property<string>("GovernanceInstance")
+                        .HasMaxLength(100)
+                        .HasColumnType("character varying(100)");
+
+                    b.Property<bool>("IsDeleted")
+                        .HasColumnType("boolean");
+
+                    b.Property<string>("LastModifiedBy")
+                        .HasColumnType("text");
+
+                    b.Property<DateTimeOffset>("LastModifiedDate")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<string>("OwnerName")
+                        .HasMaxLength(256)
+                        .HasColumnType("character varying(256)");
+
+                    b.Property<Guid?>("OwnerUserId")
+                        .HasColumnType("uuid");
+
+                    b.Property<decimal>("Progress")
+                        .HasColumnType("numeric");
+
+                    b.Property<Guid>("ProjectId")
+                        .HasColumnType("uuid");
+
+                    b.Property<string>("Reference")
+                        .IsRequired()
+                        .HasMaxLength(20)
+                        .HasColumnType("character varying(20)");
+
+                    b.Property<int>("Status")
+                        .HasColumnType("integer");
+
+                    b.Property<DateOnly?>("TargetDate")
+                        .HasColumnType("date");
+
+                    b.Property<Guid?>("TaskId")
+                        .HasColumnType("uuid");
+
+                    b.Property<string>("Title")
+                        .IsRequired()
+                        .HasMaxLength(1000)
+                        .HasColumnType("character varying(1000)");
+
+                    b.Property<int>("Version")
+                        .IsConcurrencyToken()
+                        .HasColumnType("integer");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("CreatedByUserId");
+
+                    b.HasIndex("OwnerUserId");
+
+                    b.HasIndex("ProjectId");
+
+                    b.HasIndex("TaskId");
+
+                    b.HasIndex("ProjectId", "Reference")
+                        .IsUnique();
+
+                    b.ToTable("ProjectActions", null, t =>
+                        {
+                            t.HasCheckConstraint("CK_ProjectActions_Progress", "\"Progress\" >= 0 AND \"Progress\" <= 1");
+                        });
+                });
+
+            modelBuilder.Entity("Orbita.Domain.Entities.ProjectAddedPerson", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uuid");
+
+                    b.Property<string>("CreatedBy")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<DateTimeOffset>("DateCreated")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<DateTimeOffset>("DateDeleted")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<string>("DeletedBy")
+                        .HasColumnType("text");
+
+                    b.Property<bool>("IsDeleted")
+                        .HasColumnType("boolean");
+
+                    b.Property<string>("Key")
+                        .IsRequired()
+                        .HasMaxLength(200)
+                        .HasColumnType("character varying(200)");
+
+                    b.Property<string>("LastModifiedBy")
+                        .HasColumnType("text");
+
+                    b.Property<DateTimeOffset>("LastModifiedDate")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasMaxLength(200)
+                        .HasColumnType("character varying(200)");
+
+                    b.Property<Guid>("ProjectId")
+                        .HasColumnType("uuid");
+
+                    b.Property<int>("Version")
+                        .IsConcurrencyToken()
+                        .HasColumnType("integer");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("ProjectId");
+
+                    b.HasIndex("ProjectId", "Key")
+                        .IsUnique();
+
+                    b.ToTable("ProjectAddedPeople", (string)null);
+                });
+
+            modelBuilder.Entity("Orbita.Domain.Entities.ProjectAssignment", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uuid");
+
+                    b.Property<DateTimeOffset>("AssignedAt")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<string>("CreatedBy")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<DateTimeOffset>("DateCreated")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<DateTimeOffset>("DateDeleted")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<string>("DeletedBy")
+                        .HasColumnType("text");
+
+                    b.Property<Guid?>("GrantedByUserId")
+                        .HasColumnType("uuid");
+
+                    b.Property<bool>("IsDeleted")
+                        .HasColumnType("boolean");
+
+                    b.Property<string>("LastModifiedBy")
+                        .HasColumnType("text");
+
+                    b.Property<DateTimeOffset>("LastModifiedDate")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<Guid>("ProjectId")
+                        .HasColumnType("uuid");
+
+                    b.Property<int>("Role")
+                        .HasColumnType("integer");
+
+                    b.Property<Guid>("UserId")
+                        .HasColumnType("uuid");
+
+                    b.Property<int>("Version")
+                        .IsConcurrencyToken()
+                        .HasColumnType("integer");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("GrantedByUserId");
+
+                    b.HasIndex("ProjectId");
+
+                    b.HasIndex("UserId");
+
+                    b.HasIndex("ProjectId", "UserId")
+                        .IsUnique();
+
+                    b.ToTable("ProjectAssignments", (string)null);
+                });
+
+            modelBuilder.Entity("Orbita.Domain.Entities.ProjectAxis", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uuid");
+
+                    b.Property<string>("Code")
+                        .IsRequired()
+                        .HasMaxLength(50)
+                        .HasColumnType("character varying(50)");
+
+                    b.Property<string>("CreatedBy")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<DateTimeOffset>("DateCreated")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<DateTimeOffset>("DateDeleted")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<string>("DeletedBy")
+                        .HasColumnType("text");
+
+                    b.Property<DateOnly?>("DueDate")
+                        .HasColumnType("date");
+
+                    b.Property<bool>("IsDeleted")
+                        .HasColumnType("boolean");
+
+                    b.Property<string>("LastModifiedBy")
+                        .HasColumnType("text");
+
+                    b.Property<DateTimeOffset>("LastModifiedDate")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasMaxLength(400)
+                        .HasColumnType("character varying(400)");
+
+                    b.Property<int>("Order")
+                        .HasColumnType("integer");
+
+                    b.Property<Guid>("ProjectId")
+                        .HasColumnType("uuid");
+
+                    b.Property<int>("Version")
+                        .IsConcurrencyToken()
+                        .HasColumnType("integer");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("ProjectId");
+
+                    b.HasIndex("ProjectId", "Code")
+                        .IsUnique();
+
+                    b.ToTable("ProjectAxes", (string)null);
+                });
+
+            modelBuilder.Entity("Orbita.Domain.Entities.ProjectComment", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uuid");
+
+                    b.Property<Guid>("AuthorUserId")
+                        .HasColumnType("uuid");
+
+                    b.Property<DateTimeOffset>("CreatedAt")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<string>("CreatedBy")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<DateTimeOffset>("DateCreated")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<DateTimeOffset>("DateDeleted")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<string>("DeletedBy")
+                        .HasColumnType("text");
+
+                    b.Property<bool>("IsDeleted")
+                        .HasColumnType("boolean");
+
+                    b.Property<string>("LastModifiedBy")
+                        .HasColumnType("text");
+
+                    b.Property<DateTimeOffset>("LastModifiedDate")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<DateTimeOffset?>("ModifiedAt")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<Guid>("ProjectId")
+                        .HasColumnType("uuid");
+
+                    b.Property<Guid>("TargetId")
+                        .HasColumnType("uuid");
+
+                    b.Property<string>("TargetType")
+                        .IsRequired()
+                        .HasMaxLength(30)
+                        .HasColumnType("character varying(30)");
+
+                    b.Property<string>("Text")
+                        .IsRequired()
+                        .HasMaxLength(4000)
+                        .HasColumnType("character varying(4000)");
+
+                    b.Property<int>("Version")
+                        .IsConcurrencyToken()
+                        .HasColumnType("integer");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("AuthorUserId");
+
+                    b.HasIndex("ProjectId");
+
+                    b.HasIndex("ProjectId", "TargetType", "TargetId", "CreatedAt");
+
+                    b.ToTable("ProjectComments", (string)null);
+                });
+
+            modelBuilder.Entity("Orbita.Domain.Entities.ProjectDecision", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uuid");
+
+                    b.Property<string>("Comment")
+                        .HasMaxLength(4000)
+                        .HasColumnType("character varying(4000)");
+
+                    b.Property<string>("CreatedBy")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<Guid?>("CreatedByUserId")
+                        .HasColumnType("uuid");
+
+                    b.Property<DateTimeOffset>("DateCreated")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<DateTimeOffset>("DateDeleted")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<DateOnly>("DecisionDate")
+                        .HasColumnType("date");
+
+                    b.Property<string>("DecisionMaker")
+                        .HasMaxLength(256)
+                        .HasColumnType("character varying(256)");
+
+                    b.Property<string>("DeletedBy")
+                        .HasColumnType("text");
+
+                    b.Property<string>("GovernanceInstance")
+                        .HasMaxLength(100)
+                        .HasColumnType("character varying(100)");
+
+                    b.Property<string>("Impact")
+                        .HasMaxLength(2000)
+                        .HasColumnType("character varying(2000)");
+
+                    b.Property<bool>("IsDeleted")
+                        .HasColumnType("boolean");
+
+                    b.Property<string>("LastModifiedBy")
+                        .HasColumnType("text");
+
+                    b.Property<DateTimeOffset>("LastModifiedDate")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<Guid>("ProjectId")
+                        .HasColumnType("uuid");
+
+                    b.Property<string>("Reference")
+                        .IsRequired()
+                        .HasMaxLength(20)
+                        .HasColumnType("character varying(20)");
+
+                    b.Property<int>("Status")
+                        .HasColumnType("integer");
+
+                    b.Property<string>("Title")
+                        .IsRequired()
+                        .HasMaxLength(1000)
+                        .HasColumnType("character varying(1000)");
+
+                    b.Property<int>("Version")
+                        .IsConcurrencyToken()
+                        .HasColumnType("integer");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("CreatedByUserId");
+
+                    b.HasIndex("ProjectId");
+
+                    b.HasIndex("ProjectId", "Reference")
+                        .IsUnique();
+
+                    b.ToTable("ProjectDecisions", (string)null);
+                });
+
+            modelBuilder.Entity("Orbita.Domain.Entities.ProjectDraft", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uuid");
+
+                    b.Property<Guid>("AuthorUserId")
+                        .HasColumnType("uuid");
+
+                    b.Property<string>("Client")
+                        .IsRequired()
+                        .HasMaxLength(256)
+                        .HasColumnType("character varying(256)");
+
+                    b.Property<Guid?>("CoAuthorUserId")
+                        .HasColumnType("uuid");
+
+                    b.Property<string>("Content")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<DateTimeOffset>("CreatedAt")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<string>("CreatedBy")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<DateTimeOffset>("DateCreated")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<DateTimeOffset>("DateDeleted")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<string>("DeletedBy")
+                        .HasColumnType("text");
+
+                    b.Property<bool>("IsDeleted")
+                        .HasColumnType("boolean");
+
+                    b.Property<string>("LastModifiedBy")
+                        .HasColumnType("text");
+
+                    b.Property<DateTimeOffset>("LastModifiedDate")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<DateTimeOffset>("ModifiedAt")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<Guid?>("ModifiedByUserId")
+                        .HasColumnType("uuid");
+
+                    b.Property<int>("Origin")
+                        .HasColumnType("integer");
+
+                    b.Property<string>("ProjectName")
+                        .IsRequired()
+                        .HasMaxLength(256)
+                        .HasColumnType("character varying(256)");
+
+                    b.Property<string>("Reference")
+                        .HasMaxLength(128)
+                        .HasColumnType("character varying(128)");
+
+                    b.Property<string>("Source")
+                        .HasMaxLength(512)
+                        .HasColumnType("character varying(512)");
+
+                    b.Property<int>("Version")
+                        .IsConcurrencyToken()
+                        .HasColumnType("integer");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("ModifiedByUserId");
+
+                    b.HasIndex("AuthorUserId", "ModifiedAt");
+
+                    b.HasIndex("CoAuthorUserId", "ModifiedAt");
+
+                    b.ToTable("ProjectDrafts", (string)null);
+                });
+
+            modelBuilder.Entity("Orbita.Domain.Entities.ProjectField", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uuid");
+
+                    b.Property<string>("CreatedBy")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<DateTimeOffset>("DateCreated")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<DateTimeOffset>("DateDeleted")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<string>("DeletedBy")
+                        .HasColumnType("text");
+
+                    b.Property<bool>("IsDeleted")
+                        .HasColumnType("boolean");
+
+                    b.Property<string>("Key")
+                        .HasMaxLength(50)
+                        .HasColumnType("character varying(50)");
+
+                    b.Property<string>("Label")
+                        .IsRequired()
+                        .HasMaxLength(400)
+                        .HasColumnType("character varying(400)");
+
+                    b.Property<string>("LastModifiedBy")
+                        .HasColumnType("text");
+
+                    b.Property<DateTimeOffset>("LastModifiedDate")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<int>("Order")
+                        .HasColumnType("integer");
+
+                    b.Property<Guid>("ProjectId")
+                        .HasColumnType("uuid");
+
+                    b.Property<string>("Value")
+                        .HasMaxLength(2000)
+                        .HasColumnType("character varying(2000)");
+
+                    b.Property<int>("Version")
+                        .IsConcurrencyToken()
+                        .HasColumnType("integer");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("ProjectId");
+
+                    b.HasIndex("ProjectId", "Order");
+
+                    b.ToTable("ProjectFields", (string)null);
+                });
+
+            modelBuilder.Entity("Orbita.Domain.Entities.ProjectJournalEntry", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uuid");
+
+                    b.Property<string>("CreatedBy")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<DateTimeOffset>("DateCreated")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<DateTimeOffset>("DateDeleted")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<string>("DeletedBy")
+                        .HasColumnType("text");
+
+                    b.Property<Guid?>("EntityId")
+                        .HasColumnType("uuid");
+
+                    b.Property<string>("EntityType")
+                        .IsRequired()
+                        .HasMaxLength(128)
+                        .HasColumnType("character varying(128)");
+
+                    b.Property<bool>("IsDeleted")
+                        .HasColumnType("boolean");
+
+                    b.Property<string>("LastModifiedBy")
+                        .HasColumnType("text");
+
+                    b.Property<DateTimeOffset>("LastModifiedDate")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<string>("MemberName")
+                        .IsRequired()
+                        .HasMaxLength(128)
+                        .HasColumnType("character varying(128)");
+
+                    b.Property<string>("NewValue")
+                        .HasMaxLength(4000)
+                        .HasColumnType("character varying(4000)");
+
+                    b.Property<DateTimeOffset>("OccurredAt")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<string>("PreviousValue")
+                        .HasMaxLength(4000)
+                        .HasColumnType("character varying(4000)");
+
+                    b.Property<Guid>("ProjectId")
+                        .HasColumnType("uuid");
+
+                    b.Property<Guid?>("UserId")
+                        .HasColumnType("uuid");
+
+                    b.Property<int>("Version")
+                        .IsConcurrencyToken()
+                        .HasColumnType("integer");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("ProjectId");
+
+                    b.HasIndex("UserId");
+
+                    b.HasIndex("ProjectId", "OccurredAt");
+
+                    b.HasIndex("ProjectId", "EntityType", "EntityId", "OccurredAt");
+
+                    b.ToTable("ProjectJournalEntries", (string)null);
+                });
+
+            modelBuilder.Entity("Orbita.Domain.Entities.ProjectLot", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uuid");
+
+                    b.Property<string>("Code")
+                        .IsRequired()
+                        .HasMaxLength(50)
+                        .HasColumnType("character varying(50)");
+
+                    b.Property<string>("CreatedBy")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<DateTimeOffset>("DateCreated")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<DateTimeOffset>("DateDeleted")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<string>("DeletedBy")
+                        .HasColumnType("text");
+
+                    b.Property<bool>("IsDeleted")
+                        .HasColumnType("boolean");
+
+                    b.Property<string>("LastModifiedBy")
+                        .HasColumnType("text");
+
+                    b.Property<DateTimeOffset>("LastModifiedDate")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasMaxLength(400)
+                        .HasColumnType("character varying(400)");
+
+                    b.Property<Guid>("ProjectId")
+                        .HasColumnType("uuid");
+
+                    b.Property<int>("Version")
+                        .IsConcurrencyToken()
+                        .HasColumnType("integer");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("ProjectId");
+
+                    b.HasIndex("ProjectId", "Code")
+                        .IsUnique();
+
+                    b.ToTable("ProjectLots", (string)null);
+                });
+
+            modelBuilder.Entity("Orbita.Domain.Entities.ProjectMetric", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uuid");
+
+                    b.Property<string>("CreatedBy")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<DateTimeOffset>("DateCreated")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<DateTimeOffset>("DateDeleted")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<string>("DeletedBy")
+                        .HasColumnType("text");
+
+                    b.Property<bool>("IsDeleted")
+                        .HasColumnType("boolean");
+
+                    b.Property<string>("LastModifiedBy")
+                        .HasColumnType("text");
+
+                    b.Property<DateTimeOffset>("LastModifiedDate")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<int>("Order")
+                        .HasColumnType("integer");
+
+                    b.Property<decimal>("Percentage")
+                        .HasColumnType("numeric");
+
+                    b.Property<Guid>("ProjectId")
+                        .HasColumnType("uuid");
+
+                    b.Property<string>("Step")
+                        .IsRequired()
+                        .HasMaxLength(200)
+                        .HasColumnType("character varying(200)");
+
+                    b.Property<int>("Version")
+                        .IsConcurrencyToken()
+                        .HasColumnType("integer");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("ProjectId");
+
+                    b.HasIndex("ProjectId", "Order");
+
+                    b.ToTable("ProjectMetrics", (string)null);
+                });
+
+            modelBuilder.Entity("Orbita.Domain.Entities.ProjectMilestone", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uuid");
+
+                    b.Property<string>("CreatedBy")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<DateTimeOffset>("DateCreated")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<DateTimeOffset>("DateDeleted")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<string>("DeletedBy")
+                        .HasColumnType("text");
+
+                    b.Property<DateOnly?>("EndDate")
+                        .HasColumnType("date");
+
+                    b.Property<bool>("IsDeleted")
+                        .HasColumnType("boolean");
+
+                    b.Property<string>("LastModifiedBy")
+                        .HasColumnType("text");
+
+                    b.Property<DateTimeOffset>("LastModifiedDate")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasMaxLength(200)
+                        .HasColumnType("character varying(200)");
+
+                    b.Property<Guid>("ProjectId")
+                        .HasColumnType("uuid");
+
+                    b.Property<bool>("RequiresConfirmation")
+                        .HasColumnType("boolean");
+
+                    b.Property<DateOnly>("StartDate")
+                        .HasColumnType("date");
+
+                    b.Property<int>("Type")
+                        .HasColumnType("integer");
+
+                    b.Property<int>("Version")
+                        .IsConcurrencyToken()
+                        .HasColumnType("integer");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("ProjectId");
+
+                    b.ToTable("ProjectMilestones", (string)null);
+                });
+
+            modelBuilder.Entity("Orbita.Domain.Entities.ProjectNotification", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uuid");
+
+                    b.Property<string>("CreatedBy")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<DateTimeOffset>("DateCreated")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<DateTimeOffset>("DateDeleted")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<string>("DeletedBy")
+                        .HasColumnType("text");
+
+                    b.Property<int>("DeliveryStatus")
+                        .HasColumnType("integer");
+
+                    b.Property<bool>("IsDeleted")
+                        .HasColumnType("boolean");
+
+                    b.Property<int>("Kind")
+                        .HasColumnType("integer");
+
+                    b.Property<string>("LastModifiedBy")
+                        .HasColumnType("text");
+
+                    b.Property<DateTimeOffset>("LastModifiedDate")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<Guid>("ProjectId")
+                        .HasColumnType("uuid");
+
+                    b.Property<Guid>("RecipientUserId")
+                        .HasColumnType("uuid");
+
+                    b.Property<DateTimeOffset?>("SentAt")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<Guid>("SubjectId")
+                        .HasColumnType("uuid");
+
+                    b.Property<DateOnly>("TargetDate")
+                        .HasColumnType("date");
+
+                    b.Property<int>("Version")
+                        .IsConcurrencyToken()
+                        .HasColumnType("integer");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("ProjectId");
+
+                    b.HasIndex("ProjectId", "SubjectId", "Kind");
+
+                    b.HasIndex("RecipientUserId", "DeliveryStatus", "TargetDate");
+
+                    b.ToTable("ProjectNotifications", (string)null);
+                });
+
+            modelBuilder.Entity("Orbita.Domain.Entities.ProjectPhase", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uuid");
+
+                    b.Property<string>("Code")
+                        .IsRequired()
+                        .HasMaxLength(50)
+                        .HasColumnType("character varying(50)");
+
+                    b.Property<string>("CreatedBy")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<DateTimeOffset>("DateCreated")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<DateTimeOffset>("DateDeleted")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<string>("DeletedBy")
+                        .HasColumnType("text");
+
+                    b.Property<bool>("IsDeleted")
+                        .HasColumnType("boolean");
+
+                    b.Property<bool>("IsReferenceValue")
+                        .HasColumnType("boolean");
+
+                    b.Property<string>("LastModifiedBy")
+                        .HasColumnType("text");
+
+                    b.Property<DateTimeOffset>("LastModifiedDate")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<int>("Order")
+                        .HasColumnType("integer");
+
+                    b.Property<Guid>("ProjectId")
+                        .HasColumnType("uuid");
+
+                    b.Property<int>("Version")
+                        .IsConcurrencyToken()
+                        .HasColumnType("integer");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("ProjectId");
+
+                    b.HasIndex("ProjectId", "Code")
+                        .IsUnique();
+
+                    b.ToTable("ProjectPhases", (string)null);
+                });
+
+            modelBuilder.Entity("Orbita.Domain.Entities.ProjectProfile", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uuid");
+
+                    b.Property<DateTimeOffset?>("AddedAt")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<Guid?>("AddedByUserId")
+                        .HasColumnType("uuid");
+
+                    b.Property<string>("AdditionReason")
+                        .HasMaxLength(2000)
+                        .HasColumnType("character varying(2000)");
+
+                    b.Property<string>("Collaborator")
+                        .HasColumnType("text");
+
+                    b.Property<decimal?>("CostRatePercentage")
+                        .HasColumnType("numeric");
+
+                    b.Property<string>("CreatedBy")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<decimal>("DailyCostRate")
+                        .HasColumnType("numeric");
+
+                    b.Property<decimal>("DailyRate")
+                        .HasColumnType("numeric");
+
+                    b.Property<DateTimeOffset>("DateCreated")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<DateTimeOffset>("DateDeleted")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<string>("DeletedBy")
+                        .HasColumnType("text");
+
+                    b.Property<decimal>("Expenses")
+                        .HasColumnType("numeric");
+
+                    b.Property<bool>("IsAiAgent")
+                        .HasColumnType("boolean");
+
+                    b.Property<bool>("IsDeleted")
+                        .HasColumnType("boolean");
+
+                    b.Property<string>("LastModifiedBy")
+                        .HasColumnType("text");
+
+                    b.Property<DateTimeOffset>("LastModifiedDate")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<string>("LegalEntity")
+                        .HasMaxLength(20)
+                        .HasColumnType("character varying(20)");
+
+                    b.Property<string>("Name")
+                        .HasColumnType("text");
+
+                    b.Property<int>("Origin")
+                        .HasColumnType("integer");
+
+                    b.Property<Guid>("ProjectId")
+                        .HasColumnType("uuid");
+
+                    b.Property<int>("Rank")
+                        .HasColumnType("integer");
+
+                    b.Property<Guid?>("UserId")
+                        .HasColumnType("uuid");
+
+                    b.Property<int>("Version")
+                        .IsConcurrencyToken()
+                        .HasColumnType("integer");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("AddedByUserId");
+
+                    b.HasIndex("ProjectId");
+
+                    b.HasIndex("UserId");
+
+                    b.HasIndex("ProjectId", "Rank");
+
+                    b.ToTable("ProjectProfiles", (string)null);
+                });
+
+            modelBuilder.Entity("Orbita.Domain.Entities.ProjectRisk", b =>
                 {
                     b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
@@ -2165,45 +2109,61 @@ namespace Orbita.Persistence.Migrations
                     b.Property<Guid?>("ActionId")
                         .HasColumnType("uuid");
 
+                    b.Property<string>("ActionPlan")
+                        .HasMaxLength(2000)
+                        .HasColumnType("character varying(2000)");
+
                     b.Property<string>("Cause")
+                        .HasMaxLength(2000)
+                        .HasColumnType("character varying(2000)");
+
+                    b.Property<string>("Comment")
                         .HasMaxLength(4000)
                         .HasColumnType("character varying(4000)");
 
-                    b.Property<string>("Commentaire")
-                        .IsRequired()
-                        .HasMaxLength(4000)
-                        .HasColumnType("character varying(4000)");
-
-                    b.Property<DateTimeOffset>("CreeLe")
+                    b.Property<DateTimeOffset>("CreatedAt")
                         .HasColumnType("timestamp with time zone");
 
-                    b.Property<Guid?>("CreeParId")
+                    b.Property<string>("CreatedBy")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<Guid?>("CreatedByUserId")
                         .HasColumnType("uuid");
 
-                    b.Property<string>("Impact")
-                        .IsRequired()
-                        .HasMaxLength(30)
-                        .HasColumnType("character varying(30)");
+                    b.Property<DateTimeOffset>("DateCreated")
+                        .HasColumnType("timestamp with time zone");
 
-                    b.Property<string>("Libelle")
-                        .IsRequired()
-                        .HasMaxLength(1000)
-                        .HasColumnType("character varying(1000)");
+                    b.Property<DateTimeOffset>("DateDeleted")
+                        .HasColumnType("timestamp with time zone");
 
-                    b.Property<string>("Parade")
-                        .HasMaxLength(4000)
-                        .HasColumnType("character varying(4000)");
+                    b.Property<string>("DeletedBy")
+                        .HasColumnType("text");
 
-                    b.Property<string>("Plan")
-                        .HasMaxLength(4000)
-                        .HasColumnType("character varying(4000)");
+                    b.Property<int>("Impact")
+                        .HasColumnType("integer");
 
-                    b.Property<string>("Probabilite")
-                        .IsRequired()
-                        .HasMaxLength(30)
-                        .HasColumnType("character varying(30)");
+                    b.Property<bool>("IsDeleted")
+                        .HasColumnType("boolean");
 
-                    b.Property<Guid>("ProjetId")
+                    b.Property<string>("LastModifiedBy")
+                        .HasColumnType("text");
+
+                    b.Property<DateTimeOffset>("LastModifiedDate")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<string>("Mitigation")
+                        .HasMaxLength(2000)
+                        .HasColumnType("character varying(2000)");
+
+                    b.Property<string>("Owner")
+                        .HasMaxLength(256)
+                        .HasColumnType("character varying(256)");
+
+                    b.Property<int>("Probability")
+                        .HasColumnType("integer");
+
+                    b.Property<Guid>("ProjectId")
                         .HasColumnType("uuid");
 
                     b.Property<string>("Reference")
@@ -2211,18 +2171,16 @@ namespace Orbita.Persistence.Migrations
                         .HasMaxLength(20)
                         .HasColumnType("character varying(20)");
 
-                    b.Property<string>("Responsable")
-                        .HasMaxLength(400)
-                        .HasColumnType("character varying(400)");
+                    b.Property<int>("Status")
+                        .HasColumnType("integer");
 
-                    b.Property<string>("Statut")
+                    b.Property<string>("Title")
                         .IsRequired()
-                        .HasMaxLength(30)
-                        .HasColumnType("character varying(30)");
+                        .HasMaxLength(1000)
+                        .HasColumnType("character varying(1000)");
 
-                    b.Property<string>("Type")
-                        .HasMaxLength(30)
-                        .HasColumnType("character varying(30)");
+                    b.Property<int?>("Type")
+                        .HasColumnType("integer");
 
                     b.Property<int>("Version")
                         .IsConcurrencyToken()
@@ -2232,142 +2190,54 @@ namespace Orbita.Persistence.Migrations
 
                     b.HasIndex("ActionId");
 
-                    b.HasIndex("CreeParId");
+                    b.HasIndex("CreatedByUserId");
 
-                    b.HasIndex("ProjetId");
+                    b.HasIndex("ProjectId");
 
-                    b.HasIndex("ProjetId", "Reference")
+                    b.HasIndex("ProjectId", "Reference")
                         .IsUnique();
 
-                    b.ToTable("Risques", (string)null);
+                    b.ToTable("ProjectRisks", (string)null);
                 });
 
-            modelBuilder.Entity("PilotageForfaits.Domain.Entites.Tache", b =>
+            modelBuilder.Entity("Orbita.Domain.Entities.ProjectStep", b =>
                 {
                     b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("uuid");
 
-                    b.Property<decimal?>("Avancement")
-                        .HasPrecision(18, 6)
-                        .HasColumnType("numeric(18,6)");
-
-                    b.Property<Guid?>("AxeId")
-                        .HasColumnType("uuid");
-
-                    b.Property<string>("CodeAxeTsp")
+                    b.Property<string>("CreatedBy")
                         .IsRequired()
-                        .HasMaxLength(50)
-                        .HasColumnType("character varying(50)");
+                        .HasColumnType("text");
 
-                    b.Property<bool>("ColonneLivrable")
+                    b.Property<DateTimeOffset>("DateCreated")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<DateTimeOffset>("DateDeleted")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<string>("DeletedBy")
+                        .HasColumnType("text");
+
+                    b.Property<bool>("IsDeleted")
                         .HasColumnType("boolean");
 
-                    b.Property<string>("Commentaire")
-                        .IsRequired()
-                        .HasMaxLength(4000)
-                        .HasColumnType("character varying(4000)");
+                    b.Property<string>("LastModifiedBy")
+                        .HasColumnType("text");
 
-                    b.Property<DateOnly?>("DebutPrevu")
-                        .HasColumnType("date");
+                    b.Property<DateTimeOffset>("LastModifiedDate")
+                        .HasColumnType("timestamp with time zone");
 
-                    b.Property<Guid?>("EcheanceId")
-                        .HasColumnType("uuid");
-
-                    b.Property<bool>("EstSection")
-                        .HasColumnType("boolean");
-
-                    b.Property<string>("EtapeTsp")
+                    b.Property<string>("Name")
                         .IsRequired()
                         .HasMaxLength(400)
                         .HasColumnType("character varying(400)");
 
-                    b.Property<DateOnly?>("FinPrevue")
-                        .HasColumnType("date");
-
-                    b.Property<string>("Hypothese")
-                        .IsRequired()
-                        .HasMaxLength(4000)
-                        .HasColumnType("character varying(4000)");
-
-                    b.Property<decimal?>("IaChargeRevisee")
-                        .HasPrecision(18, 6)
-                        .HasColumnType("numeric(18,6)");
-
-                    b.Property<string>("IaCommentaire")
-                        .HasMaxLength(4000)
-                        .HasColumnType("character varying(4000)");
-
-                    b.Property<string>("IaTypeOptimisation")
-                        .HasMaxLength(400)
-                        .HasColumnType("character varying(400)");
-
-                    b.Property<string>("Libelle")
-                        .HasMaxLength(1000)
-                        .HasColumnType("character varying(1000)");
-
-                    b.Property<string>("LibelleTsp")
-                        .IsRequired()
-                        .HasMaxLength(1000)
-                        .HasColumnType("character varying(1000)");
-
-                    b.Property<int?>("LigneTsp")
+                    b.Property<int>("Order")
                         .HasColumnType("integer");
 
-                    b.Property<string>("Lot")
-                        .HasMaxLength(50)
-                        .HasColumnType("character varying(50)");
-
-                    b.Property<string>("LotTsp")
-                        .IsRequired()
-                        .HasMaxLength(50)
-                        .HasColumnType("character varying(50)");
-
-                    b.Property<string>("MarqueurLivrable")
-                        .IsRequired()
-                        .HasMaxLength(50)
-                        .HasColumnType("character varying(50)");
-
-                    b.Property<string>("Origine")
-                        .IsRequired()
-                        .HasMaxLength(30)
-                        .HasColumnType("character varying(30)");
-
-                    b.Property<Guid?>("PhaseId")
+                    b.Property<Guid>("ProjectId")
                         .HasColumnType("uuid");
-
-                    b.Property<string>("PhaseTsp")
-                        .IsRequired()
-                        .HasMaxLength(50)
-                        .HasColumnType("character varying(50)");
-
-                    b.Property<int>("Position")
-                        .HasColumnType("integer");
-
-                    b.Property<Guid>("ProjetId")
-                        .HasColumnType("uuid");
-
-                    b.Property<string>("Repere")
-                        .IsRequired()
-                        .HasMaxLength(20)
-                        .HasColumnType("character varying(20)");
-
-                    b.Property<decimal?>("ResteAFaireSaisi")
-                        .HasPrecision(18, 6)
-                        .HasColumnType("numeric(18,6)");
-
-                    b.Property<string>("Statut")
-                        .HasMaxLength(30)
-                        .HasColumnType("character varying(30)");
-
-                    b.Property<bool>("TypeSaisi")
-                        .HasColumnType("boolean");
-
-                    b.Property<Guid?>("TypeTacheId")
-                        .HasColumnType("uuid");
-
-                    b.Property<DateOnly?>("ValideeLe")
-                        .HasColumnType("date");
 
                     b.Property<int>("Version")
                         .IsConcurrencyToken()
@@ -2375,28 +2245,82 @@ namespace Orbita.Persistence.Migrations
 
                     b.HasKey("Id");
 
-                    b.HasIndex("AxeId");
+                    b.HasIndex("ProjectId");
 
-                    b.HasIndex("EcheanceId");
+                    b.HasIndex("ProjectId", "Order");
 
-                    b.HasIndex("PhaseId");
-
-                    b.HasIndex("ProjetId");
-
-                    b.HasIndex("TypeTacheId");
-
-                    b.HasIndex("ProjetId", "Position");
-
-                    b.HasIndex("ProjetId", "Repere")
-                        .IsUnique();
-
-                    b.ToTable("Taches", null, t =>
-                        {
-                            t.HasCheckConstraint("CK_Taches_Avancement", "\"Avancement\" IS NULL OR (\"Avancement\" >= 0 AND \"Avancement\" <= 1)");
-                        });
+                    b.ToTable("ProjectSteps", (string)null);
                 });
 
-            modelBuilder.Entity("PilotageForfaits.Domain.Entites.TypeTache", b =>
+            modelBuilder.Entity("Orbita.Domain.Entities.ProjectSupplier", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uuid");
+
+                    b.Property<string>("Comment")
+                        .HasMaxLength(4000)
+                        .HasColumnType("character varying(4000)");
+
+                    b.Property<string>("Company")
+                        .HasMaxLength(256)
+                        .HasColumnType("character varying(256)");
+
+                    b.Property<string>("CreatedBy")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<decimal>("DailyCost")
+                        .HasColumnType("numeric");
+
+                    b.Property<decimal>("DailyRate")
+                        .HasColumnType("numeric");
+
+                    b.Property<DateTimeOffset>("DateCreated")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<DateTimeOffset>("DateDeleted")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<string>("DeletedBy")
+                        .HasColumnType("text");
+
+                    b.Property<string>("Description")
+                        .HasMaxLength(1000)
+                        .HasColumnType("character varying(1000)");
+
+                    b.Property<bool>("IsDeleted")
+                        .HasColumnType("boolean");
+
+                    b.Property<string>("LastModifiedBy")
+                        .HasColumnType("text");
+
+                    b.Property<DateTimeOffset>("LastModifiedDate")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<int>("Order")
+                        .HasColumnType("integer");
+
+                    b.Property<decimal>("PersonDays")
+                        .HasColumnType("numeric");
+
+                    b.Property<Guid>("ProjectId")
+                        .HasColumnType("uuid");
+
+                    b.Property<int>("Version")
+                        .IsConcurrencyToken()
+                        .HasColumnType("integer");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("ProjectId");
+
+                    b.HasIndex("ProjectId", "Order");
+
+                    b.ToTable("ProjectSuppliers", (string)null);
+                });
+
+            modelBuilder.Entity("Orbita.Domain.Entities.ProjectTaskType", b =>
                 {
                     b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
@@ -2407,19 +2331,41 @@ namespace Orbita.Persistence.Migrations
                         .HasMaxLength(50)
                         .HasColumnType("character varying(50)");
 
-                    b.Property<string>("Nom")
+                    b.Property<string>("CreatedBy")
                         .IsRequired()
-                        .HasMaxLength(400)
-                        .HasColumnType("character varying(400)");
+                        .HasColumnType("text");
 
-                    b.Property<int>("Ordre")
+                    b.Property<DateTimeOffset>("DateCreated")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<DateTimeOffset>("DateDeleted")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<string>("DeletedBy")
+                        .HasColumnType("text");
+
+                    b.Property<bool>("IsCoreType")
+                        .HasColumnType("boolean");
+
+                    b.Property<bool>("IsDeleted")
+                        .HasColumnType("boolean");
+
+                    b.Property<string>("LastModifiedBy")
+                        .HasColumnType("text");
+
+                    b.Property<DateTimeOffset>("LastModifiedDate")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasMaxLength(200)
+                        .HasColumnType("character varying(200)");
+
+                    b.Property<int>("Order")
                         .HasColumnType("integer");
 
-                    b.Property<Guid>("ProjetId")
+                    b.Property<Guid>("ProjectId")
                         .HasColumnType("uuid");
-
-                    b.Property<bool>("Socle")
-                        .HasColumnType("boolean");
 
                     b.Property<int>("Version")
                         .IsConcurrencyToken()
@@ -2427,960 +2373,1990 @@ namespace Orbita.Persistence.Migrations
 
                     b.HasKey("Id");
 
-                    b.HasIndex("ProjetId");
+                    b.HasIndex("ProjectId");
 
-                    b.HasIndex("ProjetId", "Code")
+                    b.HasIndex("ProjectId", "Code")
                         .IsUnique();
 
-                    b.ToTable("TypesTache", (string)null);
+                    b.ToTable("ProjectTaskTypes", (string)null);
                 });
 
-            modelBuilder.Entity("PilotageForfaits.Domain.Entites.Utilisateur", b =>
+            modelBuilder.Entity("Orbita.Domain.Entities.PurchaseBudgetLine", b =>
                 {
                     b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("uuid");
 
-                    b.Property<bool>("Actif")
-                        .HasColumnType("boolean");
+                    b.Property<string>("Comment")
+                        .HasMaxLength(4000)
+                        .HasColumnType("character varying(4000)");
 
-                    b.Property<bool>("Administrateur")
-                        .HasColumnType("boolean");
+                    b.Property<string>("CreatedBy")
+                        .IsRequired()
+                        .HasColumnType("text");
 
-                    b.Property<DateTimeOffset>("CreeLe")
+                    b.Property<DateTimeOffset>("DateCreated")
                         .HasColumnType("timestamp with time zone");
 
-                    b.Property<DateTimeOffset?>("DerniereConnexion")
+                    b.Property<DateTimeOffset>("DateDeleted")
                         .HasColumnType("timestamp with time zone");
+
+                    b.Property<string>("DeletedBy")
+                        .HasColumnType("text");
+
+                    b.Property<string>("Description")
+                        .HasMaxLength(1000)
+                        .HasColumnType("character varying(1000)");
+
+                    b.Property<bool>("IsDeleted")
+                        .HasColumnType("boolean");
+
+                    b.Property<string>("LastModifiedBy")
+                        .HasColumnType("text");
+
+                    b.Property<DateTimeOffset>("LastModifiedDate")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<int>("Order")
+                        .HasColumnType("integer");
+
+                    b.Property<Guid>("ProjectId")
+                        .HasColumnType("uuid");
+
+                    b.Property<decimal>("Quantity")
+                        .HasColumnType("numeric");
+
+                    b.Property<decimal>("ResaleAmount")
+                        .HasColumnType("numeric");
+
+                    b.Property<string>("Type")
+                        .HasMaxLength(100)
+                        .HasColumnType("character varying(100)");
+
+                    b.Property<decimal>("UnitCost")
+                        .HasColumnType("numeric");
+
+                    b.Property<int>("Version")
+                        .IsConcurrencyToken()
+                        .HasColumnType("integer");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("ProjectId");
+
+                    b.HasIndex("ProjectId", "Order");
+
+                    b.ToTable("PurchaseBudgetLines", (string)null);
+                });
+
+            modelBuilder.Entity("Orbita.Domain.Entities.ReferencePlan", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uuid");
+
+                    b.Property<string>("CreatedBy")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<DateTimeOffset>("DateCreated")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<DateTimeOffset>("DateDeleted")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<string>("DeletedBy")
+                        .HasColumnType("text");
+
+                    b.Property<Guid?>("FrozenByUserId")
+                        .HasColumnType("uuid");
+
+                    b.Property<bool>("IsDeleted")
+                        .HasColumnType("boolean");
+
+                    b.Property<string>("LastModifiedBy")
+                        .HasColumnType("text");
+
+                    b.Property<DateTimeOffset>("LastModifiedDate")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<string>("Name")
+                        .HasMaxLength(200)
+                        .HasColumnType("character varying(200)");
+
+                    b.Property<Guid>("ProjectId")
+                        .HasColumnType("uuid");
+
+                    b.Property<DateOnly>("SnapshotDate")
+                        .HasColumnType("date");
+
+                    b.Property<int>("Version")
+                        .IsConcurrencyToken()
+                        .HasColumnType("integer");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("FrozenByUserId");
+
+                    b.HasIndex("ProjectId");
+
+                    b.ToTable("ReferencePlans", (string)null);
+                });
+
+            modelBuilder.Entity("Orbita.Domain.Entities.ReferencePlanDate", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uuid");
+
+                    b.Property<string>("CreatedBy")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<DateTimeOffset>("DateCreated")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<DateTimeOffset>("DateDeleted")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<string>("DeletedBy")
+                        .HasColumnType("text");
+
+                    b.Property<DateOnly?>("EndDate")
+                        .HasColumnType("date");
+
+                    b.Property<bool>("IsDeleted")
+                        .HasColumnType("boolean");
+
+                    b.Property<string>("Key")
+                        .IsRequired()
+                        .HasMaxLength(200)
+                        .HasColumnType("character varying(200)");
+
+                    b.Property<string>("LastModifiedBy")
+                        .HasColumnType("text");
+
+                    b.Property<DateTimeOffset>("LastModifiedDate")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<Guid>("ProjectId")
+                        .HasColumnType("uuid");
+
+                    b.Property<Guid>("ReferencePlanId")
+                        .HasColumnType("uuid");
+
+                    b.Property<DateOnly?>("StartDate")
+                        .HasColumnType("date");
+
+                    b.Property<int>("Version")
+                        .IsConcurrencyToken()
+                        .HasColumnType("integer");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("ProjectId");
+
+                    b.HasIndex("ReferencePlanId", "Key")
+                        .IsUnique();
+
+                    b.ToTable("ReferencePlanDates", (string)null);
+                });
+
+            modelBuilder.Entity("Orbita.Domain.Entities.ReferencePlanTaskLine", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uuid");
+
+                    b.Property<string>("CreatedBy")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<DateTimeOffset>("DateCreated")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<DateTimeOffset>("DateDeleted")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<string>("DeletedBy")
+                        .HasColumnType("text");
+
+                    b.Property<bool>("IsDeleted")
+                        .HasColumnType("boolean");
+
+                    b.Property<string>("LastModifiedBy")
+                        .HasColumnType("text");
+
+                    b.Property<DateTimeOffset>("LastModifiedDate")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<decimal>("PlannedEffort")
+                        .HasColumnType("numeric");
+
+                    b.Property<DateOnly?>("PlannedEndDate")
+                        .HasColumnType("date");
+
+                    b.Property<DateOnly?>("PlannedStartDate")
+                        .HasColumnType("date");
+
+                    b.Property<Guid>("ProjectId")
+                        .HasColumnType("uuid");
+
+                    b.Property<Guid>("ReferencePlanId")
+                        .HasColumnType("uuid");
+
+                    b.Property<Guid>("TaskId")
+                        .HasColumnType("uuid");
+
+                    b.Property<string>("VarianceCause")
+                        .HasMaxLength(30)
+                        .HasColumnType("character varying(30)");
+
+                    b.Property<string>("VarianceExplanation")
+                        .HasMaxLength(1000)
+                        .HasColumnType("character varying(1000)");
+
+                    b.Property<int>("Version")
+                        .IsConcurrencyToken()
+                        .HasColumnType("integer");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("ProjectId");
+
+                    b.HasIndex("TaskId");
+
+                    b.HasIndex("ReferencePlanId", "TaskId")
+                        .IsUnique();
+
+                    b.ToTable("ReferencePlanTaskLines", (string)null);
+                });
+
+            modelBuilder.Entity("Orbita.Domain.Entities.ScopeChange", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uuid");
+
+                    b.Property<Guid?>("ActorUserId")
+                        .HasColumnType("uuid");
+
+                    b.Property<string>("CreatedBy")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<DateTimeOffset>("DateCreated")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<DateTimeOffset>("DateDeleted")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<Guid?>("DecisionId")
+                        .HasColumnType("uuid");
+
+                    b.Property<string>("DeletedBy")
+                        .HasColumnType("text");
+
+                    b.Property<bool>("IsContractAmendment")
+                        .HasColumnType("boolean");
+
+                    b.Property<bool>("IsDeleted")
+                        .HasColumnType("boolean");
+
+                    b.Property<int>("Kind")
+                        .HasColumnType("integer");
+
+                    b.Property<string>("LastModifiedBy")
+                        .HasColumnType("text");
+
+                    b.Property<DateTimeOffset>("LastModifiedDate")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<DateTimeOffset>("OccurredAt")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<decimal>("PersonDays")
+                        .HasColumnType("numeric");
+
+                    b.Property<Guid>("ProjectId")
+                        .HasColumnType("uuid");
+
+                    b.Property<Guid?>("ProjectProfileId")
+                        .HasColumnType("uuid");
+
+                    b.Property<string>("Reason")
+                        .HasMaxLength(2000)
+                        .HasColumnType("character varying(2000)");
+
+                    b.Property<Guid?>("SourceProjectProfileId")
+                        .HasColumnType("uuid");
+
+                    b.Property<Guid>("TaskId")
+                        .HasColumnType("uuid");
+
+                    b.Property<int>("Version")
+                        .IsConcurrencyToken()
+                        .HasColumnType("integer");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("ActorUserId");
+
+                    b.HasIndex("DecisionId");
+
+                    b.HasIndex("ProjectId");
+
+                    b.HasIndex("ProjectProfileId");
+
+                    b.HasIndex("SourceProjectProfileId");
+
+                    b.HasIndex("TaskId", "OccurredAt");
+
+                    b.ToTable("ScopeChanges", (string)null);
+                });
+
+            modelBuilder.Entity("Orbita.Domain.Entities.SoldPhaseMonth", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uuid");
+
+                    b.Property<string>("CreatedBy")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<DateTimeOffset>("DateCreated")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<DateTimeOffset>("DateDeleted")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<string>("DeletedBy")
+                        .HasColumnType("text");
+
+                    b.Property<bool>("IsDeleted")
+                        .HasColumnType("boolean");
+
+                    b.Property<string>("LastModifiedBy")
+                        .HasColumnType("text");
+
+                    b.Property<DateTimeOffset>("LastModifiedDate")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<string>("Month")
+                        .IsRequired()
+                        .HasMaxLength(7)
+                        .HasColumnType("character varying(7)");
+
+                    b.Property<decimal>("PersonDays")
+                        .HasColumnType("numeric");
+
+                    b.Property<Guid>("ProjectId")
+                        .HasColumnType("uuid");
+
+                    b.Property<Guid>("SoldPhasePlanningId")
+                        .HasColumnType("uuid");
+
+                    b.Property<int>("Version")
+                        .IsConcurrencyToken()
+                        .HasColumnType("integer");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("ProjectId");
+
+                    b.HasIndex("SoldPhasePlanningId", "Month")
+                        .IsUnique();
+
+                    b.ToTable("SoldPhaseMonths", (string)null);
+                });
+
+            modelBuilder.Entity("Orbita.Domain.Entities.SoldPhasePlanning", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uuid");
+
+                    b.Property<string>("CreatedBy")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<DateTimeOffset>("DateCreated")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<DateTimeOffset>("DateDeleted")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<string>("DeletedBy")
+                        .HasColumnType("text");
+
+                    b.Property<string>("EnteredDailyCostRate")
+                        .HasMaxLength(100)
+                        .HasColumnType("character varying(100)");
+
+                    b.Property<bool>("IsDeleted")
+                        .HasColumnType("boolean");
+
+                    b.Property<string>("LastModifiedBy")
+                        .HasColumnType("text");
+
+                    b.Property<DateTimeOffset>("LastModifiedDate")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<int>("Order")
+                        .HasColumnType("integer");
+
+                    b.Property<string>("Phase")
+                        .HasMaxLength(50)
+                        .HasColumnType("character varying(50)");
+
+                    b.Property<Guid>("ProjectId")
+                        .HasColumnType("uuid");
+
+                    b.Property<int>("Version")
+                        .IsConcurrencyToken()
+                        .HasColumnType("integer");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("ProjectId");
+
+                    b.ToTable("SoldPhasePlannings", (string)null);
+                });
+
+            modelBuilder.Entity("Orbita.Domain.Entities.SoldProfilePlanning", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uuid");
+
+                    b.Property<string>("CreatedBy")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<DateTimeOffset>("DateCreated")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<DateTimeOffset>("DateDeleted")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<string>("DeletedBy")
+                        .HasColumnType("text");
+
+                    b.Property<bool>("IsDeleted")
+                        .HasColumnType("boolean");
+
+                    b.Property<string>("LastModifiedBy")
+                        .HasColumnType("text");
+
+                    b.Property<DateTimeOffset>("LastModifiedDate")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<string>("Month")
+                        .IsRequired()
+                        .HasMaxLength(7)
+                        .HasColumnType("character varying(7)");
+
+                    b.Property<decimal>("PersonDays")
+                        .HasColumnType("numeric");
+
+                    b.Property<Guid>("ProjectId")
+                        .HasColumnType("uuid");
+
+                    b.Property<Guid>("ProjectProfileId")
+                        .HasColumnType("uuid");
+
+                    b.Property<int>("Version")
+                        .IsConcurrencyToken()
+                        .HasColumnType("integer");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("ProjectId");
+
+                    b.HasIndex("ProjectProfileId", "Month")
+                        .IsUnique();
+
+                    b.ToTable("SoldProfilePlannings", (string)null);
+                });
+
+            modelBuilder.Entity("Orbita.Domain.Entities.TaskEffort", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uuid");
+
+                    b.Property<DateTimeOffset?>("AddedAt")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<Guid?>("AddedByUserId")
+                        .HasColumnType("uuid");
+
+                    b.Property<string>("AdditionReason")
+                        .HasMaxLength(2000)
+                        .HasColumnType("character varying(2000)");
+
+                    b.Property<decimal>("AdditionalEffort")
+                        .HasColumnType("numeric");
+
+                    b.Property<string>("CreatedBy")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<DateTimeOffset>("DateCreated")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<DateTimeOffset>("DateDeleted")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<string>("DeletedBy")
+                        .HasColumnType("text");
+
+                    b.Property<bool>("IsDeleted")
+                        .HasColumnType("boolean");
+
+                    b.Property<string>("LastModifiedBy")
+                        .HasColumnType("text");
+
+                    b.Property<DateTimeOffset>("LastModifiedDate")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<Guid>("ProjectId")
+                        .HasColumnType("uuid");
+
+                    b.Property<Guid>("ProjectProfileId")
+                        .HasColumnType("uuid");
+
+                    b.Property<decimal>("SoldEffort")
+                        .HasColumnType("numeric");
+
+                    b.Property<Guid>("TaskId")
+                        .HasColumnType("uuid");
+
+                    b.Property<int>("Version")
+                        .IsConcurrencyToken()
+                        .HasColumnType("integer");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("AddedByUserId");
+
+                    b.HasIndex("ProjectId");
+
+                    b.HasIndex("ProjectProfileId");
+
+                    b.HasIndex("TaskId", "ProjectProfileId")
+                        .IsUnique();
+
+                    b.ToTable("TaskEfforts", null, t =>
+                        {
+                            t.HasCheckConstraint("CK_TaskEfforts_NonNegative", "\"SoldEffort\" >= 0 AND \"AdditionalEffort\" >= 0");
+                        });
+                });
+
+            modelBuilder.Entity("Orbita.Domain.Entities.TimeEntry", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uuid");
+
+                    b.Property<string>("CreatedBy")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<DateTimeOffset>("DateCreated")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<DateTimeOffset>("DateDeleted")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<string>("DeletedBy")
+                        .HasColumnType("text");
+
+                    b.Property<bool>("IsDeleted")
+                        .HasColumnType("boolean");
+
+                    b.Property<string>("LastModifiedBy")
+                        .HasColumnType("text");
+
+                    b.Property<DateTimeOffset>("LastModifiedDate")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<decimal>("PersonDays")
+                        .HasColumnType("numeric");
+
+                    b.Property<Guid>("ProjectId")
+                        .HasColumnType("uuid");
+
+                    b.Property<Guid>("ProjectProfileId")
+                        .HasColumnType("uuid");
+
+                    b.Property<DateTimeOffset>("RecordedAt")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<Guid?>("RecordedByUserId")
+                        .HasColumnType("uuid");
+
+                    b.Property<Guid>("TaskId")
+                        .HasColumnType("uuid");
+
+                    b.Property<int>("Version")
+                        .IsConcurrencyToken()
+                        .HasColumnType("integer");
+
+                    b.Property<DateOnly>("WorkDate")
+                        .HasColumnType("date");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("ProjectId");
+
+                    b.HasIndex("RecordedByUserId");
+
+                    b.HasIndex("ProjectProfileId", "WorkDate");
+
+                    b.HasIndex("TaskId", "ProjectProfileId", "WorkDate")
+                        .IsUnique();
+
+                    b.ToTable("TimeEntries", null, t =>
+                        {
+                            t.HasCheckConstraint("CK_TimeEntries_PersonDays_Positive", "\"PersonDays\" > 0");
+                        });
+                });
+
+            modelBuilder.Entity("Orbita.Domain.Entities.TspImportRecord", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uuid");
+
+                    b.Property<string>("CreatedBy")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<DateTimeOffset>("DateCreated")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<DateTimeOffset>("DateDeleted")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<string>("DeletedBy")
+                        .HasColumnType("text");
+
+                    b.Property<string>("FileName")
+                        .HasMaxLength(260)
+                        .HasColumnType("character varying(260)");
+
+                    b.Property<Guid?>("HiddenByUserId")
+                        .HasColumnType("uuid");
+
+                    b.Property<DateTimeOffset>("ImportedAt")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<Guid?>("ImportedByUserId")
+                        .HasColumnType("uuid");
+
+                    b.Property<bool>("IsDeleted")
+                        .HasColumnType("boolean");
+
+                    b.Property<string>("LastModifiedBy")
+                        .HasColumnType("text");
+
+                    b.Property<DateTimeOffset>("LastModifiedDate")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<string>("ObservedPoints")
+                        .HasMaxLength(4000)
+                        .HasColumnType("character varying(4000)");
+
+                    b.Property<string>("PhasePlanningSource")
+                        .HasMaxLength(4000)
+                        .HasColumnType("character varying(4000)");
+
+                    b.Property<string>("ProfilePlanningSource")
+                        .HasMaxLength(4000)
+                        .HasColumnType("character varying(4000)");
+
+                    b.Property<Guid>("ProjectId")
+                        .HasColumnType("uuid");
+
+                    b.Property<int>("Version")
+                        .IsConcurrencyToken()
+                        .HasColumnType("integer");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("HiddenByUserId");
+
+                    b.HasIndex("ImportedByUserId");
+
+                    b.HasIndex("ProjectId");
+
+                    b.HasIndex("ProjectId", "ImportedAt");
+
+                    b.ToTable("TspImportRecords", (string)null);
+                });
+
+            modelBuilder.Entity("Orbita.Domain.Entities.User", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uuid");
+
+                    b.Property<DateTimeOffset>("CreatedAt")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<string>("CreatedBy")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<DateTimeOffset>("DateCreated")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<DateTimeOffset>("DateDeleted")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<string>("DeletedBy")
+                        .HasColumnType("text");
 
                     b.Property<string>("Email")
+                        .HasMaxLength(320)
+                        .HasColumnType("character varying(320)");
+
+                    b.Property<string>("FirstName")
+                        .HasMaxLength(128)
+                        .HasColumnType("character varying(128)");
+
+                    b.Property<bool>("IsActive")
+                        .HasColumnType("boolean");
+
+                    b.Property<bool>("IsDeleted")
+                        .HasColumnType("boolean");
+
+                    b.Property<DateTimeOffset?>("LastLoginAt")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<string>("LastModifiedBy")
+                        .HasColumnType("text");
+
+                    b.Property<DateTimeOffset>("LastModifiedDate")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<string>("LastName")
+                        .HasMaxLength(128)
+                        .HasColumnType("character varying(128)");
+
+                    b.Property<Guid>("ObjectId")
+                        .HasColumnType("uuid");
+
+                    b.Property<Guid>("TenantId")
+                        .HasColumnType("uuid");
+
+                    b.Property<int>("Version")
+                        .IsConcurrencyToken()
+                        .HasColumnType("integer");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("TenantId", "ObjectId")
+                        .IsUnique();
+
+                    b.ToTable("Users", (string)null);
+                });
+
+            modelBuilder.Entity("Orbita.Domain.Entities.WeeklyStatusPoint", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uuid");
+
+                    b.Property<string>("Content")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<string>("CreatedBy")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<DateTimeOffset>("DateCreated")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<DateTimeOffset>("DateDeleted")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<string>("DeletedBy")
+                        .HasColumnType("text");
+
+                    b.Property<bool>("IsDeleted")
+                        .HasColumnType("boolean");
+
+                    b.Property<string>("Key")
+                        .IsRequired()
+                        .HasMaxLength(20)
+                        .HasColumnType("character varying(20)");
+
+                    b.Property<string>("LastModifiedBy")
+                        .HasColumnType("text");
+
+                    b.Property<DateTimeOffset>("LastModifiedDate")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<DateTimeOffset>("ModifiedAt")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<Guid?>("ModifiedByUserId")
+                        .HasColumnType("uuid");
+
+                    b.Property<Guid>("ProjectId")
+                        .HasColumnType("uuid");
+
+                    b.Property<int>("Version")
+                        .IsConcurrencyToken()
+                        .HasColumnType("integer");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("ModifiedByUserId");
+
+                    b.HasIndex("ProjectId");
+
+                    b.HasIndex("ProjectId", "Key")
+                        .IsUnique();
+
+                    b.ToTable("WeeklyStatusPoints", (string)null);
+                });
+
+            modelBuilder.Entity("Orbita.Domain.Entities.WorkTask", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uuid");
+
+                    b.Property<string>("AiComment")
+                        .HasMaxLength(4000)
+                        .HasColumnType("character varying(4000)");
+
+                    b.Property<string>("AiOptimizationType")
+                        .HasMaxLength(100)
+                        .HasColumnType("character varying(100)");
+
+                    b.Property<decimal?>("AiRevisedEffort")
+                        .HasColumnType("numeric");
+
+                    b.Property<string>("Assumption")
+                        .HasMaxLength(4000)
+                        .HasColumnType("character varying(4000)");
+
+                    b.Property<Guid?>("AxisId")
+                        .HasColumnType("uuid");
+
+                    b.Property<string>("Comment")
+                        .HasMaxLength(4000)
+                        .HasColumnType("character varying(4000)");
+
+                    b.Property<string>("CreatedBy")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<DateTimeOffset>("DateCreated")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<DateTimeOffset>("DateDeleted")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<string>("DeletedBy")
+                        .HasColumnType("text");
+
+                    b.Property<string>("DeliverableMarker")
+                        .HasMaxLength(50)
+                        .HasColumnType("character varying(50)");
+
+                    b.Property<bool>("HasDeliverableColumn")
+                        .HasColumnType("boolean");
+
+                    b.Property<Guid?>("InvoiceMilestoneId")
+                        .HasColumnType("uuid");
+
+                    b.Property<bool>("IsDeleted")
+                        .HasColumnType("boolean");
+
+                    b.Property<bool>("IsSection")
+                        .HasColumnType("boolean");
+
+                    b.Property<string>("LastModifiedBy")
+                        .HasColumnType("text");
+
+                    b.Property<DateTimeOffset>("LastModifiedDate")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<string>("Lot")
+                        .HasColumnType("text");
+
+                    b.Property<int>("Origin")
+                        .HasColumnType("integer");
+
+                    b.Property<Guid?>("PhaseId")
+                        .HasColumnType("uuid");
+
+                    b.Property<DateOnly?>("PlannedEndDate")
+                        .HasColumnType("date");
+
+                    b.Property<DateOnly?>("PlannedStartDate")
+                        .HasColumnType("date");
+
+                    b.Property<int>("Position")
+                        .HasColumnType("integer");
+
+                    b.Property<decimal?>("Progress")
+                        .HasColumnType("numeric");
+
+                    b.Property<Guid>("ProjectId")
+                        .HasColumnType("uuid");
+
+                    b.Property<string>("Reference")
+                        .IsRequired()
+                        .HasMaxLength(20)
+                        .HasColumnType("character varying(20)");
+
+                    b.Property<decimal?>("RemainingEffort")
+                        .HasColumnType("numeric");
+
+                    b.Property<int?>("Status")
+                        .HasColumnType("integer");
+
+                    b.Property<Guid?>("TaskTypeId")
+                        .HasColumnType("uuid");
+
+                    b.Property<bool>("TaskTypeWasExplicitlySet")
+                        .HasColumnType("boolean");
+
+                    b.Property<string>("Title")
+                        .HasMaxLength(1000)
+                        .HasColumnType("character varying(1000)");
+
+                    b.Property<string>("TspAxisCode")
+                        .HasMaxLength(50)
+                        .HasColumnType("character varying(50)");
+
+                    b.Property<string>("TspLot")
+                        .HasMaxLength(50)
+                        .HasColumnType("character varying(50)");
+
+                    b.Property<string>("TspPhase")
+                        .HasMaxLength(50)
+                        .HasColumnType("character varying(50)");
+
+                    b.Property<int?>("TspRow")
+                        .HasColumnType("integer");
+
+                    b.Property<string>("TspStep")
+                        .HasMaxLength(50)
+                        .HasColumnType("character varying(50)");
+
+                    b.Property<string>("TspTitle")
+                        .HasMaxLength(1000)
+                        .HasColumnType("character varying(1000)");
+
+                    b.Property<DateOnly?>("ValidatedOn")
+                        .HasColumnType("date");
+
+                    b.Property<int>("Version")
+                        .IsConcurrencyToken()
+                        .HasColumnType("integer");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("AxisId");
+
+                    b.HasIndex("InvoiceMilestoneId");
+
+                    b.HasIndex("PhaseId");
+
+                    b.HasIndex("ProjectId");
+
+                    b.HasIndex("TaskTypeId");
+
+                    b.HasIndex("ProjectId", "Position");
+
+                    b.HasIndex("ProjectId", "Reference")
+                        .IsUnique();
+
+                    b.ToTable("WorkTasks", null, t =>
+                        {
+                            t.HasCheckConstraint("CK_WorkTasks_Progress", "\"Progress\" IS NULL OR (\"Progress\" >= 0 AND \"Progress\" <= 1)");
+                        });
+                });
+
+            modelBuilder.Entity("Orbita.Domain.Entities.Workshop", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uuid");
+
+                    b.Property<string>("CreatedBy")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<DateTimeOffset>("DateCreated")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<DateTimeOffset>("DateDeleted")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<string>("DeletedBy")
+                        .HasColumnType("text");
+
+                    b.Property<TimeOnly?>("EndTime")
+                        .HasColumnType("time without time zone");
+
+                    b.Property<bool>("InvitationSent")
+                        .HasColumnType("boolean");
+
+                    b.Property<DateOnly?>("InvitationSentOn")
+                        .HasColumnType("date");
+
+                    b.Property<bool>("IsDeleted")
+                        .HasColumnType("boolean");
+
+                    b.Property<string>("LastModifiedBy")
+                        .HasColumnType("text");
+
+                    b.Property<DateTimeOffset>("LastModifiedDate")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<Guid>("ProjectId")
+                        .HasColumnType("uuid");
+
+                    b.Property<DateOnly?>("ScheduledDate")
+                        .HasColumnType("date");
+
+                    b.Property<TimeOnly?>("StartTime")
+                        .HasColumnType("time without time zone");
+
+                    b.Property<Guid>("TaskId")
+                        .HasColumnType("uuid");
+
+                    b.Property<int>("Version")
+                        .IsConcurrencyToken()
+                        .HasColumnType("integer");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("ProjectId");
+
+                    b.HasIndex("TaskId")
+                        .IsUnique();
+
+                    b.ToTable("Workshops", (string)null);
+                });
+
+            modelBuilder.Entity("Orbita.Domain.Entities.WorkshopRecipient", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uuid");
+
+                    b.Property<string>("CreatedBy")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<DateTimeOffset>("DateCreated")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<DateTimeOffset>("DateDeleted")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<string>("DeletedBy")
+                        .HasColumnType("text");
+
+                    b.Property<bool>("IsDeleted")
+                        .HasColumnType("boolean");
+
+                    b.Property<string>("LastModifiedBy")
+                        .HasColumnType("text");
+
+                    b.Property<DateTimeOffset>("LastModifiedDate")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<string>("NameOrEmail")
                         .IsRequired()
                         .HasMaxLength(320)
                         .HasColumnType("character varying(320)");
 
-                    b.Property<string>("IdentifiantExterne")
-                        .IsRequired()
-                        .HasMaxLength(100)
-                        .HasColumnType("character varying(100)");
-
-                    b.Property<string>("Nom")
-                        .IsRequired()
-                        .HasMaxLength(400)
-                        .HasColumnType("character varying(400)");
-
-                    b.Property<string>("Prenom")
-                        .IsRequired()
-                        .HasMaxLength(400)
-                        .HasColumnType("character varying(400)");
-
-                    b.Property<int>("Version")
-                        .IsConcurrencyToken()
+                    b.Property<int>("Order")
                         .HasColumnType("integer");
 
-                    b.HasKey("Id");
-
-                    b.HasIndex("IdentifiantExterne")
-                        .IsUnique();
-
-                    b.ToTable("Utilisateurs", (string)null);
-                });
-
-            modelBuilder.Entity("PilotageForfaits.Domain.Entites.ValeurListeIa", b =>
-                {
-                    b.Property<Guid>("Id")
-                        .ValueGeneratedOnAdd()
+                    b.Property<Guid>("ProjectId")
                         .HasColumnType("uuid");
 
-                    b.Property<string>("Libelle")
-                        .IsRequired()
-                        .HasMaxLength(400)
-                        .HasColumnType("character varying(400)");
-
-                    b.Property<string>("Liste")
-                        .IsRequired()
-                        .HasMaxLength(30)
-                        .HasColumnType("character varying(30)");
-
-                    b.Property<int>("Ordre")
-                        .HasColumnType("integer");
-
-                    b.Property<Guid>("ProjetId")
+                    b.Property<Guid?>("UserId")
                         .HasColumnType("uuid");
 
                     b.Property<int>("Version")
                         .IsConcurrencyToken()
                         .HasColumnType("integer");
 
+                    b.Property<Guid>("WorkshopId")
+                        .HasColumnType("uuid");
+
                     b.HasKey("Id");
 
-                    b.HasIndex("ProjetId");
+                    b.HasIndex("ProjectId");
 
-                    b.ToTable("ValeursListeIa", (string)null);
+                    b.HasIndex("UserId");
+
+                    b.HasIndex("WorkshopId", "Order");
+
+                    b.ToTable("WorkshopRecipients", (string)null);
                 });
 
-            modelBuilder.Entity("PilotageForfaits.Domain.Entites.Absence", b =>
+            modelBuilder.Entity("Orbita.Domain.Entities.Absence", b =>
                 {
-                    b.HasOne("PilotageForfaits.Domain.Entites.Utilisateur", null)
+                    b.HasOne("Orbita.Domain.Entities.User", null)
                         .WithMany()
-                        .HasForeignKey("SaisieParId")
+                        .HasForeignKey("RecordedByUserId")
                         .OnDelete(DeleteBehavior.Restrict);
 
-                    b.HasOne("PilotageForfaits.Domain.Entites.Utilisateur", null)
+                    b.HasOne("Orbita.Domain.Entities.User", null)
                         .WithMany()
-                        .HasForeignKey("UtilisateurId")
-                        .OnDelete(DeleteBehavior.Restrict);
-                });
-
-            modelBuilder.Entity("PilotageForfaits.Domain.Entites.AchatReel", b =>
-                {
-                    b.HasOne("PilotageForfaits.Domain.Entites.Utilisateur", null)
-                        .WithMany()
-                        .HasForeignKey("CreeParId")
-                        .OnDelete(DeleteBehavior.Restrict);
-
-                    b.HasOne("PilotageForfaits.Domain.Entites.LigneBudgetAchat", null)
-                        .WithMany()
-                        .HasForeignKey("LigneBudgetAchatId")
-                        .OnDelete(DeleteBehavior.Restrict);
-
-                    b.HasOne("PilotageForfaits.Domain.Entites.Projet", null)
-                        .WithMany("AchatsReels")
-                        .HasForeignKey("ProjetId")
-                        .OnDelete(DeleteBehavior.Restrict)
-                        .IsRequired();
-                });
-
-            modelBuilder.Entity("PilotageForfaits.Domain.Entites.ActionProjet", b =>
-                {
-                    b.HasOne("PilotageForfaits.Domain.Entites.Utilisateur", null)
-                        .WithMany()
-                        .HasForeignKey("CreeeParId")
-                        .OnDelete(DeleteBehavior.Restrict);
-
-                    b.HasOne("PilotageForfaits.Domain.Entites.Utilisateur", null)
-                        .WithMany()
-                        .HasForeignKey("PorteurId")
-                        .OnDelete(DeleteBehavior.Restrict);
-
-                    b.HasOne("PilotageForfaits.Domain.Entites.Projet", null)
-                        .WithMany("Actions")
-                        .HasForeignKey("ProjetId")
-                        .OnDelete(DeleteBehavior.Restrict)
-                        .IsRequired();
-
-                    b.HasOne("PilotageForfaits.Domain.Entites.Tache", null)
-                        .WithMany()
-                        .HasForeignKey("TacheId")
+                        .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Restrict);
                 });
 
-            modelBuilder.Entity("PilotageForfaits.Domain.Entites.Atelier", b =>
+            modelBuilder.Entity("Orbita.Domain.Entities.ActualExpense", b =>
                 {
-                    b.HasOne("PilotageForfaits.Domain.Entites.Projet", null)
+                    b.HasOne("Orbita.Domain.Entities.User", null)
                         .WithMany()
-                        .HasForeignKey("ProjetId")
-                        .OnDelete(DeleteBehavior.Restrict)
-                        .IsRequired();
-
-                    b.HasOne("PilotageForfaits.Domain.Entites.Tache", null)
-                        .WithMany()
-                        .HasForeignKey("TacheId")
-                        .OnDelete(DeleteBehavior.Restrict)
-                        .IsRequired();
-                });
-
-            modelBuilder.Entity("PilotageForfaits.Domain.Entites.Axe", b =>
-                {
-                    b.HasOne("PilotageForfaits.Domain.Entites.Projet", null)
-                        .WithMany("Axes")
-                        .HasForeignKey("ProjetId")
-                        .OnDelete(DeleteBehavior.Restrict)
-                        .IsRequired();
-                });
-
-            modelBuilder.Entity("PilotageForfaits.Domain.Entites.BrouillonProjet", b =>
-                {
-                    b.HasOne("PilotageForfaits.Domain.Entites.Utilisateur", "CoRedacteur")
-                        .WithMany()
-                        .HasForeignKey("CoRedacteurId")
+                        .HasForeignKey("CreatedByUserId")
                         .OnDelete(DeleteBehavior.Restrict);
 
-                    b.HasOne("PilotageForfaits.Domain.Entites.Utilisateur", "CreePar")
+                    b.HasOne("Orbita.Domain.Entities.ExpenseImport", null)
                         .WithMany()
-                        .HasForeignKey("CreeParId")
-                        .OnDelete(DeleteBehavior.Restrict)
-                        .IsRequired();
-
-                    b.HasOne("PilotageForfaits.Domain.Entites.Utilisateur", null)
-                        .WithMany()
-                        .HasForeignKey("ModifieParId")
+                        .HasForeignKey("ExpenseImportId")
                         .OnDelete(DeleteBehavior.Restrict);
 
-                    b.Navigation("CoRedacteur");
-
-                    b.Navigation("CreePar");
-                });
-
-            modelBuilder.Entity("PilotageForfaits.Domain.Entites.ChampFiche", b =>
-                {
-                    b.HasOne("PilotageForfaits.Domain.Entites.Projet", null)
-                        .WithMany("ChampsFiche")
-                        .HasForeignKey("ProjetId")
-                        .OnDelete(DeleteBehavior.Restrict)
+                    b.HasOne("Orbita.Domain.Entities.Project", null)
+                        .WithMany("ActualExpenses")
+                        .HasForeignKey("ProjectId")
+                        .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
                 });
 
-            modelBuilder.Entity("PilotageForfaits.Domain.Entites.ChargeTache", b =>
+            modelBuilder.Entity("Orbita.Domain.Entities.ActualPurchase", b =>
                 {
-                    b.HasOne("PilotageForfaits.Domain.Entites.Utilisateur", null)
+                    b.HasOne("Orbita.Domain.Entities.User", null)
                         .WithMany()
-                        .HasForeignKey("AjouteeParId")
+                        .HasForeignKey("CreatedByUserId")
                         .OnDelete(DeleteBehavior.Restrict);
 
-                    b.HasOne("PilotageForfaits.Domain.Entites.ProfilProjet", "ProfilProjet")
+                    b.HasOne("Orbita.Domain.Entities.Project", null)
+                        .WithMany("ActualPurchases")
+                        .HasForeignKey("ProjectId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("Orbita.Domain.Entities.PurchaseBudgetLine", null)
                         .WithMany()
-                        .HasForeignKey("ProfilProjetId")
-                        .OnDelete(DeleteBehavior.Restrict)
-                        .IsRequired();
-
-                    b.HasOne("PilotageForfaits.Domain.Entites.Projet", null)
-                        .WithMany()
-                        .HasForeignKey("ProjetId")
-                        .OnDelete(DeleteBehavior.Restrict)
-                        .IsRequired();
-
-                    b.HasOne("PilotageForfaits.Domain.Entites.Tache", null)
-                        .WithMany("Charges")
-                        .HasForeignKey("TacheId")
-                        .OnDelete(DeleteBehavior.Restrict)
-                        .IsRequired();
-
-                    b.Navigation("ProfilProjet");
-                });
-
-            modelBuilder.Entity("PilotageForfaits.Domain.Entites.Consomme", b =>
-                {
-                    b.HasOne("PilotageForfaits.Domain.Entites.ProfilProjet", null)
-                        .WithMany()
-                        .HasForeignKey("ProfilProjetId")
-                        .OnDelete(DeleteBehavior.Restrict)
-                        .IsRequired();
-
-                    b.HasOne("PilotageForfaits.Domain.Entites.Projet", null)
-                        .WithMany()
-                        .HasForeignKey("ProjetId")
-                        .OnDelete(DeleteBehavior.Restrict)
-                        .IsRequired();
-
-                    b.HasOne("PilotageForfaits.Domain.Entites.Utilisateur", null)
-                        .WithMany()
-                        .HasForeignKey("SaisiParId")
-                        .OnDelete(DeleteBehavior.Restrict);
-
-                    b.HasOne("PilotageForfaits.Domain.Entites.Tache", null)
-                        .WithMany("Consommes")
-                        .HasForeignKey("TacheId")
-                        .OnDelete(DeleteBehavior.Restrict)
-                        .IsRequired();
-                });
-
-            modelBuilder.Entity("PilotageForfaits.Domain.Entites.DatesPlanReference", b =>
-                {
-                    b.HasOne("PilotageForfaits.Domain.Entites.PlanReference", null)
-                        .WithMany()
-                        .HasForeignKey("PlanReferenceId")
-                        .OnDelete(DeleteBehavior.Restrict)
-                        .IsRequired();
-
-                    b.HasOne("PilotageForfaits.Domain.Entites.Projet", null)
-                        .WithMany()
-                        .HasForeignKey("ProjetId")
-                        .OnDelete(DeleteBehavior.Restrict)
-                        .IsRequired();
-                });
-
-            modelBuilder.Entity("PilotageForfaits.Domain.Entites.DatesPlanning", b =>
-                {
-                    b.HasOne("PilotageForfaits.Domain.Entites.Projet", null)
-                        .WithMany()
-                        .HasForeignKey("ProjetId")
-                        .OnDelete(DeleteBehavior.Restrict)
-                        .IsRequired();
-                });
-
-            modelBuilder.Entity("PilotageForfaits.Domain.Entites.Decision", b =>
-                {
-                    b.HasOne("PilotageForfaits.Domain.Entites.Utilisateur", null)
-                        .WithMany()
-                        .HasForeignKey("CreeeParId")
-                        .OnDelete(DeleteBehavior.Restrict);
-
-                    b.HasOne("PilotageForfaits.Domain.Entites.Projet", null)
-                        .WithMany("Decisions")
-                        .HasForeignKey("ProjetId")
-                        .OnDelete(DeleteBehavior.Restrict)
-                        .IsRequired();
-                });
-
-            modelBuilder.Entity("PilotageForfaits.Domain.Entites.Destinataire", b =>
-                {
-                    b.HasOne("PilotageForfaits.Domain.Entites.Atelier", null)
-                        .WithMany("Destinataires")
-                        .HasForeignKey("AtelierId")
-                        .OnDelete(DeleteBehavior.Restrict)
-                        .IsRequired();
-
-                    b.HasOne("PilotageForfaits.Domain.Entites.Projet", null)
-                        .WithMany()
-                        .HasForeignKey("ProjetId")
-                        .OnDelete(DeleteBehavior.Restrict)
-                        .IsRequired();
-
-                    b.HasOne("PilotageForfaits.Domain.Entites.Utilisateur", null)
-                        .WithMany()
-                        .HasForeignKey("UtilisateurId")
+                        .HasForeignKey("PurchaseBudgetLineId")
                         .OnDelete(DeleteBehavior.Restrict);
                 });
 
-            modelBuilder.Entity("PilotageForfaits.Domain.Entites.Echeance", b =>
+            modelBuilder.Entity("Orbita.Domain.Entities.AgencyRate", b =>
                 {
-                    b.HasOne("PilotageForfaits.Domain.Entites.Projet", null)
-                        .WithMany("Echeances")
-                        .HasForeignKey("ProjetId")
+                    b.HasOne("Orbita.Domain.Entities.Project", null)
+                        .WithMany("AgencyRates")
+                        .HasForeignKey("ProjectId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+                });
+
+            modelBuilder.Entity("Orbita.Domain.Entities.AiReferenceValue", b =>
+                {
+                    b.HasOne("Orbita.Domain.Entities.Project", null)
+                        .WithMany("AiReferenceValues")
+                        .HasForeignKey("ProjectId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+                });
+
+            modelBuilder.Entity("Orbita.Domain.Entities.Deliverable", b =>
+                {
+                    b.HasOne("Orbita.Domain.Entities.Project", null)
+                        .WithMany()
+                        .HasForeignKey("ProjectId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("Orbita.Domain.Entities.WorkTask", null)
+                        .WithMany()
+                        .HasForeignKey("TaskId")
                         .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
                 });
 
-            modelBuilder.Entity("PilotageForfaits.Domain.Entites.ElementPlanning", b =>
+            modelBuilder.Entity("Orbita.Domain.Entities.ExpenseBudgetLine", b =>
                 {
-                    b.HasOne("PilotageForfaits.Domain.Entites.Projet", null)
+                    b.HasOne("Orbita.Domain.Entities.Project", null)
+                        .WithMany("ExpenseBudget")
+                        .HasForeignKey("ProjectId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+                });
+
+            modelBuilder.Entity("Orbita.Domain.Entities.ExpenseImport", b =>
+                {
+                    b.HasOne("Orbita.Domain.Entities.User", null)
                         .WithMany()
-                        .HasForeignKey("ProjetId")
+                        .HasForeignKey("ImportedByUserId")
+                        .OnDelete(DeleteBehavior.Restrict);
+
+                    b.HasOne("Orbita.Domain.Entities.Project", null)
+                        .WithMany()
+                        .HasForeignKey("ProjectId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+                });
+
+            modelBuilder.Entity("Orbita.Domain.Entities.ForecastProfile", b =>
+                {
+                    b.HasOne("Orbita.Domain.Entities.Project", null)
+                        .WithMany("ForecastProfiles")
+                        .HasForeignKey("ProjectId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("Orbita.Domain.Entities.ProjectProfile", null)
+                        .WithMany()
+                        .HasForeignKey("ProjectProfileId")
                         .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
                 });
 
-            modelBuilder.Entity("PilotageForfaits.Domain.Entites.EntreeJournal", b =>
+            modelBuilder.Entity("Orbita.Domain.Entities.IndicatorSnapshot", b =>
                 {
-                    b.HasOne("PilotageForfaits.Domain.Entites.Projet", null)
-                        .WithMany()
-                        .HasForeignKey("ProjetId")
-                        .OnDelete(DeleteBehavior.Restrict)
-                        .IsRequired();
-
-                    b.HasOne("PilotageForfaits.Domain.Entites.Utilisateur", null)
-                        .WithMany()
-                        .HasForeignKey("UtilisateurId")
-                        .OnDelete(DeleteBehavior.Restrict);
-                });
-
-            modelBuilder.Entity("PilotageForfaits.Domain.Entites.Etape", b =>
-                {
-                    b.HasOne("PilotageForfaits.Domain.Entites.Projet", null)
-                        .WithMany("Etapes")
-                        .HasForeignKey("ProjetId")
-                        .OnDelete(DeleteBehavior.Restrict)
+                    b.HasOne("Orbita.Domain.Entities.Project", null)
+                        .WithMany("IndicatorSnapshots")
+                        .HasForeignKey("ProjectId")
+                        .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
                 });
 
-            modelBuilder.Entity("PilotageForfaits.Domain.Entites.EvolutionPerimetre", b =>
+            modelBuilder.Entity("Orbita.Domain.Entities.InvoiceMilestone", b =>
                 {
-                    b.HasOne("PilotageForfaits.Domain.Entites.Decision", null)
-                        .WithMany()
-                        .HasForeignKey("DecisionId")
-                        .OnDelete(DeleteBehavior.Restrict);
-
-                    b.HasOne("PilotageForfaits.Domain.Entites.Utilisateur", null)
-                        .WithMany()
-                        .HasForeignKey("ParId")
-                        .OnDelete(DeleteBehavior.Restrict);
-
-                    b.HasOne("PilotageForfaits.Domain.Entites.ProfilProjet", null)
-                        .WithMany()
-                        .HasForeignKey("ProfilProjetId")
-                        .OnDelete(DeleteBehavior.Restrict);
-
-                    b.HasOne("PilotageForfaits.Domain.Entites.ProfilProjet", null)
-                        .WithMany()
-                        .HasForeignKey("ProfilSourceId")
-                        .OnDelete(DeleteBehavior.Restrict);
-
-                    b.HasOne("PilotageForfaits.Domain.Entites.Projet", null)
-                        .WithMany()
-                        .HasForeignKey("ProjetId")
-                        .OnDelete(DeleteBehavior.Restrict)
-                        .IsRequired();
-
-                    b.HasOne("PilotageForfaits.Domain.Entites.Tache", null)
-                        .WithMany("Evolutions")
-                        .HasForeignKey("TacheId")
-                        .OnDelete(DeleteBehavior.Restrict)
+                    b.HasOne("Orbita.Domain.Entities.Project", null)
+                        .WithMany("InvoiceMilestones")
+                        .HasForeignKey("ProjectId")
+                        .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
                 });
 
-            modelBuilder.Entity("PilotageForfaits.Domain.Entites.FraisReel", b =>
+            modelBuilder.Entity("Orbita.Domain.Entities.InvoiceMilestonePhase", b =>
                 {
-                    b.HasOne("PilotageForfaits.Domain.Entites.Utilisateur", null)
+                    b.HasOne("Orbita.Domain.Entities.InvoiceMilestone", null)
                         .WithMany()
-                        .HasForeignKey("CreeParId")
-                        .OnDelete(DeleteBehavior.Restrict);
-
-                    b.HasOne("PilotageForfaits.Domain.Entites.ImportFrais", null)
-                        .WithMany()
-                        .HasForeignKey("ImportFraisId")
-                        .OnDelete(DeleteBehavior.Restrict);
-
-                    b.HasOne("PilotageForfaits.Domain.Entites.Projet", null)
-                        .WithMany("FraisReels")
-                        .HasForeignKey("ProjetId")
-                        .OnDelete(DeleteBehavior.Restrict)
-                        .IsRequired();
-                });
-
-            modelBuilder.Entity("PilotageForfaits.Domain.Entites.GrilleAgence", b =>
-                {
-                    b.HasOne("PilotageForfaits.Domain.Entites.Projet", null)
-                        .WithMany("Grille")
-                        .HasForeignKey("ProjetId")
-                        .OnDelete(DeleteBehavior.Restrict)
-                        .IsRequired();
-                });
-
-            modelBuilder.Entity("PilotageForfaits.Domain.Entites.Habilitation", b =>
-                {
-                    b.HasOne("PilotageForfaits.Domain.Entites.Utilisateur", null)
-                        .WithMany()
-                        .HasForeignKey("AccordeeParId")
-                        .OnDelete(DeleteBehavior.Restrict);
-
-                    b.HasOne("PilotageForfaits.Domain.Entites.Projet", null)
-                        .WithMany("Habilitations")
-                        .HasForeignKey("ProjetId")
-                        .OnDelete(DeleteBehavior.Restrict)
+                        .HasForeignKey("InvoiceMilestoneId")
+                        .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("PilotageForfaits.Domain.Entites.Utilisateur", "Utilisateur")
-                        .WithMany("Habilitations")
-                        .HasForeignKey("UtilisateurId")
-                        .OnDelete(DeleteBehavior.Restrict)
-                        .IsRequired();
-
-                    b.Navigation("Utilisateur");
-                });
-
-            modelBuilder.Entity("PilotageForfaits.Domain.Entites.ImportFrais", b =>
-                {
-                    b.HasOne("PilotageForfaits.Domain.Entites.Utilisateur", null)
-                        .WithMany()
-                        .HasForeignKey("ImporteParId")
-                        .OnDelete(DeleteBehavior.Restrict);
-
-                    b.HasOne("PilotageForfaits.Domain.Entites.Projet", null)
-                        .WithMany()
-                        .HasForeignKey("ProjetId")
-                        .OnDelete(DeleteBehavior.Restrict)
-                        .IsRequired();
-                });
-
-            modelBuilder.Entity("PilotageForfaits.Domain.Entites.ImportTsp", b =>
-                {
-                    b.HasOne("PilotageForfaits.Domain.Entites.Utilisateur", null)
-                        .WithMany()
-                        .HasForeignKey("ImporteParId")
-                        .OnDelete(DeleteBehavior.Restrict);
-
-                    b.HasOne("PilotageForfaits.Domain.Entites.Utilisateur", null)
-                        .WithMany()
-                        .HasForeignKey("MasquesParId")
-                        .OnDelete(DeleteBehavior.Restrict);
-
-                    b.HasOne("PilotageForfaits.Domain.Entites.Projet", null)
-                        .WithMany("Imports")
-                        .HasForeignKey("ProjetId")
-                        .OnDelete(DeleteBehavior.Restrict)
-                        .IsRequired();
-                });
-
-            modelBuilder.Entity("PilotageForfaits.Domain.Entites.Jalon", b =>
-                {
-                    b.HasOne("PilotageForfaits.Domain.Entites.Projet", null)
-                        .WithMany()
-                        .HasForeignKey("ProjetId")
-                        .OnDelete(DeleteBehavior.Restrict)
-                        .IsRequired();
-                });
-
-            modelBuilder.Entity("PilotageForfaits.Domain.Entites.LienEcheancePhase", b =>
-                {
-                    b.HasOne("PilotageForfaits.Domain.Entites.Echeance", null)
-                        .WithMany("Phases")
-                        .HasForeignKey("EcheanceId")
-                        .OnDelete(DeleteBehavior.Restrict)
-                        .IsRequired();
-
-                    b.HasOne("PilotageForfaits.Domain.Entites.Phase", "Phase")
+                    b.HasOne("Orbita.Domain.Entities.ProjectPhase", null)
                         .WithMany()
                         .HasForeignKey("PhaseId")
                         .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
-                    b.HasOne("PilotageForfaits.Domain.Entites.Projet", null)
+                    b.HasOne("Orbita.Domain.Entities.Project", null)
                         .WithMany()
-                        .HasForeignKey("ProjetId")
-                        .OnDelete(DeleteBehavior.Restrict)
-                        .IsRequired();
-
-                    b.Navigation("Phase");
-                });
-
-            modelBuilder.Entity("PilotageForfaits.Domain.Entites.LigneBudgetAchat", b =>
-                {
-                    b.HasOne("PilotageForfaits.Domain.Entites.Projet", null)
-                        .WithMany("BudgetAchats")
-                        .HasForeignKey("ProjetId")
-                        .OnDelete(DeleteBehavior.Restrict)
+                        .HasForeignKey("ProjectId")
+                        .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
                 });
 
-            modelBuilder.Entity("PilotageForfaits.Domain.Entites.LigneBudgetFrais", b =>
+            modelBuilder.Entity("Orbita.Domain.Entities.PlanningDate", b =>
                 {
-                    b.HasOne("PilotageForfaits.Domain.Entites.Projet", null)
-                        .WithMany("BudgetFrais")
-                        .HasForeignKey("ProjetId")
-                        .OnDelete(DeleteBehavior.Restrict)
+                    b.HasOne("Orbita.Domain.Entities.Project", null)
+                        .WithMany("PlanningDates")
+                        .HasForeignKey("ProjectId")
+                        .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
                 });
 
-            modelBuilder.Entity("PilotageForfaits.Domain.Entites.LignePlanReference", b =>
+            modelBuilder.Entity("Orbita.Domain.Entities.PlanningElement", b =>
                 {
-                    b.HasOne("PilotageForfaits.Domain.Entites.PlanReference", null)
-                        .WithMany("Lignes")
-                        .HasForeignKey("PlanReferenceId")
-                        .OnDelete(DeleteBehavior.Restrict)
-                        .IsRequired();
-
-                    b.HasOne("PilotageForfaits.Domain.Entites.Projet", null)
-                        .WithMany()
-                        .HasForeignKey("ProjetId")
-                        .OnDelete(DeleteBehavior.Restrict)
-                        .IsRequired();
-
-                    b.HasOne("PilotageForfaits.Domain.Entites.Tache", null)
-                        .WithMany()
-                        .HasForeignKey("TacheId")
-                        .OnDelete(DeleteBehavior.Restrict)
+                    b.HasOne("Orbita.Domain.Entities.Project", null)
+                        .WithMany("PlanningElements")
+                        .HasForeignKey("ProjectId")
+                        .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
                 });
 
-            modelBuilder.Entity("PilotageForfaits.Domain.Entites.Livrable", b =>
+            modelBuilder.Entity("Orbita.Domain.Entities.Project", b =>
                 {
-                    b.HasOne("PilotageForfaits.Domain.Entites.Projet", null)
+                    b.HasOne("Orbita.Domain.Entities.User", null)
                         .WithMany()
-                        .HasForeignKey("ProjetId")
-                        .OnDelete(DeleteBehavior.Restrict)
-                        .IsRequired();
-
-                    b.HasOne("PilotageForfaits.Domain.Entites.Tache", null)
-                        .WithMany()
-                        .HasForeignKey("TacheId")
-                        .OnDelete(DeleteBehavior.Restrict)
-                        .IsRequired();
-                });
-
-            modelBuilder.Entity("PilotageForfaits.Domain.Entites.Metrique", b =>
-                {
-                    b.HasOne("PilotageForfaits.Domain.Entites.Projet", null)
-                        .WithMany("Metriques")
-                        .HasForeignKey("ProjetId")
-                        .OnDelete(DeleteBehavior.Restrict)
-                        .IsRequired();
-                });
-
-            modelBuilder.Entity("PilotageForfaits.Domain.Entites.Commentaire", b =>
-                {
-                    b.HasOne("PilotageForfaits.Domain.Entites.Utilisateur", null)
-                        .WithMany()
-                        .HasForeignKey("AuteurId")
+                        .HasForeignKey("CreatedByUserId")
                         .OnDelete(DeleteBehavior.Restrict);
 
-                    b.HasOne("PilotageForfaits.Domain.Entites.Projet", null)
-                        .WithMany()
-                        .HasForeignKey("ProjetId")
-                        .OnDelete(DeleteBehavior.Restrict)
-                        .IsRequired();
-
-                });
-
-            modelBuilder.Entity("PilotageForfaits.Domain.Entites.Notification", b =>
-                {
-                    b.HasOne("PilotageForfaits.Domain.Entites.Utilisateur", null)
-                        .WithMany()
-                        .HasForeignKey("DestinataireId")
-                        .OnDelete(DeleteBehavior.Restrict)
-                        .IsRequired();
-
-                    b.HasOne("PilotageForfaits.Domain.Entites.Projet", null)
-                        .WithMany()
-                        .HasForeignKey("ProjetId")
-                        .OnDelete(DeleteBehavior.Restrict)
-                        .IsRequired();
-                });
-
-            modelBuilder.Entity("PilotageForfaits.Domain.Entites.PersonneAjoutee", b =>
-                {
-                    b.HasOne("PilotageForfaits.Domain.Entites.Projet", null)
-                        .WithMany()
-                        .HasForeignKey("ProjetId")
-                        .OnDelete(DeleteBehavior.Restrict)
-                        .IsRequired();
-                });
-
-                        modelBuilder.Entity("PilotageForfaits.Domain.Entites.Lot", b =>
-                {
-                    b.HasOne("PilotageForfaits.Domain.Entites.Projet", null)
-                        .WithMany("Lots")
-                        .HasForeignKey("ProjetId")
-                        .OnDelete(DeleteBehavior.Restrict)
-                        .IsRequired();
-                });
-
-            modelBuilder.Entity("PilotageForfaits.Domain.Entites.Phase", b =>
-                {
-                    b.HasOne("PilotageForfaits.Domain.Entites.Projet", null)
-                        .WithMany("Phases")
-                        .HasForeignKey("ProjetId")
-                        .OnDelete(DeleteBehavior.Restrict)
-                        .IsRequired();
-                });
-
-            modelBuilder.Entity("PilotageForfaits.Domain.Entites.PhotoIndicateurs", b =>
-                {
-                    b.HasOne("PilotageForfaits.Domain.Entites.Projet", null)
-                        .WithMany()
-                        .HasForeignKey("ProjetId")
-                        .OnDelete(DeleteBehavior.Restrict)
-                        .IsRequired();
-                });
-
-            modelBuilder.Entity("PilotageForfaits.Domain.Entites.PlanReference", b =>
-                {
-                    b.HasOne("PilotageForfaits.Domain.Entites.Utilisateur", null)
-                        .WithMany()
-                        .HasForeignKey("FigeParId")
-                        .OnDelete(DeleteBehavior.Restrict);
-
-                    b.HasOne("PilotageForfaits.Domain.Entites.Projet", null)
-                        .WithMany()
-                        .HasForeignKey("ProjetId")
-                        .OnDelete(DeleteBehavior.Restrict)
-                        .IsRequired();
-                });
-
-            modelBuilder.Entity("PilotageForfaits.Domain.Entites.PlanningVenduPhase", b =>
-                {
-                    b.HasOne("PilotageForfaits.Domain.Entites.Projet", null)
-                        .WithMany("PlanningPhases")
-                        .HasForeignKey("ProjetId")
-                        .OnDelete(DeleteBehavior.Restrict)
-                        .IsRequired();
-                });
-
-            modelBuilder.Entity("PilotageForfaits.Domain.Entites.PlanningVenduPhaseMois", b =>
-                {
-                    b.HasOne("PilotageForfaits.Domain.Entites.PlanningVenduPhase", null)
-                        .WithMany("Mois")
-                        .HasForeignKey("PlanningVenduPhaseId")
-                        .OnDelete(DeleteBehavior.Restrict)
-                        .IsRequired();
-
-                    b.HasOne("PilotageForfaits.Domain.Entites.Projet", null)
-                        .WithMany()
-                        .HasForeignKey("ProjetId")
-                        .OnDelete(DeleteBehavior.Restrict)
-                        .IsRequired();
-                });
-
-            modelBuilder.Entity("PilotageForfaits.Domain.Entites.PlanningVenduProfil", b =>
-                {
-                    b.HasOne("PilotageForfaits.Domain.Entites.ProfilProjet", null)
-                        .WithMany()
-                        .HasForeignKey("ProfilProjetId")
-                        .OnDelete(DeleteBehavior.Restrict)
-                        .IsRequired();
-
-                    b.HasOne("PilotageForfaits.Domain.Entites.Projet", null)
-                        .WithMany("PlanningProfils")
-                        .HasForeignKey("ProjetId")
-                        .OnDelete(DeleteBehavior.Restrict)
-                        .IsRequired();
-                });
-
-            modelBuilder.Entity("PilotageForfaits.Domain.Entites.PointHebdo", b =>
-                {
-                    b.HasOne("PilotageForfaits.Domain.Entites.Utilisateur", null)
-                        .WithMany()
-                        .HasForeignKey("ParId")
-                        .OnDelete(DeleteBehavior.Restrict);
-
-                    b.HasOne("PilotageForfaits.Domain.Entites.Projet", null)
-                        .WithMany()
-                        .HasForeignKey("ProjetId")
-                        .OnDelete(DeleteBehavior.Restrict)
-                        .IsRequired();
-                });
-
-            modelBuilder.Entity("PilotageForfaits.Domain.Entites.Prestataire", b =>
-                {
-                    b.HasOne("PilotageForfaits.Domain.Entites.Projet", null)
-                        .WithMany("Prestataires")
-                        .HasForeignKey("ProjetId")
-                        .OnDelete(DeleteBehavior.Restrict)
-                        .IsRequired();
-                });
-
-            modelBuilder.Entity("PilotageForfaits.Domain.Entites.PrevisionnelProfil", b =>
-                {
-                    b.HasOne("PilotageForfaits.Domain.Entites.ProfilProjet", null)
-                        .WithMany()
-                        .HasForeignKey("ProfilProjetId")
-                        .OnDelete(DeleteBehavior.Restrict)
-                        .IsRequired();
-
-                    b.HasOne("PilotageForfaits.Domain.Entites.Projet", null)
-                        .WithMany()
-                        .HasForeignKey("ProjetId")
-                        .OnDelete(DeleteBehavior.Restrict)
-                        .IsRequired();
-                });
-
-            modelBuilder.Entity("PilotageForfaits.Domain.Entites.ProfilProjet", b =>
-                {
-                    b.HasOne("PilotageForfaits.Domain.Entites.Utilisateur", null)
-                        .WithMany()
-                        .HasForeignKey("AjouteParId")
-                        .OnDelete(DeleteBehavior.Restrict);
-
-                    b.HasOne("PilotageForfaits.Domain.Entites.Projet", null)
-                        .WithMany("Profils")
-                        .HasForeignKey("ProjetId")
-                        .OnDelete(DeleteBehavior.Restrict)
-                        .IsRequired();
-
-                    b.HasOne("PilotageForfaits.Domain.Entites.Utilisateur", null)
-                        .WithMany()
-                        .HasForeignKey("UtilisateurId")
-                        .OnDelete(DeleteBehavior.Restrict);
-                });
-
-            modelBuilder.Entity("PilotageForfaits.Domain.Entites.Projet", b =>
-                {
-                    b.HasOne("PilotageForfaits.Domain.Entites.Utilisateur", null)
-                        .WithMany()
-                        .HasForeignKey("CreeParId")
-                        .OnDelete(DeleteBehavior.Restrict);
-
-                    b.OwnsOne("PilotageForfaits.Domain.Entites.ParametresProjet", "Parametres", b1 =>
+                    b.OwnsOne("Orbita.Domain.ValueObjects.ProjectSettings", "Settings", b1 =>
                         {
-                            b1.Property<Guid>("ProjetId")
+                            b1.Property<Guid>("ProjectId")
                                 .HasColumnType("uuid");
 
-                            b1.Property<int?>("AlerteActionsJours")
+                            b1.Property<int?>("ActionAlertDays")
                                 .HasColumnType("integer");
 
-                            b1.Property<int?>("AlerteAteliersJours")
+                            b1.Property<int?>("DeliverableAlertDays")
                                 .HasColumnType("integer");
 
-                            b1.Property<int?>("AlerteEcheancesJours")
-                                .HasColumnType("integer");
-
-                            b1.Property<int?>("AlerteLivrablesJours")
-                                .HasColumnType("integer");
-
-                            b1.Property<DateOnly?>("DernierCoproj")
-                                .HasColumnType("date");
-
-                            b1.Property<string>("Instances")
-                                .HasMaxLength(4000)
-                                .HasColumnType("character varying(4000)");
-
-                            b1.Property<int>("NombreMois")
-                                .HasColumnType("integer");
-
-                            b1.Property<string>("PremierMois")
+                            b1.Property<string>("FirstPlanningMonth")
                                 .HasMaxLength(7)
                                 .HasColumnType("character varying(7)");
 
-                            b1.Property<string>("Regroupement")
-                                .IsRequired()
-                                .HasMaxLength(30)
-                                .HasColumnType("character varying(30)");
+                            b1.Property<string>("GovernanceInstances")
+                                .HasMaxLength(2000)
+                                .HasColumnType("character varying(2000)");
 
-                            b1.HasKey("ProjetId");
+                            b1.Property<int>("Grouping")
+                                .HasColumnType("integer");
 
-                            b1.ToTable("Projets");
+                            b1.Property<DateOnly?>("LastProjectCommitteeDate")
+                                .HasColumnType("date");
+
+                            b1.Property<int?>("MilestoneAlertDays")
+                                .HasColumnType("integer");
+
+                            b1.Property<int>("MonthCount")
+                                .HasColumnType("integer");
+
+                            b1.Property<int?>("WorkshopAlertDays")
+                                .HasColumnType("integer");
+
+                            b1.HasKey("ProjectId");
+
+                            b1.ToTable("Projects");
 
                             b1.WithOwner()
-                                .HasForeignKey("ProjetId");
+                                .HasForeignKey("ProjectId");
                         });
 
-                    b.Navigation("Parametres")
+                    b.Navigation("Settings")
                         .IsRequired();
                 });
 
-            modelBuilder.Entity("PilotageForfaits.Domain.Entites.Risque", b =>
+            modelBuilder.Entity("Orbita.Domain.Entities.ProjectAction", b =>
                 {
-                    b.HasOne("PilotageForfaits.Domain.Entites.ActionProjet", null)
+                    b.HasOne("Orbita.Domain.Entities.User", null)
+                        .WithMany()
+                        .HasForeignKey("CreatedByUserId")
+                        .OnDelete(DeleteBehavior.Restrict);
+
+                    b.HasOne("Orbita.Domain.Entities.User", null)
+                        .WithMany()
+                        .HasForeignKey("OwnerUserId")
+                        .OnDelete(DeleteBehavior.Restrict);
+
+                    b.HasOne("Orbita.Domain.Entities.Project", null)
+                        .WithMany("Actions")
+                        .HasForeignKey("ProjectId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("Orbita.Domain.Entities.WorkTask", null)
+                        .WithMany()
+                        .HasForeignKey("TaskId")
+                        .OnDelete(DeleteBehavior.Restrict);
+                });
+
+            modelBuilder.Entity("Orbita.Domain.Entities.ProjectAddedPerson", b =>
+                {
+                    b.HasOne("Orbita.Domain.Entities.Project", null)
+                        .WithMany()
+                        .HasForeignKey("ProjectId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+                });
+
+            modelBuilder.Entity("Orbita.Domain.Entities.ProjectAssignment", b =>
+                {
+                    b.HasOne("Orbita.Domain.Entities.User", null)
+                        .WithMany()
+                        .HasForeignKey("GrantedByUserId")
+                        .OnDelete(DeleteBehavior.Restrict);
+
+                    b.HasOne("Orbita.Domain.Entities.Project", null)
+                        .WithMany("Assignments")
+                        .HasForeignKey("ProjectId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("Orbita.Domain.Entities.User", null)
+                        .WithMany()
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+                });
+
+            modelBuilder.Entity("Orbita.Domain.Entities.ProjectAxis", b =>
+                {
+                    b.HasOne("Orbita.Domain.Entities.Project", null)
+                        .WithMany("Axes")
+                        .HasForeignKey("ProjectId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+                });
+
+            modelBuilder.Entity("Orbita.Domain.Entities.ProjectComment", b =>
+                {
+                    b.HasOne("Orbita.Domain.Entities.User", null)
+                        .WithMany()
+                        .HasForeignKey("AuthorUserId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.HasOne("Orbita.Domain.Entities.Project", null)
+                        .WithMany()
+                        .HasForeignKey("ProjectId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+                });
+
+            modelBuilder.Entity("Orbita.Domain.Entities.ProjectDecision", b =>
+                {
+                    b.HasOne("Orbita.Domain.Entities.User", null)
+                        .WithMany()
+                        .HasForeignKey("CreatedByUserId")
+                        .OnDelete(DeleteBehavior.Restrict);
+
+                    b.HasOne("Orbita.Domain.Entities.Project", null)
+                        .WithMany("Decisions")
+                        .HasForeignKey("ProjectId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+                });
+
+            modelBuilder.Entity("Orbita.Domain.Entities.ProjectDraft", b =>
+                {
+                    b.HasOne("Orbita.Domain.Entities.User", null)
+                        .WithMany()
+                        .HasForeignKey("AuthorUserId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.HasOne("Orbita.Domain.Entities.User", null)
+                        .WithMany()
+                        .HasForeignKey("CoAuthorUserId")
+                        .OnDelete(DeleteBehavior.Restrict);
+
+                    b.HasOne("Orbita.Domain.Entities.User", null)
+                        .WithMany()
+                        .HasForeignKey("ModifiedByUserId")
+                        .OnDelete(DeleteBehavior.Restrict);
+                });
+
+            modelBuilder.Entity("Orbita.Domain.Entities.ProjectField", b =>
+                {
+                    b.HasOne("Orbita.Domain.Entities.Project", null)
+                        .WithMany("Fields")
+                        .HasForeignKey("ProjectId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+                });
+
+            modelBuilder.Entity("Orbita.Domain.Entities.ProjectJournalEntry", b =>
+                {
+                    b.HasOne("Orbita.Domain.Entities.Project", null)
+                        .WithMany("JournalEntries")
+                        .HasForeignKey("ProjectId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("Orbita.Domain.Entities.User", null)
+                        .WithMany()
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.Restrict);
+                });
+
+            modelBuilder.Entity("Orbita.Domain.Entities.ProjectLot", b =>
+                {
+                    b.HasOne("Orbita.Domain.Entities.Project", null)
+                        .WithMany("Lots")
+                        .HasForeignKey("ProjectId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+                });
+
+            modelBuilder.Entity("Orbita.Domain.Entities.ProjectMetric", b =>
+                {
+                    b.HasOne("Orbita.Domain.Entities.Project", null)
+                        .WithMany("Metrics")
+                        .HasForeignKey("ProjectId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+                });
+
+            modelBuilder.Entity("Orbita.Domain.Entities.ProjectMilestone", b =>
+                {
+                    b.HasOne("Orbita.Domain.Entities.Project", null)
+                        .WithMany("Milestones")
+                        .HasForeignKey("ProjectId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+                });
+
+            modelBuilder.Entity("Orbita.Domain.Entities.ProjectNotification", b =>
+                {
+                    b.HasOne("Orbita.Domain.Entities.Project", null)
+                        .WithMany("Notifications")
+                        .HasForeignKey("ProjectId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("Orbita.Domain.Entities.User", null)
+                        .WithMany()
+                        .HasForeignKey("RecipientUserId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+                });
+
+            modelBuilder.Entity("Orbita.Domain.Entities.ProjectPhase", b =>
+                {
+                    b.HasOne("Orbita.Domain.Entities.Project", null)
+                        .WithMany("Phases")
+                        .HasForeignKey("ProjectId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+                });
+
+            modelBuilder.Entity("Orbita.Domain.Entities.ProjectProfile", b =>
+                {
+                    b.HasOne("Orbita.Domain.Entities.User", null)
+                        .WithMany()
+                        .HasForeignKey("AddedByUserId")
+                        .OnDelete(DeleteBehavior.Restrict);
+
+                    b.HasOne("Orbita.Domain.Entities.Project", null)
+                        .WithMany("Profiles")
+                        .HasForeignKey("ProjectId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("Orbita.Domain.Entities.User", null)
+                        .WithMany()
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.Restrict);
+                });
+
+            modelBuilder.Entity("Orbita.Domain.Entities.ProjectRisk", b =>
+                {
+                    b.HasOne("Orbita.Domain.Entities.ProjectAction", null)
                         .WithMany()
                         .HasForeignKey("ActionId")
                         .OnDelete(DeleteBehavior.Restrict);
 
-                    b.HasOne("PilotageForfaits.Domain.Entites.Utilisateur", null)
+                    b.HasOne("Orbita.Domain.Entities.User", null)
                         .WithMany()
-                        .HasForeignKey("CreeParId")
+                        .HasForeignKey("CreatedByUserId")
                         .OnDelete(DeleteBehavior.Restrict);
 
-                    b.HasOne("PilotageForfaits.Domain.Entites.Projet", null)
-                        .WithMany("Risques")
-                        .HasForeignKey("ProjetId")
+                    b.HasOne("Orbita.Domain.Entities.Project", null)
+                        .WithMany("Risks")
+                        .HasForeignKey("ProjectId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+                });
+
+            modelBuilder.Entity("Orbita.Domain.Entities.ProjectStep", b =>
+                {
+                    b.HasOne("Orbita.Domain.Entities.Project", null)
+                        .WithMany("Steps")
+                        .HasForeignKey("ProjectId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+                });
+
+            modelBuilder.Entity("Orbita.Domain.Entities.ProjectSupplier", b =>
+                {
+                    b.HasOne("Orbita.Domain.Entities.Project", null)
+                        .WithMany("Suppliers")
+                        .HasForeignKey("ProjectId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+                });
+
+            modelBuilder.Entity("Orbita.Domain.Entities.ProjectTaskType", b =>
+                {
+                    b.HasOne("Orbita.Domain.Entities.Project", null)
+                        .WithMany("TaskTypes")
+                        .HasForeignKey("ProjectId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+                });
+
+            modelBuilder.Entity("Orbita.Domain.Entities.PurchaseBudgetLine", b =>
+                {
+                    b.HasOne("Orbita.Domain.Entities.Project", null)
+                        .WithMany("PurchaseBudget")
+                        .HasForeignKey("ProjectId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+                });
+
+            modelBuilder.Entity("Orbita.Domain.Entities.ReferencePlan", b =>
+                {
+                    b.HasOne("Orbita.Domain.Entities.User", null)
+                        .WithMany()
+                        .HasForeignKey("FrozenByUserId")
+                        .OnDelete(DeleteBehavior.Restrict);
+
+                    b.HasOne("Orbita.Domain.Entities.Project", null)
+                        .WithMany("ReferencePlans")
+                        .HasForeignKey("ProjectId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+                });
+
+            modelBuilder.Entity("Orbita.Domain.Entities.ReferencePlanDate", b =>
+                {
+                    b.HasOne("Orbita.Domain.Entities.Project", null)
+                        .WithMany()
+                        .HasForeignKey("ProjectId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("Orbita.Domain.Entities.ReferencePlan", null)
+                        .WithMany()
+                        .HasForeignKey("ReferencePlanId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+                });
+
+            modelBuilder.Entity("Orbita.Domain.Entities.ReferencePlanTaskLine", b =>
+                {
+                    b.HasOne("Orbita.Domain.Entities.Project", null)
+                        .WithMany()
+                        .HasForeignKey("ProjectId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("Orbita.Domain.Entities.ReferencePlan", null)
+                        .WithMany("Lines")
+                        .HasForeignKey("ReferencePlanId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("Orbita.Domain.Entities.WorkTask", null)
+                        .WithMany()
+                        .HasForeignKey("TaskId")
                         .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
                 });
 
-            modelBuilder.Entity("PilotageForfaits.Domain.Entites.Tache", b =>
+            modelBuilder.Entity("Orbita.Domain.Entities.ScopeChange", b =>
                 {
-                    b.HasOne("PilotageForfaits.Domain.Entites.Axe", "Axe")
+                    b.HasOne("Orbita.Domain.Entities.User", null)
                         .WithMany()
-                        .HasForeignKey("AxeId")
+                        .HasForeignKey("ActorUserId")
                         .OnDelete(DeleteBehavior.Restrict);
 
-                    b.HasOne("PilotageForfaits.Domain.Entites.Echeance", null)
+                    b.HasOne("Orbita.Domain.Entities.ProjectDecision", null)
                         .WithMany()
-                        .HasForeignKey("EcheanceId")
+                        .HasForeignKey("DecisionId")
                         .OnDelete(DeleteBehavior.Restrict);
 
-                    b.HasOne("PilotageForfaits.Domain.Entites.Phase", "Phase")
+                    b.HasOne("Orbita.Domain.Entities.Project", null)
+                        .WithMany()
+                        .HasForeignKey("ProjectId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("Orbita.Domain.Entities.ProjectProfile", null)
+                        .WithMany()
+                        .HasForeignKey("ProjectProfileId")
+                        .OnDelete(DeleteBehavior.Restrict);
+
+                    b.HasOne("Orbita.Domain.Entities.ProjectProfile", null)
+                        .WithMany()
+                        .HasForeignKey("SourceProjectProfileId")
+                        .OnDelete(DeleteBehavior.Restrict);
+
+                    b.HasOne("Orbita.Domain.Entities.WorkTask", null)
+                        .WithMany("ScopeChanges")
+                        .HasForeignKey("TaskId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+                });
+
+            modelBuilder.Entity("Orbita.Domain.Entities.SoldPhaseMonth", b =>
+                {
+                    b.HasOne("Orbita.Domain.Entities.Project", null)
+                        .WithMany()
+                        .HasForeignKey("ProjectId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("Orbita.Domain.Entities.SoldPhasePlanning", null)
+                        .WithMany()
+                        .HasForeignKey("SoldPhasePlanningId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+                });
+
+            modelBuilder.Entity("Orbita.Domain.Entities.SoldPhasePlanning", b =>
+                {
+                    b.HasOne("Orbita.Domain.Entities.Project", null)
+                        .WithMany("SoldPhasePlanning")
+                        .HasForeignKey("ProjectId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+                });
+
+            modelBuilder.Entity("Orbita.Domain.Entities.SoldProfilePlanning", b =>
+                {
+                    b.HasOne("Orbita.Domain.Entities.Project", null)
+                        .WithMany("SoldProfilePlanning")
+                        .HasForeignKey("ProjectId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("Orbita.Domain.Entities.ProjectProfile", null)
+                        .WithMany()
+                        .HasForeignKey("ProjectProfileId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+                });
+
+            modelBuilder.Entity("Orbita.Domain.Entities.TaskEffort", b =>
+                {
+                    b.HasOne("Orbita.Domain.Entities.User", null)
+                        .WithMany()
+                        .HasForeignKey("AddedByUserId")
+                        .OnDelete(DeleteBehavior.Restrict);
+
+                    b.HasOne("Orbita.Domain.Entities.Project", null)
+                        .WithMany()
+                        .HasForeignKey("ProjectId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("Orbita.Domain.Entities.ProjectProfile", null)
+                        .WithMany()
+                        .HasForeignKey("ProjectProfileId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.HasOne("Orbita.Domain.Entities.WorkTask", null)
+                        .WithMany("Efforts")
+                        .HasForeignKey("TaskId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+                });
+
+            modelBuilder.Entity("Orbita.Domain.Entities.TimeEntry", b =>
+                {
+                    b.HasOne("Orbita.Domain.Entities.Project", null)
+                        .WithMany()
+                        .HasForeignKey("ProjectId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("Orbita.Domain.Entities.ProjectProfile", null)
+                        .WithMany()
+                        .HasForeignKey("ProjectProfileId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.HasOne("Orbita.Domain.Entities.User", null)
+                        .WithMany()
+                        .HasForeignKey("RecordedByUserId")
+                        .OnDelete(DeleteBehavior.Restrict);
+
+                    b.HasOne("Orbita.Domain.Entities.WorkTask", null)
+                        .WithMany("TimeEntries")
+                        .HasForeignKey("TaskId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+                });
+
+            modelBuilder.Entity("Orbita.Domain.Entities.TspImportRecord", b =>
+                {
+                    b.HasOne("Orbita.Domain.Entities.User", null)
+                        .WithMany()
+                        .HasForeignKey("HiddenByUserId")
+                        .OnDelete(DeleteBehavior.Restrict);
+
+                    b.HasOne("Orbita.Domain.Entities.User", null)
+                        .WithMany()
+                        .HasForeignKey("ImportedByUserId")
+                        .OnDelete(DeleteBehavior.Restrict);
+
+                    b.HasOne("Orbita.Domain.Entities.Project", null)
+                        .WithMany("TspImports")
+                        .HasForeignKey("ProjectId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+                });
+
+            modelBuilder.Entity("Orbita.Domain.Entities.WeeklyStatusPoint", b =>
+                {
+                    b.HasOne("Orbita.Domain.Entities.User", null)
+                        .WithMany()
+                        .HasForeignKey("ModifiedByUserId")
+                        .OnDelete(DeleteBehavior.Restrict);
+
+                    b.HasOne("Orbita.Domain.Entities.Project", null)
+                        .WithMany()
+                        .HasForeignKey("ProjectId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+                });
+
+            modelBuilder.Entity("Orbita.Domain.Entities.WorkTask", b =>
+                {
+                    b.HasOne("Orbita.Domain.Entities.ProjectAxis", null)
+                        .WithMany()
+                        .HasForeignKey("AxisId")
+                        .OnDelete(DeleteBehavior.Restrict);
+
+                    b.HasOne("Orbita.Domain.Entities.InvoiceMilestone", null)
+                        .WithMany()
+                        .HasForeignKey("InvoiceMilestoneId")
+                        .OnDelete(DeleteBehavior.Restrict);
+
+                    b.HasOne("Orbita.Domain.Entities.ProjectPhase", null)
                         .WithMany()
                         .HasForeignKey("PhaseId")
                         .OnDelete(DeleteBehavior.Restrict);
 
-                    b.HasOne("PilotageForfaits.Domain.Entites.Projet", null)
-                        .WithMany("Taches")
-                        .HasForeignKey("ProjetId")
-                        .OnDelete(DeleteBehavior.Restrict)
+                    b.HasOne("Orbita.Domain.Entities.Project", null)
+                        .WithMany("Tasks")
+                        .HasForeignKey("ProjectId")
+                        .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("PilotageForfaits.Domain.Entites.TypeTache", "TypeTache")
+                    b.HasOne("Orbita.Domain.Entities.ProjectTaskType", null)
                         .WithMany()
-                        .HasForeignKey("TypeTacheId")
+                        .HasForeignKey("TaskTypeId")
+                        .OnDelete(DeleteBehavior.Restrict);
+                });
+
+            modelBuilder.Entity("Orbita.Domain.Entities.Workshop", b =>
+                {
+                    b.HasOne("Orbita.Domain.Entities.Project", null)
+                        .WithMany()
+                        .HasForeignKey("ProjectId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("Orbita.Domain.Entities.WorkTask", null)
+                        .WithMany()
+                        .HasForeignKey("TaskId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+                });
+
+            modelBuilder.Entity("Orbita.Domain.Entities.WorkshopRecipient", b =>
+                {
+                    b.HasOne("Orbita.Domain.Entities.Project", null)
+                        .WithMany()
+                        .HasForeignKey("ProjectId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("Orbita.Domain.Entities.User", null)
+                        .WithMany()
+                        .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Restrict);
 
-                    b.Navigation("Axe");
-
-                    b.Navigation("Phase");
-
-                    b.Navigation("TypeTache");
-                });
-
-            modelBuilder.Entity("PilotageForfaits.Domain.Entites.TypeTache", b =>
-                {
-                    b.HasOne("PilotageForfaits.Domain.Entites.Projet", null)
-                        .WithMany("TypesTache")
-                        .HasForeignKey("ProjetId")
-                        .OnDelete(DeleteBehavior.Restrict)
+                    b.HasOne("Orbita.Domain.Entities.Workshop", null)
+                        .WithMany("Recipients")
+                        .HasForeignKey("WorkshopId")
+                        .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
                 });
 
-            modelBuilder.Entity("PilotageForfaits.Domain.Entites.ValeurListeIa", b =>
+            modelBuilder.Entity("Orbita.Domain.Entities.Project", b =>
                 {
-                    b.HasOne("PilotageForfaits.Domain.Entites.Projet", null)
-                        .WithMany("ValeursIa")
-                        .HasForeignKey("ProjetId")
-                        .OnDelete(DeleteBehavior.Restrict)
-                        .IsRequired();
-                });
-
-            modelBuilder.Entity("PilotageForfaits.Domain.Entites.Atelier", b =>
-                {
-                    b.Navigation("Destinataires");
-                });
-
-            modelBuilder.Entity("PilotageForfaits.Domain.Entites.Echeance", b =>
-                {
-                    b.Navigation("Phases");
-                });
-
-            modelBuilder.Entity("PilotageForfaits.Domain.Entites.PlanReference", b =>
-                {
-                    b.Navigation("Lignes");
-                });
-
-            modelBuilder.Entity("PilotageForfaits.Domain.Entites.PlanningVenduPhase", b =>
-                {
-                    b.Navigation("Mois");
-                });
-
-            modelBuilder.Entity("PilotageForfaits.Domain.Entites.Projet", b =>
-                {
-                    b.Navigation("AchatsReels");
-
                     b.Navigation("Actions");
+
+                    b.Navigation("ActualExpenses");
+
+                    b.Navigation("ActualPurchases");
+
+                    b.Navigation("AgencyRates");
+
+                    b.Navigation("AiReferenceValues");
+
+                    b.Navigation("Assignments");
 
                     b.Navigation("Axes");
 
-
-                    b.Navigation("BudgetAchats");
-
-                    b.Navigation("BudgetFrais");
-
-                    b.Navigation("ChampsFiche");
-
                     b.Navigation("Decisions");
 
-                    b.Navigation("Echeances");
+                    b.Navigation("ExpenseBudget");
 
-                    b.Navigation("Etapes");
+                    b.Navigation("Fields");
 
-                    b.Navigation("FraisReels");
+                    b.Navigation("ForecastProfiles");
 
-                    b.Navigation("Grille");
+                    b.Navigation("IndicatorSnapshots");
 
-                    b.Navigation("Habilitations");
+                    b.Navigation("InvoiceMilestones");
 
-                    b.Navigation("Imports");
+                    b.Navigation("JournalEntries");
 
-                    b.Navigation("Metriques");
+                    b.Navigation("Lots");
+
+                    b.Navigation("Metrics");
+
+                    b.Navigation("Milestones");
+
+                    b.Navigation("Notifications");
 
                     b.Navigation("Phases");
 
-                    b.Navigation("PlanningPhases");
+                    b.Navigation("PlanningDates");
 
-                    b.Navigation("PlanningProfils");
+                    b.Navigation("PlanningElements");
 
-                    b.Navigation("Prestataires");
+                    b.Navigation("Profiles");
 
-                    b.Navigation("Profils");
+                    b.Navigation("PurchaseBudget");
 
-                    b.Navigation("Risques");
+                    b.Navigation("ReferencePlans");
 
-                    b.Navigation("Taches");
+                    b.Navigation("Risks");
 
-                    b.Navigation("TypesTache");
+                    b.Navigation("SoldPhasePlanning");
 
-                    b.Navigation("ValeursIa");
+                    b.Navigation("SoldProfilePlanning");
+
+                    b.Navigation("Steps");
+
+                    b.Navigation("Suppliers");
+
+                    b.Navigation("TaskTypes");
+
+                    b.Navigation("Tasks");
+
+                    b.Navigation("TspImports");
                 });
 
-            modelBuilder.Entity("PilotageForfaits.Domain.Entites.Tache", b =>
+            modelBuilder.Entity("Orbita.Domain.Entities.ReferencePlan", b =>
                 {
-                    b.Navigation("Charges");
-
-                    b.Navigation("Consommes");
-
-                    b.Navigation("Evolutions");
+                    b.Navigation("Lines");
                 });
 
-            modelBuilder.Entity("PilotageForfaits.Domain.Entites.Utilisateur", b =>
+            modelBuilder.Entity("Orbita.Domain.Entities.WorkTask", b =>
                 {
-                    b.Navigation("Habilitations");
+                    b.Navigation("Efforts");
+
+                    b.Navigation("ScopeChanges");
+
+                    b.Navigation("TimeEntries");
+                });
+
+            modelBuilder.Entity("Orbita.Domain.Entities.Workshop", b =>
+                {
+                    b.Navigation("Recipients");
                 });
 #pragma warning restore 612, 618
         }
