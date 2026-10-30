@@ -21,7 +21,7 @@ public static class Program
         var configuration = builder.Configuration;
 
         // Register the domain and application handlers used by inbound messages.
-        builder.Services.AddBusiness(typeof(Project).Assembly);
+        builder.Services.AddBusiness(typeof(Book).Assembly);
         builder.Services.AddFranzMediator(new[] { typeof(ApplicationServiceCollectionExtensions).Assembly });
 
         // Provider-neutral database wiring; select the engine through configuration.

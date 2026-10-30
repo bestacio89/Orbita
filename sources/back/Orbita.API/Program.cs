@@ -11,7 +11,6 @@ using Franz.Common.Mediator.Extensions;
 using Franz.Common.Mediator.Polly;
 using Orbita.Domain.Entities;
 using Orbita.Persistence;
-using Orbita.Domain.Entities;
 using Serilog;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -29,7 +28,7 @@ builder.Services.AddFranzTelemetry(environment, configuration);
 
 // Register application services and domain-level Orbita business capabilities.
 builder.Services.RegisterApplicationServices();
-builder.Services.AddBusiness(typeof(Book).Assembly);
+builder.Services.AddBusiness(typeof(Project).Assembly);
 
 // Database provider selection is configuration-driven and remains outside the domain.
 builder.Services.AddRelationalDatabase<ApplicationDbContext>(environment, configuration);
@@ -55,7 +54,7 @@ var app = builder.Build();
 if (app.Environment.IsDevelopment())
 {
     await using var scope = app.Services.CreateAsyncScope();
-    await TemplateDatabaseSeeder.RunAsync(scope.ServiceProvider, app.Lifetime.ApplicationStopping);
+    await DatabaseInitializer.InitializeAsync(scope.ServiceProvider, app.Lifetime.ApplicationStopping);
 }
 else
 {
