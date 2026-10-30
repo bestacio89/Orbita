@@ -18,9 +18,9 @@ namespace Orbita.Application.Books.Queries
     : IQueryHandler<GetBookByIdQuery, Result<BookDto>>
     {
         private readonly IEntityRepository<Book, int> _bookRepository;
-    private readonly IOrbitaMapper _mapper;
+    private readonly IFranzMapper _mapper;
 
-        public GetBookByIdQueryHandler(IEntityRepository<Book, int> bookRepository, IOrbitaMapper mapper)
+        public GetBookByIdQueryHandler(IEntityRepository<Book, int> bookRepository, IFranzMapper mapper)
         {
             _bookRepository = bookRepository;
             _mapper = mapper;

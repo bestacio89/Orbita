@@ -17,9 +17,9 @@ public sealed class ListMembersQueryHandler
     : IQueryHandler<ListMembersQuery, Result<IReadOnlyCollection<MemberDto>>>
 {
     private readonly EntityRepository<ApplicationDbContext, Member, int> _memberRepository;
-    private readonly IOrbitaMapper _mapper;
+    private readonly IFranzMapper _mapper;
 
-    public ListMembersQueryHandler(EntityRepository<ApplicationDbContext, Member, int> memberRepository, IOrbitaMapper mapper)
+    public ListMembersQueryHandler(EntityRepository<ApplicationDbContext, Member, int> memberRepository, IFranzMapper mapper)
     {
         _memberRepository = memberRepository;
         _mapper = mapper;

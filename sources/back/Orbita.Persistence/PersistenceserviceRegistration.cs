@@ -36,12 +36,12 @@ public static class PersistenceServiceRegistration
       this IServiceCollection services,
       IConfiguration configuration)
   {
-    services.AddOrbitaRedisCaching(options =>
+    services.AddFranzRedisCaching(options =>
     {
       options.ConnectionString = configuration.GetConnectionString("Redis");
     });
 
-    services.AddOrbitaMediatorCaching(configuration, opt =>
+    services.AddFranzMediatorCaching(configuration, opt =>
     {
       var type = typeof(MediatorCachingOptions);
 

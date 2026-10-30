@@ -16,9 +16,9 @@ public sealed class AddMemberCommandHandler
     : ICommandHandler<AddMemberCommand, Result<int>>
 {
     private readonly EntityRepository<ApplicationDbContext,Member, int> _memberRepository;
-    private readonly IOrbitaMapper _mapper;
+    private readonly IFranzMapper _mapper;
 
-    public AddMemberCommandHandler(EntityRepository<ApplicationDbContext, Member, int> memberRepository, IOrbitaMapper mapper)
+    public AddMemberCommandHandler(EntityRepository<ApplicationDbContext, Member, int> memberRepository, IFranzMapper mapper)
     {
         _memberRepository = memberRepository;
         _mapper = mapper;

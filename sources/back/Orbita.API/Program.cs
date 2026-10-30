@@ -18,7 +18,7 @@ var configuration = builder.Configuration;
 
 // Logging and telemetry are configured once at the host boundary.
 builder.Host.UseLog();
-builder.Services.AddOrbitaTelemetry(environment, configuration);
+builder.Services.AddFranzTelemetry(environment, configuration);
 
 // Register application services and domain-level Orbita business capabilities.
 builder.Services.RegisterApplicationServices();
@@ -26,7 +26,7 @@ builder.Services.AddBusiness(typeof(Book).Assembly);
 
 // Database provider selection is configuration-driven and remains outside the domain.
 builder.Services.AddRelationalDatabase<ApplicationDbContext>(environment, configuration);
-builder.Services.AddOrbitaAuditing();
+builder.Services.AddFranzAuditing();
 
 // Register persistence concerns: repositories, cache integration, and persistence services.
 builder.Services.RegisterPersistenceServices<ApplicationDbContext>(configuration);
@@ -36,10 +36,10 @@ builder.Services.AddHttpArchitecture(environment, configuration);
 
 // Cross-cutting mediator behavior is explicit and composable.
 builder.Services
-    .AddOrbitaSerilogAuditPipeline()
-    .AddOrbitaSerilogLoggingPipeline();
+    .AddFranzSerilogAuditPipeline()
+    .AddFranzSerilogLoggingPipeline();
 
-builder.Services.AddOrbitaResilience(configuration);
+builder.Services.AddFranzResilience(configuration);
 
 var app = builder.Build();
 

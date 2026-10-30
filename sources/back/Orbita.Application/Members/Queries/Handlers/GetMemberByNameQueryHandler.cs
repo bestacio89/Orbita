@@ -14,9 +14,9 @@ namespace Orbita.Application.Queries.Members.Handlers
     public sealed class GetMemberByNameQueryHandler : IQueryHandler<GetMemberByNameQuery, Result<MemberDto>>
     {
         private readonly IMemberRepository _memberRepository;
-        private readonly IOrbitaMapper _mapper;
+        private readonly IFranzMapper _mapper;
 
-        public GetMemberByNameQueryHandler(IMemberRepository memberRepository, IOrbitaMapper mapper)
+        public GetMemberByNameQueryHandler(IMemberRepository memberRepository, IFranzMapper mapper)
         {
             _memberRepository = memberRepository;
             _mapper = mapper;

@@ -6,7 +6,7 @@ using Orbita.Domain.ValueObjects;
 
 namespace Orbita.Application.Mappings
 {
-  public class ApplicationProfile : OrbitaMapProfile
+  public class ApplicationProfile : FranzMapProfile
   {
     public ApplicationProfile()
     {

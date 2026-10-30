@@ -13,9 +13,9 @@ namespace Orbita.Application.Books.Queries
     public sealed class GetBooksByAuthorQueryHandler : IQueryHandler<GetBooksByAuthorQuery, Result<IEnumerable<BookDto>>>
     {
         private readonly IBookRepository _bookRepository;
-        private readonly IOrbitaMapper _mapper;
+        private readonly IFranzMapper _mapper;
 
-        public GetBooksByAuthorQueryHandler(IBookRepository bookRepository, IOrbitaMapper mapper)
+        public GetBooksByAuthorQueryHandler(IBookRepository bookRepository, IFranzMapper mapper)
         {
             _bookRepository = bookRepository;
             _mapper = mapper;

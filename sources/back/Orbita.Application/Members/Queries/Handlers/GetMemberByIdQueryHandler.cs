@@ -18,9 +18,9 @@ public sealed class GetMemberByIdQueryHandler
     : IQueryHandler<GetMemberByIdQuery, Result<MemberDto>>
 {
     private readonly EntityRepository<ApplicationDbContext, Member, int> _memberRepository;
-    private readonly IOrbitaMapper _mapper;
+    private readonly IFranzMapper _mapper;
 
-    public GetMemberByIdQueryHandler(EntityRepository<ApplicationDbContext, Member, int>  memberRepository, IOrbitaMapper mapper)
+    public GetMemberByIdQueryHandler(EntityRepository<ApplicationDbContext, Member, int>  memberRepository, IFranzMapper mapper)
     {
         _memberRepository = memberRepository;
         _mapper = mapper;
