@@ -30,6 +30,12 @@ jobs:
       - name: Install EF Core tooling
         run: dotnet tool install --global dotnet-ef --version 10.0.14
 
+      - name: Remove stale build outputs
+        shell: bash
+        run: |
+          dotnet clean Orbita.slnx --configuration Release
+          find . -type d \\( -name bin -o -name obj \\) -prune -exec rm -rf {} +
+
       - name: Restore solution
         run: dotnet restore Orbita.slnx
 
