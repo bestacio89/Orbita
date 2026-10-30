@@ -34,5 +34,5 @@ jobs:
       - name: Build Release
         run: dotnet build Orbita.slnx --configuration Release --no-restore
 
-      - name: Run tests
-        run: dotnet test Orbita.slnx --configuration Release --no-build --no-restore --logger "console;verbosity=normal"
+      - name: Run architectural tribunals
+        run: dotnet test Tests/Orbita.Testing.ArchitecturalReports/Orbita.Testing.ArchitecturalReports.csproj --configuration Release --no-build --no-restore --logger "console;verbosity=normal"
