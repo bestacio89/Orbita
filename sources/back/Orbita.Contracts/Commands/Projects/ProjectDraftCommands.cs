@@ -16,7 +16,15 @@ public sealed record InviteDraftCoAuthorCommand(
     Guid CoAuthorUserId,
     int ExpectedVersion) : ICommand<Result>;
 
+public sealed record RemoveDraftCoAuthorCommand(
+    Guid DraftId,
+    int ExpectedVersion) : ICommand<Result>;
+
 public sealed record UpdateProjectDraftContentCommand(
     Guid DraftId,
     string Content,
+    int ExpectedVersion) : ICommand<Result>;
+
+public sealed record DeleteProjectDraftCommand(
+    Guid DraftId,
     int ExpectedVersion) : ICommand<Result>;

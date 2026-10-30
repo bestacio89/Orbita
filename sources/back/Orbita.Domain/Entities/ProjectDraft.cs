@@ -18,7 +18,7 @@ public sealed class ProjectDraft : DomainEntity
     public string? Reference { get; private set; }
     public DraftOrigin Origin { get; private set; }
     public string? Source { get; private set; }
-    /// <summary>Serialized TSP draft payload. Its schema is versioned by the payload format.</summary>
+    /// <summary>Serialized, versioned TSP draft payload.</summary>
     public string Content { get; private set; } = string.Empty;
     public Guid AuthorUserId { get; private set; }
     public Guid? CoAuthorUserId { get; private set; }
@@ -46,6 +46,11 @@ public sealed class ProjectDraft : DomainEntity
             throw new BusinessRuleException("A draft author is required.");
         }
 
+        if (!Enum.IsDefined(origin))
+        {
+            throw new BusinessRuleException("The draft origin is invalid.");
+        }
+
         if (string.IsNullOrWhiteSpace(content))
         {
             throw new BusinessRuleException("A draft must contain a TSP payload.");
@@ -55,13 +60,13 @@ public sealed class ProjectDraft : DomainEntity
         {
             Client = client.Trim(),
             ProjectName = projectName.Trim(),
-            Reference = string.IsNullOrWhiteSpace(reference) ? null : reference.Trim(),
+            Reference = NormalizeOptional(reference),
             Origin = origin,
             Content = content,
             AuthorUserId = authorUserId,
             CreatedAt = createdAt,
             ModifiedAt = createdAt,
-            Source = string.IsNullOrWhiteSpace(source) ? null : source.Trim()
+            Source = NormalizeOptional(source)
         };
     }
 
@@ -101,16 +106,33 @@ public sealed class ProjectDraft : DomainEntity
         ModifiedByUserId = actorUserId;
     }
 
-    public void UpdateContent(Guid actorUserId, string content, DateTimeOffset modifiedAt)
+    public void UpdateContent(Guid actorUserId, string content, DateTimeOffset modifiedAt) =>
+        UpdateContent(actorUserId, Client, ProjectName, Reference, content, modifiedAt);
+
+    public void UpdateContent(
+        Guid actorUserId,
+        string client,
+        string projectName,
+        string? reference,
+        string content,
+        DateTimeOffset modifiedAt)
     {
         EnsureCanEdit(actorUserId);
         EnsureModificationTimestamp(modifiedAt);
+
+        if (string.IsNullOrWhiteSpace(client) || string.IsNullOrWhiteSpace(projectName))
+        {
+            throw new BusinessRuleException("A draft requires both a client and a project name.");
+        }
 
         if (string.IsNullOrWhiteSpace(content))
         {
             throw new BusinessRuleException("A draft must contain a TSP payload.");
         }
 
+        Client = client.Trim();
+        ProjectName = projectName.Trim();
+        Reference = NormalizeOptional(reference);
         Content = content;
         ModifiedAt = modifiedAt;
         ModifiedByUserId = actorUserId;
@@ -131,4 +153,7 @@ public sealed class ProjectDraft : DomainEntity
             throw new BusinessRuleException("A draft modification timestamp cannot move backwards.");
         }
     }
+
+    private static string? NormalizeOptional(string? value) =>
+        string.IsNullOrWhiteSpace(value) ? null : value.Trim();
 }

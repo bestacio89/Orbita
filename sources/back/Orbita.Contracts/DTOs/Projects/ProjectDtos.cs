@@ -63,14 +63,33 @@ public sealed record CurrentUserDto(
     IReadOnlyCollection<string> GlobalRoles,
     IReadOnlyCollection<string> Capabilities);
 
+public sealed record ProjectDraftSummaryDto(
+    Guid Id,
+    string Client,
+    string ProjectName,
+    string? Reference,
+    DraftOrigin Origin,
+    string? Source,
+    Guid AuthorUserId,
+    Guid? CoAuthorUserId,
+    DateTimeOffset CreatedAt,
+    DateTimeOffset ModifiedAt,
+    Guid? ModifiedByUserId,
+    int Version,
+    bool IsAuthor);
+
 public sealed record ProjectDraftDto(
     Guid Id,
     string Client,
     string ProjectName,
     string? Reference,
     DraftOrigin Origin,
+    string? Source,
+    string Content,
     Guid AuthorUserId,
     Guid? CoAuthorUserId,
     DateTimeOffset CreatedAt,
     DateTimeOffset ModifiedAt,
-    int Version);
+    Guid? ModifiedByUserId,
+    int Version,
+    bool IsAuthor);

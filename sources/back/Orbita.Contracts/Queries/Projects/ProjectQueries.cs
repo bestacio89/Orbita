@@ -16,5 +16,8 @@ public sealed record ListProjectsQuery(
 public sealed record GetCurrentUserQuery
     : IQuery<Result<CurrentUserDto>>;
 
+public sealed record ListProjectDraftsQuery
+    : IQuery<Result<IReadOnlyCollection<ProjectDraftSummaryDto>>>;
+
 public sealed record GetProjectDraftByIdQuery(Guid DraftId)
     : IQuery<Result<ProjectDraftDto>>;
