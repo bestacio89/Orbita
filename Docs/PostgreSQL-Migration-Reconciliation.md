@@ -25,11 +25,24 @@ Orbita currently has 50 explicitly named relational tables in its EF configurati
 
 - [x] Historical initial migration ported with ID `20261019121926_Postgresqlmigration`.
 - [x] Historical follow-up migration ported with ID `20261024160000_EvolutionsRevueBimensuelle`.
-- [x] Historical model snapshot ported as `ApplicationDbContextModelSnapshot`.
+- [x] Historical Magellan model snapshot retained as migration-lineage metadata. It is **not** the current Orbita model snapshot.
 - [x] PostgreSQL Testcontainers integration project added and explicitly wired into CI.
-- [x] Real PostgreSQL execution of the historical migration chain — verified against PostgreSQL 18 in CI run `41097245451`.
+- [x] Historical migration chain applied to an empty PostgreSQL 18 database.
+- [x] Historical migration constraints verified against PostgreSQL: external-identity uniqueness, lot-code uniqueness, and restrictive project-to-lot deletion.
+- [x] Historical follow-up migration data-copy behavior covered by a populated PostgreSQL test: task updates are copied into comments before the legacy table is removed.
 - [ ] Column-level source-to-target mapping and forward schema/data migration.
-- [ ] Current Orbita model snapshot and no-pending-model-changes verification.
+- [ ] Current Orbita model snapshot committed alongside the reviewed forward migration.
+- [ ] Fresh PostgreSQL database reaches the current Orbita schema through the complete migration chain.
+- [ ] Existing Magellan schema upgrades to Orbita without data loss.
+- [ ] Current Orbita constraints, indexes, foreign keys, and delete behaviors verified against PostgreSQL.
+- [ ] Optimistic concurrency verified through competing PostgreSQL-backed updates.
+- [ ] Repository persistence/retrieval round trips verified against PostgreSQL.
+
+### Important distinction
+
+The historical migrations currently prove that the original Magellan schema can be created and evolved. They do **not** prove that the current Orbita model can be deployed to that database. The generated EF preview `20261030172607_OrbitaSchemaTranslation` was inspected and rejected because its default `Up` method drops and recreates 49 tables. It is not a safe migration and must not be committed as-is.
+
+The current snapshot must be committed only with the reviewed forward migration that it describes. Replacing the historical snapshot early would make EF report an apparently current model while the database still contains the legacy schema.
 
 ## Migration strategy
 
