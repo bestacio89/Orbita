@@ -86,6 +86,12 @@ Platform bootstrap configuration is distinct from company-level identity configu
 9. Deactivating an external identity must not silently delete the Orbita user or their audit history.
 10. Revoking a company membership must prevent further company/project operations within that company's scope.
 
+## Initial domain implementation
+
+The first Phase 3 domain slice introduces `Company`, `CompanyMembership`, and `ExternalIdentity`, together with company-scoped role, membership lifecycle, and provider-kind enums. Their initial invariants are covered by domain unit tests. This is not yet a complete multi-company implementation: user linking, project ownership, persistence mappings, repository isolation, workflows, and migrations remain subsequent deliverables.
+
+`ExternalIdentity` uses an immutable issuer/subject pair and supports OIDC, SAML 2.0, and local identity kinds. Provider-specific authentication remains outside the domain. The existing Entra-specific `User` and API identity contract are retained temporarily until the provider-neutral application and API transition is implemented as a coherent slice.
+
 ## Persistence and migration implications
 
 - Add company, external identity, company membership, company identity configuration, and any explicit cross-company grant model required by approved workflows.
@@ -119,4 +125,4 @@ The following must be settled from the business requirements before implementati
 - Whether a platform operator can access company data, and under what audited break-glass policy.
 - Whether local accounts are allowed by default, opt-in, or prohibited by platform policy.
 
-These decisions are not inferred from the single-company Magellan source and must not be silently guessed.
+These decisions are not inferred from the single-company Magellan source and must not be silently guessed. The initial implementation proceeds with one owning company per project and explicit collaboration grants as the baseline.
