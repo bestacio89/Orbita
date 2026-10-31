@@ -34,4 +34,35 @@ public sealed class ApplicationDbContextModelTests
         Assert.Contains(typeof(WorkTask), domainEntities.Select(entityType => entityType.ClrType));
         Assert.Contains(typeof(Absence), domainEntities.Select(entityType => entityType.ClrType));
     }
+
+    [Fact]
+    public void External_identity_is_persisted_with_global_issuer_subject_uniqueness()
+    {
+        var options = new DbContextOptionsBuilder<ApplicationDbContext>()
+            .UseNpgsql("Host=localhost;Database=orbita_model;Username=postgres")
+            .Options;
+
+        using var services = new ServiceCollection().BuildServiceProvider();
+        using var context = new ApplicationDbContext(options, new FranzDispatcher(services));
+
+        var user = context.Model.FindEntityType(typeof(User));
+        var identity = context.Model.FindEntityType(typeof(ExternalIdentity));
+
+        Assert.NotNull(user);
+        Assert.NotNull(identity);
+
+        var relationship = Assert.Single(identity.GetForeignKeys());
+        Assert.Equal(typeof(User), relationship.PrincipalEntityType.ClrType);
+        Assert.Equal(DeleteBehavior.Restrict, relationship.DeleteBehavior);
+
+        var uniqueIdentityKey = Assert.Single(identity.GetIndexes().Where(index =>
+            index.IsUnique &&
+            index.Properties.Select(property => property.Name)
+                .SequenceEqual(new[] { nameof(ExternalIdentity.Issuer), nameof(ExternalIdentity.Subject) })));
+
+        Assert.Equal(
+            "IX_ExternalIdentities_Issuer_Subject",
+            uniqueIdentityKey.GetDatabaseName());
+    }
+
 }
