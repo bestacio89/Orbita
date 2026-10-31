@@ -41,7 +41,9 @@ public sealed class CurrentActorResolver(
                 providerKind,
                 currentUser.Issuer,
                 currentUser.Subject,
-                now));
+                now);
+            identity.RecordAuthentication(now);
+            user.LinkExternalIdentity(identity);
 
             user.RecordLogin(now);
             await users.AddAsync(user, cancellationToken);
