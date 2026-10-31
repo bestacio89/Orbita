@@ -15,7 +15,5 @@ internal sealed class UserConfiguration : IEntityTypeConfiguration<User>
         builder.Property(user => user.FirstName).HasMaxLength(128);
         builder.Property(user => user.LastName).HasMaxLength(128);
         builder.Ignore(user => user.DisplayName);
-        // External identity persistence is introduced with its dedicated schema migration slice.
-        builder.Ignore(user => user.ExternalIdentities);
     }
 }
