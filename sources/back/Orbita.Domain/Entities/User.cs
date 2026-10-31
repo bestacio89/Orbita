@@ -23,10 +23,10 @@ public sealed class User : DomainEntity
     }
 
     [Obsolete("Use ExternalIdentities. Retained temporarily for the Entra migration path.")]
-    public Guid? TenantId { get; private set; }
+    public Guid TenantId { get; private set; }
 
     [Obsolete("Use ExternalIdentities. Retained temporarily for the Entra migration path.")]
-    public Guid? ObjectId { get; private set; }
+    public Guid ObjectId { get; private set; }
 
     public string? FirstName { get; private set; }
     public string? LastName { get; private set; }
