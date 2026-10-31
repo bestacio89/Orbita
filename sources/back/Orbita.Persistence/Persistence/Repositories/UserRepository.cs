@@ -19,8 +19,7 @@ public sealed class UserRepository(ApplicationDbContext dbContext) : IUserReposi
             .Include(user => user.ExternalIdentities)
             .Where(user => user.ExternalIdentities.Any(identity =>
                 identity.Issuer == issuer &&
-                identity.Subject == subject &&
-                identity.IsActive))
+                identity.Subject == subject))
             .SingleOrDefaultAsync(cancellationToken);
 
     public async Task AddAsync(User user, CancellationToken cancellationToken = default)
