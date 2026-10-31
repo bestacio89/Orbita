@@ -1,44 +1,34 @@
 using Orbita.Domain.Common;
+using Orbita.Domain.Enums;
 
 namespace Orbita.Domain.Entities;
 
 /// <summary>
-/// Application user provisioned from a validated Microsoft Entra identity.
-/// Tenant ID and object ID form the immutable external identity; email and display names are presentation data only.
+/// Provider-neutral Orbita person record. External identities are authentication keys;
+/// profile attributes are mutable presentation data and never authorize access.
 /// </summary>
 public sealed class User : DomainEntity
 {
+    private readonly List<ExternalIdentity> _externalIdentities = [];
+
     private User()
     {
     }
 
-    private User(Guid tenantId, Guid objectId, string? firstName, string? lastName, string? email, DateTimeOffset createdAt)
+    private User(string? firstName, string? lastName, string? email, DateTimeOffset createdAt)
     {
-        if (tenantId == Guid.Empty)
-        {
-            throw new ArgumentException("The Entra tenant identifier is required.", nameof(tenantId));
-        }
-
-        if (objectId == Guid.Empty)
-        {
-            throw new ArgumentException("The Entra object identifier is required.", nameof(objectId));
-        }
-
-        TenantId = tenantId;
-        ObjectId = objectId;
         UpdateProfile(firstName, lastName, email);
         CreatedAt = createdAt;
         IsActive = true;
     }
 
-    public Guid TenantId { get; private set; }
-    public Guid ObjectId { get; private set; }
     public string? FirstName { get; private set; }
     public string? LastName { get; private set; }
     public string? Email { get; private set; }
     public bool IsActive { get; private set; }
     public DateTimeOffset CreatedAt { get; private set; }
     public DateTimeOffset? LastLoginAt { get; private set; }
+    public IReadOnlyCollection<ExternalIdentity> ExternalIdentities => _externalIdentities.AsReadOnly();
 
     public string DisplayName
     {
@@ -46,18 +36,46 @@ public sealed class User : DomainEntity
         {
             var name = string.Join(' ', new[] { FirstName, LastName }
                 .Where(value => !string.IsNullOrWhiteSpace(value)));
-            return string.IsNullOrWhiteSpace(name) ? Email ?? ObjectId.ToString("D") : name;
+            return string.IsNullOrWhiteSpace(name) ? Email ?? Id.ToString("D") : name;
         }
     }
 
-    public static User Provision(
-        Guid tenantId,
-        Guid objectId,
+    public static User Create(
         string? firstName,
         string? lastName,
         string? email,
         DateTimeOffset createdAt) =>
-        new(tenantId, objectId, firstName, lastName, email, createdAt);
+        new(firstName, lastName, email, createdAt);
+
+    public void LinkExternalIdentity(ExternalIdentity identity)
+    {
+        ArgumentNullException.ThrowIfNull(identity);
+        if (_externalIdentities.Any(existing =>
+                string.Equals(existing.Issuer, identity.Issuer, StringComparison.Ordinal) &&
+                string.Equals(existing.Subject, identity.Subject, StringComparison.Ordinal)))
+        {
+            throw new BusinessRuleException("This external identity is already linked to the user.");
+        }
+
+        _externalIdentities.Add(identity);
+    }
+
+    public bool UnlinkExternalIdentity(Guid identityId)
+    {
+        var identity = _externalIdentities.SingleOrDefault(item => item.Id == identityId);
+        if (identity is null)
+        {
+            return false;
+        }
+
+        if (identity.IsActive && _externalIdentities.Count(item => item.IsActive) <= 1)
+        {
+            throw new BusinessRuleException("A user must retain at least one active external identity.");
+        }
+
+        identity.Deactivate();
+        return true;
+    }
 
     public void UpdateProfile(string? firstName, string? lastName, string? email)
     {
