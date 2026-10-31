@@ -9,7 +9,7 @@ This roadmap remains the functional target. The status below distinguishes imple
 | 0 — Architecture baseline | Complete | Source/target mapping, functional inventory, dependency rules, and acceptance criteria are documented. |
 | 1 — Domain and contracts | Foundation implemented | Orbita domain entities, value objects, calculation rules, TSP models, commands, queries, DTOs, and repository contracts are present. Project contracts now follow one-type-per-file organization. Continue validating completeness against the functional inventory. |
 | 2 — PostgreSQL persistence | Baseline complete; capability validation ongoing | A single clean InitialOrbitaSchema migration is generated from the current model. PostgreSQL 18 integration tests apply it to an empty database, validate the mapped schema, and exercise repository, uniqueness, rollback, and concurrency behavior. Historical data import remains separate. |
-| 3 — Application workflows | In progress | Phase 3 branch adds initial Company, CompanyMembership, and ExternalIdentity domain primitives with lifecycle invariants and unit tests. Persistence, user linking, project ownership, company-scoped workflows, and provider-neutral API contracts remain outstanding. See `Phase-3-Company-and-Identity-Architecture.md`. |
+| 3 — Application workflows | In progress | Company, CompanyMembership, provider-neutral User/ExternalIdentity linking, EF mappings, issuer/subject repository lookup, actor resolution, and initial domain/model tests are implemented on the Phase 3 branch. EF migration generation is pending in Visual Studio; company persistence, memberships, project ownership, company-scoped workflows, and provider configuration remain outstanding. See `Phase-3-Company-and-Identity-Architecture.md`. |
 | 4 — API and security | Partial | Project and draft HTTP endpoints and current-user resolution are present. Full Entra token validation and end-to-end authorization coverage for the complete security matrix remain outstanding. |
 | 5 — Automated verification | Foundation complete; coverage expansion ongoing | Unit, PostgreSQL integration, architecture, and architectural tribunal projects run in CI. API-level end-to-end security scenarios and remaining business workflows still require coverage. |
 | 6 — Operations and documentation | Partial | CI, environment-driven configuration, migration guidance, and this roadmap are present. Production deployment, readiness, secret-store integration, and operational validation remain outstanding. |
@@ -70,7 +70,7 @@ Keep the existing Orbita solution layout. Do not create a parallel `src` tree or
 
 ### Project and identity management
 - Project creation, editing, archive/status rules, uniqueness identity, and project lifecycle.
-- User provisioning from validated Entra tenant/object identity, activation/deactivation, and last-login data.
+- Provider-neutral Orbita user provisioning from a validated external issuer/subject identity, identity linking/deactivation, activation/deactivation, and last-login data.
 - Global application roles `Manager` and `Admin`, with distinct capability sets.
 - Project-level assignments for Project Manager, Contributor, and Reader.
 - Profile-to-user ownership links used to scope Contributor work.
@@ -101,7 +101,7 @@ Keep the existing Orbita solution layout. Do not create a parallel `src` tree or
 - Entra ID JWT validation against configured tenant and API audience.
 - Development identity handler restricted to Development and Tests.
 - Derive capabilities from validated `roles` claims; never trust incoming capability claims.
-- Use stable tenant ID + object ID identity; do not authorize by email or display name.
+- Use validated issuer + subject identity keys; do not authorize by email or display name. Provider-specific adapters may retain vendor metadata without making it the universal user key.
 - Require authentication by default and make only explicitly public endpoints anonymous.
 - Enforce both global capability and project assignment for project operations.
 - Return 404 for inaccessible project resources where existence must not be disclosed.
