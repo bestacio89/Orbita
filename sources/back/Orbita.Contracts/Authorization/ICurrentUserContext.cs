@@ -1,17 +1,17 @@
 #nullable enable
 
+using Orbita.Domain.Enums;
+
 namespace Orbita.Contracts.Authorization;
 
-/// <summary>
-/// Current authenticated principal after token validation and claims transformation.
-/// Tenant/object identifiers are the external identity key; email and display name are presentation data only.
-/// </summary>
+/// <summary>Validated external principal metadata. Profile claims are never authentication keys.</summary>
 public interface ICurrentUserContext
 {
     bool IsAuthenticated { get; }
+    string? Issuer { get; }
+    string? Subject { get; }
+    IdentityProviderKind? ProviderKind { get; }
     Guid? UserId { get; }
-    Guid? TenantId { get; }
-    Guid? ObjectId { get; }
     string? FirstName { get; }
     string? LastName { get; }
     string? DisplayName { get; }
