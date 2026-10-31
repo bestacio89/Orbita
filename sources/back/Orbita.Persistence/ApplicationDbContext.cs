@@ -18,6 +18,7 @@ public sealed class ApplicationDbContext : DbContextBase
     public DbSet<ProjectAssignment> ProjectAssignments => Set<ProjectAssignment>();
     public DbSet<ProjectDraft> ProjectDrafts => Set<ProjectDraft>();
     public DbSet<User> Users => Set<User>();
+    public DbSet<ExternalIdentity> ExternalIdentities => Set<ExternalIdentity>();
     public DbSet<ProjectJournalEntry> ProjectJournalEntries => Set<ProjectJournalEntry>();
 
     public DbSet<Absence> Absences => Set<Absence>();

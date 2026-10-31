@@ -7,12 +7,20 @@ namespace Orbita.Persistence.Repositories;
 public sealed class UserRepository(ApplicationDbContext dbContext) : IUserRepository
 {
     public Task<User?> GetByIdAsync(Guid userId, CancellationToken cancellationToken = default) =>
-        dbContext.Users.SingleOrDefaultAsync(user => user.Id == userId, cancellationToken);
+        dbContext.Users
+            .Include(user => user.ExternalIdentities)
+            .SingleOrDefaultAsync(user => user.Id == userId, cancellationToken);
 
-    public Task<User?> GetByExternalIdentityAsync(Guid tenantId, Guid objectId, CancellationToken cancellationToken = default) =>
-        dbContext.Users.SingleOrDefaultAsync(
-            user => user.TenantId == tenantId && user.ObjectId == objectId,
-            cancellationToken);
+    public Task<User?> GetByExternalIdentityAsync(
+        string issuer,
+        string subject,
+        CancellationToken cancellationToken = default) =>
+        dbContext.Users
+            .Include(user => user.ExternalIdentities)
+            .Where(user => user.ExternalIdentities.Any(identity =>
+                identity.Issuer == issuer &&
+                identity.Subject == subject))
+            .SingleOrDefaultAsync(cancellationToken);
 
     public async Task AddAsync(User user, CancellationToken cancellationToken = default)
     {
