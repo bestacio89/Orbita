@@ -1,33 +1,38 @@
 using Orbita.Domain.Common;
-using Orbita.Domain.Enums;
 
 namespace Orbita.Domain.Entities;
 
 /// <summary>
-/// Orbita user profile. External authentication identities are linked separately from the user record;
-/// email and display names are mutable presentation attributes, never identity keys.
+/// Application user provisioned from a validated Microsoft Entra identity.
+/// Tenant ID and object ID form the immutable external identity; email and display names are presentation data only.
 /// </summary>
 public sealed class User : DomainEntity
 {
-    private readonly List<ExternalIdentity> _externalIdentities = [];
-
     private User()
     {
     }
 
-    private User(string? firstName, string? lastName, string? email, DateTimeOffset createdAt)
+    private User(Guid tenantId, Guid objectId, string? firstName, string? lastName, string? email, DateTimeOffset createdAt)
     {
+        if (tenantId == Guid.Empty)
+        {
+            throw new ArgumentException("The Entra tenant identifier is required.", nameof(tenantId));
+        }
+
+        if (objectId == Guid.Empty)
+        {
+            throw new ArgumentException("The Entra object identifier is required.", nameof(objectId));
+        }
+
+        TenantId = tenantId;
+        ObjectId = objectId;
         UpdateProfile(firstName, lastName, email);
         CreatedAt = createdAt;
         IsActive = true;
     }
 
-    [Obsolete("Use ExternalIdentities. Retained temporarily for the Entra migration path.")]
     public Guid TenantId { get; private set; }
-
-    [Obsolete("Use ExternalIdentities. Retained temporarily for the Entra migration path.")]
     public Guid ObjectId { get; private set; }
-
     public string? FirstName { get; private set; }
     public string? LastName { get; private set; }
     public string? Email { get; private set; }
@@ -35,86 +40,24 @@ public sealed class User : DomainEntity
     public DateTimeOffset CreatedAt { get; private set; }
     public DateTimeOffset? LastLoginAt { get; private set; }
 
-    public IReadOnlyCollection<ExternalIdentity> ExternalIdentities => _externalIdentities.AsReadOnly();
-
     public string DisplayName
     {
         get
         {
             var name = string.Join(' ', new[] { FirstName, LastName }
                 .Where(value => !string.IsNullOrWhiteSpace(value)));
-            return string.IsNullOrWhiteSpace(name) ? Email ?? Id.ToString("D") : name;
+            return string.IsNullOrWhiteSpace(name) ? Email ?? ObjectId.ToString("D") : name;
         }
     }
 
-    public static User Create(
-        string? firstName,
-        string? lastName,
-        string? email,
-        DateTimeOffset createdAt) =>
-        new(firstName, lastName, email, createdAt);
-
-    /// <summary>
-    /// Compatibility factory for the existing Entra provisioning flow.
-    /// New identity integrations must create a provider-neutral user and link an ExternalIdentity.
-    /// </summary>
     public static User Provision(
         Guid tenantId,
         Guid objectId,
         string? firstName,
         string? lastName,
         string? email,
-        DateTimeOffset createdAt)
-    {
-        if (tenantId == Guid.Empty)
-            throw new ArgumentException("The Entra tenant identifier is required.", nameof(tenantId));
-        if (objectId == Guid.Empty)
-            throw new ArgumentException("The Entra object identifier is required.", nameof(objectId));
-
-        var user = new User(firstName, lastName, email, createdAt)
-        {
-            TenantId = tenantId,
-            ObjectId = objectId
-        };
-        user.LinkExternalIdentity(
-            IdentityProviderKind.OpenIdConnect,
-            $"https://login.microsoftonline.com/{tenantId:D}/v2.0",
-            objectId.ToString("D"),
-            createdAt);
-
-        return user;
-    }
-
-    public ExternalIdentity LinkExternalIdentity(
-        IdentityProviderKind providerKind,
-        string issuer,
-        string subject,
-        DateTimeOffset linkedAt)
-    {
-        if (_externalIdentities.Any(identity =>
-                string.Equals(identity.Issuer, issuer.Trim(), StringComparison.Ordinal) &&
-                string.Equals(identity.Subject, subject.Trim(), StringComparison.Ordinal)))
-        {
-            throw new BusinessRuleException("This external identity is already linked to the user.");
-        }
-
-        var identity = ExternalIdentity.Link(Id, providerKind, issuer, subject, linkedAt);
-        _externalIdentities.Add(identity);
-        return identity;
-    }
-
-    public bool UnlinkExternalIdentity(Guid externalIdentityId)
-    {
-        var identity = _externalIdentities.SingleOrDefault(candidate => candidate.Id == externalIdentityId);
-        if (identity is null)
-            return false;
-
-        if (_externalIdentities.Count(candidate => candidate.IsActive) <= 1 && identity.IsActive)
-            throw new BusinessRuleException("A user cannot unlink their last active external identity.");
-
-        identity.Deactivate();
-        return true;
-    }
+        DateTimeOffset createdAt) =>
+        new(tenantId, objectId, firstName, lastName, email, createdAt);
 
     public void UpdateProfile(string? firstName, string? lastName, string? email)
     {
@@ -130,7 +73,9 @@ public sealed class User : DomainEntity
     public void RecordLogin(DateTimeOffset occurredAt)
     {
         if (LastLoginAt is not null && occurredAt < LastLoginAt)
+        {
             throw new BusinessRuleException("A login timestamp cannot move backwards.");
+        }
 
         LastLoginAt = occurredAt;
     }
