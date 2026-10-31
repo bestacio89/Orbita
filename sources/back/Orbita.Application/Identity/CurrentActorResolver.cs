@@ -36,7 +36,7 @@ public sealed class CurrentActorResolver(
                 currentUser.Email,
                 now);
 
-            user.LinkExternalIdentity(ExternalIdentity.Link(
+            var identity = ExternalIdentity.Link(
                 user.Id,
                 providerKind,
                 currentUser.Issuer,
