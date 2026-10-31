@@ -88,7 +88,7 @@ Platform bootstrap configuration is distinct from company-level identity configu
 
 ## Initial domain implementation
 
-The first Phase 3 domain slice introduces `Company`, `CompanyMembership`, and `ExternalIdentity`, together with company-scoped role, membership lifecycle, and provider-kind enums. Their initial invariants are covered by domain unit tests. This is not yet a complete multi-company implementation: user linking, project ownership, persistence mappings, repository isolation, workflows, and migrations remain subsequent deliverables.
+The first Phase 3 domain slice introduces `Company`, `CompanyMembership`, and `ExternalIdentity`, together with company-scoped role, membership lifecycle, and provider-kind enums. `User` now supports multiple provider-neutral external identity links, rejects duplicate issuer/subject links, and prevents unlinking its last active identity. Domain invariants are covered by unit tests. The current Entra provisioning factory and scalar columns remain as a compatibility bridge; the external identity collection is deliberately excluded from EF mapping until the dedicated schema migration and repository slice. This is not yet a complete multi-company implementation: provider-neutral actor resolution, project ownership, persistence mappings, repository isolation, workflows, and migrations remain subsequent deliverables.
 
 `ExternalIdentity` uses an immutable issuer/subject pair and supports OIDC, SAML 2.0, and local identity kinds. Provider-specific authentication remains outside the domain. The existing Entra-specific `User` and API identity contract are retained temporarily until the provider-neutral application and API transition is implemented as a coherent slice.
 
