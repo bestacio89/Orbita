@@ -1,4 +1,5 @@
 using Orbita.Domain.Common;
+using Orbita.Domain.Enums;
 
 namespace Orbita.Domain.Entities;
 
@@ -20,6 +21,12 @@ public sealed class User : DomainEntity
         CreatedAt = createdAt;
         IsActive = true;
     }
+
+    [Obsolete("Use ExternalIdentities. Retained temporarily for the Entra migration path.")]
+    public Guid? TenantId { get; private set; }
+
+    [Obsolete("Use ExternalIdentities. Retained temporarily for the Entra migration path.")]
+    public Guid? ObjectId { get; private set; }
 
     public string? FirstName { get; private set; }
     public string? LastName { get; private set; }
@@ -64,9 +71,13 @@ public sealed class User : DomainEntity
         if (objectId == Guid.Empty)
             throw new ArgumentException("The Entra object identifier is required.", nameof(objectId));
 
-        var user = new User(firstName, lastName, email, createdAt);
+        var user = new User(firstName, lastName, email, createdAt)
+        {
+            TenantId = tenantId,
+            ObjectId = objectId
+        };
         user.LinkExternalIdentity(
-            Domain.Enums.IdentityProviderKind.OpenIdConnect,
+            IdentityProviderKind.OpenIdConnect,
             $"https://login.microsoftonline.com/{tenantId:D}/v2.0",
             objectId.ToString("D"),
             createdAt);
@@ -75,7 +86,7 @@ public sealed class User : DomainEntity
     }
 
     public ExternalIdentity LinkExternalIdentity(
-        Domain.Enums.IdentityProviderKind providerKind,
+        IdentityProviderKind providerKind,
         string issuer,
         string subject,
         DateTimeOffset linkedAt)
