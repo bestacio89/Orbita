@@ -9,7 +9,7 @@ This roadmap remains the functional target. The status below distinguishes imple
 | 0 — Architecture baseline | Complete | Source/target mapping, functional inventory, dependency rules, and acceptance criteria are documented. |
 | 1 — Domain and contracts | Foundation implemented | Orbita domain entities, value objects, calculation rules, TSP models, commands, queries, DTOs, and repository contracts are present. Project contracts now follow one-type-per-file organization. Continue validating completeness against the functional inventory. |
 | 2 — PostgreSQL persistence | Baseline complete; capability validation ongoing | A single clean InitialOrbitaSchema migration is generated from the current model. PostgreSQL 18 integration tests apply it to an empty database, validate the mapped schema, and exercise repository, uniqueness, rollback, and concurrency behavior. Historical data import remains separate. |
-| 3 — Application workflows | Partial | Project lifecycle, assignment, current-user, project draft, co-author, TSP ingestion, and deterministic calculation workflows are present. Remaining planning, time-entry, financial, export, governance, and reporting capabilities must be assessed against the source inventory. |
+| 3 — Application workflows | Partial; Phase 3 execution started | Existing project/draft/calculation foundations are present. Remaining delivery, tracking, finance, export, governance, reporting, and multi-company workflows require capability-by-capability implementation. The agreed multi-company and provider-neutral identity architecture is documented in `Phase-3-Company-and-Identity-Architecture.md`. |
 | 4 — API and security | Partial | Project and draft HTTP endpoints and current-user resolution are present. Full Entra token validation and end-to-end authorization coverage for the complete security matrix remain outstanding. |
 | 5 — Automated verification | Foundation complete; coverage expansion ongoing | Unit, PostgreSQL integration, architecture, and architectural tribunal projects run in CI. API-level end-to-end security scenarios and remaining business workflows still require coverage. |
 | 6 — Operations and documentation | Partial | CI, environment-driven configuration, migration guidance, and this roadmap are present. Production deployment, readiness, secret-store integration, and operational validation remain outstanding. |
@@ -160,6 +160,41 @@ Acceptance:
 - Application has no reference to the Persistence project.
 
 ### Phase 3 — Application workflows and business services
+
+**Purpose:** Complete Orbita's backend business behaviour over the existing Domain/Contracts/Persistence boundaries, including multi-company isolation and provider-neutral identity. The frontend remains out of scope.
+
+Work is delivered in the following vertical slices:
+
+1. **Company and identity foundation:** Company ownership, provider-neutral Orbita users and external identities, company memberships, company-scoped identity configuration metadata, and explicit access boundaries.
+2. **Company and project access workflows:** Membership lifecycle, company roles/capabilities, project ownership, explicit project assignments, cross-company collaboration grants, and scoped portfolio queries.
+3. **Project delivery and planning:** Profiles, sold planning, agencies/rates, phases, lots, axes, task types, tasks, milestones, planning dates, frozen reference plans, and variance explanations.
+4. **Workload and time tracking:** Time-entry validation, daily effort constraints, profile charging, absence handling, workload projections, and forecast replanning.
+5. **Financial and commercial workflows:** Budgets, purchases, expenses, invoicing milestones, margin/forecast calculations, snapshots, and server-side financial visibility.
+6. **Governance and collaboration:** Workshops, deliverables, recipients, weekly status, actions, decisions, risks, comments, notifications, and journal/audit workflows.
+7. **TSP lifecycle:** Workbook import, validation, blank/imported/project-derived drafts, co-authoring, analysis, export, and controlled project launch.
+8. **Reporting and exports:** Portfolio/project views, committee snapshots, exports, and capability-filtered read models.
+9. **Provider-neutral authentication configuration contracts:** Company provider policies, platform bootstrap state, provider discovery/validation contracts, and provisioning ports. Actual protocol middleware and vendor adapters are implemented in Phase 4.
+
+The first-launch UI is deferred to the frontend phase. The backend must provide the contracts and workflows it will consume.
+
+**Multi-company invariants:**
+- Company membership is distinct from project assignment.
+- Each project has one owning company unless a later approved business decision changes that rule.
+- Project access is never inferred from email or shared identity-provider membership.
+- Cross-company collaboration requires an explicit, auditable grant.
+- External identities are provider-neutral and keyed by validated issuer/subject; Entra tenant/object identifiers are not the universal identity model.
+- Company-specific identity configuration contains secret references, never secret material.
+- Financial visibility is enforced in queries, DTOs, and exports.
+
+See [Phase 3 Company and Identity Architecture](Phase-3-Company-and-Identity-Architecture.md) for the detailed boundaries and unresolved decisions.
+
+**Acceptance:**
+- Business rules match Magellan where Magellan defines them; new multi-company behaviour is covered by explicit Orbita decisions and tests.
+- Company isolation is enforced in application queries and persistence constraints, not merely by controller filters.
+- Application tests cover membership, ownership, assignment, cross-company denial, financial visibility, and concurrency.
+- Application has no direct dependency on concrete EF DbContext or Persistence implementation.
+- Authentication provider configuration is provider-neutral; actual protocol validation remains at the API boundary.
+
 **Purpose:** Port the complete application behaviour over the new Domain/Contracts/Persistence boundaries.
 
 Deliverables:
