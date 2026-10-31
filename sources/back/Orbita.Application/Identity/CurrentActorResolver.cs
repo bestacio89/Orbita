@@ -54,9 +54,13 @@ public sealed class CurrentActorResolver(
         }
 
         var identity = user.ExternalIdentities.Single(item =>
-            item.IsActive &&
             string.Equals(item.Issuer, currentUser.Issuer, StringComparison.Ordinal) &&
             string.Equals(item.Subject, currentUser.Subject, StringComparison.Ordinal));
+
+        if (!identity.IsActive)
+        {
+            return null;
+        }
 
         identity.RecordAuthentication(now);
         user.RecordLogin(now);
