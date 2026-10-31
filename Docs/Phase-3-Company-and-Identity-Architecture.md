@@ -2,7 +2,7 @@
 
 ## Status
 
-Proposed backend architecture baseline for Phase 3. This document records the multi-company requirements agreed for Orbita. It does not claim that the model, workflows, persistence mappings, or authentication integrations are implemented.
+Architecture baseline and implementation status for Phase 3. The domain and persistence model now include provider-neutral users and external identity links; company workflows, schema migration, provider middleware, and multi-company enforcement remain incomplete.
 
 ## Objective
 
@@ -86,11 +86,20 @@ Platform bootstrap configuration is distinct from company-level identity configu
 9. Deactivating an external identity must not silently delete the Orbita user or their audit history.
 10. Revoking a company membership must prevent further company/project operations within that company's scope.
 
-## Initial domain implementation
+## Implementation status
 
-The first Phase 3 domain slice introduces `Company`, `CompanyMembership`, and `ExternalIdentity`, together with company-scoped role, membership lifecycle, and provider-kind enums. `ExternalIdentity` exists as a provider-neutral domain primitive, but it is not yet linked to `User` or persisted. The existing `User` model and Entra provisioning flow remain unchanged until a coordinated user/identity schema migration, repository implementation, and actor-resolution transition can be delivered together. This is not yet a complete multi-company implementation: provider-neutral user linking, actor resolution, project ownership, persistence mappings, repository isolation, workflows, and migrations remain subsequent deliverables.
+The Phase 3 branch now contains:
 
-`ExternalIdentity` uses an immutable issuer/subject pair and supports OIDC, SAML 2.0, and local identity kinds. Provider-specific authentication remains outside the domain. The existing Entra-specific `User` and API identity contract are retained temporarily until the provider-neutral application and API transition is implemented as a coherent slice.
+- `Company`, `CompanyMembership`, and provider-neutral `ExternalIdentity` domain primitives with lifecycle invariants.
+- A provider-neutral `User` aggregate that can link multiple external identities, keeps profile attributes separate from authentication keys, and prevents unlinking its final active identity.
+- EF Core mappings for `User` and `ExternalIdentity`, including a required user relationship and a database unique index over `(Issuer, Subject)`.
+- Repository lookup by issuer/subject, including inactive identity records so a deactivated identity cannot be silently reprovisioned as a new user.
+- Provider-neutral current-principal contracts and actor resolution using validated issuer/subject values.
+- Domain and relational-model tests for linking invariants and mapping constraints.
+
+**Migration generation remains pending.** The existing initial migration and model snapshot still represent the Entra-specific `TenantId`/`ObjectId` columns. Generate the next EF Core migration from the updated model in Visual Studio. It must migrate existing rows into `ExternalIdentities` while preserving every `User.Id` and all existing user foreign keys, then remove the obsolete provider-specific columns and index. Review the generated migration and snapshot before committing them.
+
+The API principal adapter currently projects OIDC issuer/subject claims. SAML and local protocol adapters remain part of the later API/security integration. This is not yet a complete multi-company implementation: company persistence, memberships, project ownership, company-scoped workflows, provider configuration, and isolation enforcement remain outstanding.
 
 ## Persistence and migration implications
 
