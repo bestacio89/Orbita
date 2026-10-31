@@ -120,4 +120,75 @@ public sealed class CompanyIdentityDomainTests
         Assert.Equal("https://orbita.example.test/local", identity.Issuer);
         Assert.Equal("account-123", identity.Subject);
     }
+    [Fact]
+    public void User_can_link_multiple_provider_neutral_external_identities()
+    {
+        var user = User.Create("Ada", "Lovelace", "ada@example.test", Now);
+
+        var entra = user.LinkExternalIdentity(
+            IdentityProviderKind.OpenIdConnect,
+            "https://login.microsoftonline.com/tenant-a/v2.0",
+            "subject-a",
+            Now);
+        var keycloak = user.LinkExternalIdentity(
+            IdentityProviderKind.OpenIdConnect,
+            "https://sso.example.test/realms/acme",
+            "subject-b",
+            Now.AddMinutes(1));
+
+        Assert.Equal(2, user.ExternalIdentities.Count);
+        Assert.Contains(entra, user.ExternalIdentities);
+        Assert.Contains(keycloak, user.ExternalIdentities);
+    }
+
+    [Fact]
+    public void User_rejects_duplicate_issuer_and_subject_links()
+    {
+        var user = User.Create("Ada", "Lovelace", null, Now);
+        user.LinkExternalIdentity(
+            IdentityProviderKind.OpenIdConnect,
+            "https://identity.example.test",
+            "subject",
+            Now);
+
+        Assert.Throws<BusinessRuleException>(() => user.LinkExternalIdentity(
+            IdentityProviderKind.Saml2,
+            "https://identity.example.test",
+            "subject",
+            Now.AddMinutes(1)));
+    }
+
+    [Fact]
+    public void User_cannot_unlink_its_last_active_external_identity()
+    {
+        var user = User.Create("Ada", "Lovelace", null, Now);
+        var identity = user.LinkExternalIdentity(
+            IdentityProviderKind.Local,
+            "https://orbita.example.test/local",
+            "account-123",
+            Now);
+
+        Assert.Throws<BusinessRuleException>(() => user.UnlinkExternalIdentity(identity.Id));
+    }
+
+    [Fact]
+    public void User_can_unlink_one_identity_when_another_active_identity_remains()
+    {
+        var user = User.Create("Ada", "Lovelace", null, Now);
+        var first = user.LinkExternalIdentity(
+            IdentityProviderKind.OpenIdConnect,
+            "https://identity-a.example.test",
+            "subject-a",
+            Now);
+        user.LinkExternalIdentity(
+            IdentityProviderKind.Saml2,
+            "https://identity-b.example.test",
+            "subject-b",
+            Now);
+
+        Assert.True(user.UnlinkExternalIdentity(first.Id));
+        Assert.False(first.IsActive);
+        Assert.Single(user.ExternalIdentities.Where(identity => identity.IsActive));
+    }
+
 }
