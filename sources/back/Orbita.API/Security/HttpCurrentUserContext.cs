@@ -2,6 +2,7 @@
 
 using System.Security.Claims;
 using Orbita.Contracts.Authorization;
+using Orbita.Domain.Enums;
 
 namespace Orbita.API.Security;
 
@@ -12,11 +13,21 @@ public sealed class HttpCurrentUserContext(IHttpContextAccessor accessor) : ICur
 
     public bool IsAuthenticated => Principal?.Identity?.IsAuthenticated == true;
 
+    public string? Issuer =>
+        Principal?.FindFirst("iss")?.Value ??
+        Principal?.FindFirst("sub")?.Issuer ??
+        Principal?.FindFirst(ClaimTypes.NameIdentifier)?.Issuer;
+
+    public string? Subject =>
+        Principal?.FindFirst("sub")?.Value ??
+        Principal?.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+
+    public IdentityProviderKind? ProviderKind =>
+        !IsAuthenticated ? null :
+        string.IsNullOrWhiteSpace(Subject) || string.IsNullOrWhiteSpace(Issuer) ? null :
+        IdentityProviderKind.OpenIdConnect;
+
     public Guid? UserId => ReadGuid("orbita_user_id");
-
-    public Guid? TenantId => ReadGuid("tid");
-
-    public Guid? ObjectId => ReadGuid("oid") ?? ReadGuid(ClaimTypes.NameIdentifier);
 
     public string? FirstName =>
         Principal?.FindFirst("given_name")?.Value ??
